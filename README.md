@@ -1,7 +1,37 @@
-# 👋Hi there!, I'm xXN1CG4M3RXx
-### Software Engineer
+# 👋Hi there!, I'm Nico
+## Software Engineer
 
-I'm a passionate developer who enjoys building things, learning daily, and having fun along the way.<br>🚀 I like keeping my code clean, simple, and practical.<br>💡 Always curious about new tech and better solutions.<br><br>🎯 Interests<br><br>🌸 Anime fan, from classics to seasonal releases.<br>🎮 Gamer in my free time, mostly story-driven and competitive games.<br>💻 Coding enthusiast (ofc), I enjoy turning ideas into working projects.<br><br>🛠️ Languages & Tools<br><br>🔹 C# – Mainly for desktop apps and backend logic.<br>🔹 Python – Automation, scripts, and small tools.<br>🔹 Java – Object-oriented projects and learning core concepts.<br>🔹 HTML & CSS – Building clean and responsive layouts.<br>🔹 JavaScript – Adding interactivity and dynamic behavior.<br><br>🌱 Currently Learning<br><br>📘 Improving problem-solving and data structures.<br>⚙️ Exploring better project architecture and clean code practices.<br>🧠 Always leveling up as a developer.<br><br>📫 Let's Connect<br><br>🤝 Open to collaboration and learning from others.<br>⭐ Check out my repositories and feel free to leave feedback! <br>🔗 You can check out my socials [Here](https://guns.lol/xX_N1C_G4M3R_Xx)
+I'm a passionate developer who enjoys building things, learning daily, and having fun along the way.
+<br>
+🚀 I like keeping my code clean, simple, and practical.
+<br>
+💡 Always curious about new tech and better solutions.
+
+## 🎯 Interests
+
+🌸 Anime fan, from classics to seasonal releases.<br>
+🎮 Gamer in my free time, mostly story-driven and competitive games.<br>
+💻 Coding enthusiast (ofc), I enjoy turning ideas into working projects.
+
+## 🛠️ Languages & Tools
+
+🔹 C# – Mainly for desktop apps and backend logic.<br>
+🔹 Python – Automation, scripts, and small tools.<br>
+🔹 Java – Object-oriented projects and learning core concepts.<br>
+🔹 HTML & CSS – Building clean and responsive layouts.<br>
+🔹 JavaScript – Adding interactivity and dynamic behavior.
+
+## 🌱 Currently Learning
+
+📘 Improving problem-solving and data structures.<br>
+⚙️ Exploring better project architecture and clean code practices.<br>
+🧠 Always leveling up as a developer.
+
+## 📫 Let's Connect
+
+🤝 Open to collaboration and learning from others.<br>
+⭐ Check out my repositories and feel free to leave feedback!<br>
+🔗 If you want you can also check out my [socials](https://guns.lol/NicoJ).
 
 ## Skills
 
