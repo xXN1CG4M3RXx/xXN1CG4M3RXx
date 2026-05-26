@@ -50,7 +50,7 @@ I'm a passionate developer who enjoys building things, learning daily, and havin
 
 ## Support Me
 
-<a href="https://www.buymeacoffee.com/xx_n1c_g4m3r_xx"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="Buy Me A Coffee" /></a>
+<a href="https://www.buymeacoffee.com/nicoj"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="Buy Me A Coffee" /></a>
 
 ## GitHub Activity Graph
 
