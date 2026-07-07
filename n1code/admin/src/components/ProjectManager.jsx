@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { db, storage } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import ImageManagerModal from './ImageManagerModal';
 
 export default function ProjectManager() {
   const [loading, setLoading] = useState(false);
@@ -9,6 +9,8 @@ export default function ProjectManager() {
   const [success, setSuccess] = useState(false);
   
   const [projects, setProjects] = useState([]);
+  const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
+  const [activeProjectId, setActiveProjectId] = useState(null);
   
   useEffect(() => {
     const fetchProjects = async () => {
@@ -74,24 +76,27 @@ export default function ProjectManager() {
     }));
   };
 
-  const handleImageUpload = async (e, id) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      updateProject(id, 'imageUrl', url);
-    } catch (error) {
-      console.error("Upload failed", error);
-      alert("Failed to upload image.");
+  const openImageManager = (projectId) => {
+    setActiveProjectId(projectId);
+    setIsImageManagerOpen(true);
+  };
+
+  const handleImageSelected = (url) => {
+    if (activeProjectId) {
+      updateProject(activeProjectId, 'imageUrl', url);
     }
   };
 
   if (loading) return <div className="text-slate-400 p-8">Loading projects...</div>;
 
   return (
-    <div className="glassmorphism rounded-2xl p-8 border border-sky-aqua-500/20">
+    <div className="glassmorphism rounded-2xl p-8 border border-sky-aqua-500/20 relative">
+      <ImageManagerModal 
+        isOpen={isImageManagerOpen} 
+        onClose={() => setIsImageManagerOpen(false)}
+        onSelect={handleImageSelected}
+      />
+      
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-2xl font-display font-bold text-slate-100">Project Showcase</h2>
@@ -186,10 +191,12 @@ export default function ProjectManager() {
                     className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     placeholder="https://..."
                   />
-                  <label className="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-lg px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
-                    Upload
-                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, project.id)} />
-                  </label>
+                  <button 
+                    onClick={() => openImageManager(project.id)}
+                    className="bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-lg px-4 py-2 text-slate-200 transition-colors whitespace-nowrap"
+                  >
+                    Select Image
+                  </button>
                 </div>
               </div>
             </div>

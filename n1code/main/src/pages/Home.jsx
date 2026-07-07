@@ -18,6 +18,12 @@ export default function Home() {
       color2: "#000016",
       imageUrl: ""
     },
+    pageBackground: {
+      type: "color",
+      color1: "#0b0f19",
+      color2: "#000000",
+      imageUrl: ""
+    },
     links: [
       { id: "1", title: "Steam", url: "https://steamcommunity.com", icon: "steam", description: "Add me on Steam to play games together!" },
       { id: "2", title: "GitHub", url: "https://github.com", icon: "github", description: "Check out my latest open source projects" },
@@ -34,7 +40,11 @@ export default function Home() {
         const docRef = doc(db, "settings", "profile");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setProfile(docSnap.data());
+          const data = docSnap.data();
+          if (!data.pageBackground) {
+            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+          }
+          setProfile(data);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -43,13 +53,25 @@ export default function Home() {
     fetchProfile();
   }, []);
 
-  const getBackgroundStyle = () => {
+  const getCardBackgroundStyle = () => {
     if (profile.background.type === 'image') {
-      return { backgroundImage: `url(${profile.background.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+      return { backgroundImage: `url(${profile.background.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: 'transparent' };
     } else if (profile.background.type === 'gradient') {
-      return { background: `linear-gradient(135deg, ${profile.background.color1}, ${profile.background.color2})` };
+      return { background: `linear-gradient(135deg, ${profile.background.color1}, ${profile.background.color2})`, backgroundColor: 'transparent' };
     }
-    return { backgroundColor: profile.background.color1 };
+    return { backgroundColor: profile.background.color1, background: 'none' };
+  };
+
+  const getPageBackgroundStyle = () => {
+    // Check if pageBackground exists (to prevent errors if migrating old data)
+    if (!profile.pageBackground) return {}; 
+    
+    if (profile.pageBackground.type === 'image') {
+      return { backgroundImage: `url(${profile.pageBackground.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+    } else if (profile.pageBackground.type === 'gradient') {
+      return { background: `linear-gradient(135deg, ${profile.pageBackground.color1}, ${profile.pageBackground.color2})` };
+    }
+    return { backgroundColor: profile.pageBackground.color1, background: 'none' };
   };
 
   const glowStyle = profile.glowEnabled ? { filter: `drop-shadow(0 0 10px ${profile.accentColor})` } : {};
@@ -70,10 +92,13 @@ export default function Home() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 pb-32 w-full min-h-screen relative" style={getBackgroundStyle()}>
+    <div className="flex-1 flex flex-col items-center justify-center p-6 pb-32 w-full min-h-screen relative" style={getPageBackgroundStyle()}>
       
       {/* Main Glassmorphism Card */}
-      <div className="glassmorphism rounded-[2.5rem] p-8 md:p-12 w-full max-w-2xl mx-auto flex flex-col items-center relative overflow-hidden bg-slate-900/40 border border-white/10 backdrop-blur-xl shadow-2xl">
+      <div 
+        className="glassmorphism rounded-[2.5rem] p-8 md:p-12 w-full max-w-2xl mx-auto flex flex-col items-center relative overflow-hidden border border-white/10 shadow-2xl"
+        style={getCardBackgroundStyle()}
+      >
         
         {/* Profile Image with splash effect behind it */}
         <div className="relative w-32 h-32 mb-6">

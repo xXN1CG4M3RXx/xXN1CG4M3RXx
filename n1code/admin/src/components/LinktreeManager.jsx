@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { db, storage } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import ImageManagerModal from './ImageManagerModal';
 
 export default function LinktreeManager() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
   
-  // This state mirrors the expected structure in main's Home.jsx
+  // Image Manager State
+  const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
+  const [currentImageField, setCurrentImageField] = useState(null); // 'avatarUrl', 'background.imageUrl', 'pageBackground.imageUrl'
+  
   const [profile, setProfile] = useState({
     username: "",
     bio: "",
@@ -22,6 +24,12 @@ export default function LinktreeManager() {
       color2: "#000016",
       imageUrl: ""
     },
+    pageBackground: {
+      type: "color",
+      color1: "#0b0f19",
+      color2: "#000000",
+      imageUrl: ""
+    },
     links: [],
     views: 0
   });
@@ -32,7 +40,17 @@ export default function LinktreeManager() {
         const docRef = doc(db, "settings", "profile");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setProfile(docSnap.data());
+          const data = docSnap.data();
+          // Ensure pageBackground exists if migrating from old data
+          if (!data.pageBackground) {
+            data.pageBackground = {
+              type: "color",
+              color1: "#0b0f19",
+              color2: "#000000",
+              imageUrl: ""
+            };
+          }
+          setProfile(data);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -40,16 +58,6 @@ export default function LinktreeManager() {
     };
     fetchProfile();
   }, []);
-
-  const availableColors = [
-    { name: "Deep Navy", value: "var(--color-deep-navy-500)" },
-    { name: "Regal Navy", value: "var(--color-regal-navy-500)" },
-    { name: "Baltic Blue", value: "var(--color-baltic-blue-500)" },
-    { name: "Blue Green", value: "var(--color-blue-green-500)" },
-    { name: "Sky Aqua", value: "var(--color-sky-aqua-500)" },
-    { name: "White", value: "#ffffff" },
-    { name: "Black", value: "#000000" },
-  ];
 
   const iconOptions = ["steam", "github", "discord", "youtube", "twitch", "tiktok", "monitor", "code"];
 
@@ -68,26 +76,18 @@ export default function LinktreeManager() {
     }
   };
 
-  const handleImageUpload = async (e, fieldPath) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    setUploadingImage(true);
-    try {
-      const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      
-      if (fieldPath === 'avatarUrl') {
-        setProfile(p => ({ ...p, avatarUrl: url }));
-      } else if (fieldPath === 'background.imageUrl') {
-        setProfile(p => ({ ...p, background: { ...p.background, imageUrl: url } }));
-      }
-    } catch (error) {
-      console.error("Upload failed", error);
-      alert("Failed to upload image. Please try again.");
-    } finally {
-      setUploadingImage(false);
+  const openImageManager = (fieldPath) => {
+    setCurrentImageField(fieldPath);
+    setIsImageManagerOpen(true);
+  };
+
+  const handleImageSelected = (url) => {
+    if (currentImageField === 'avatarUrl') {
+      setProfile(p => ({ ...p, avatarUrl: url }));
+    } else if (currentImageField === 'background.imageUrl') {
+      setProfile(p => ({ ...p, background: { ...p.background, imageUrl: url } }));
+    } else if (currentImageField === 'pageBackground.imageUrl') {
+      setProfile(p => ({ ...p, pageBackground: { ...p.pageBackground, imageUrl: url } }));
     }
   };
 
@@ -114,6 +114,12 @@ export default function LinktreeManager() {
 
   return (
     <div className="space-y-8 pb-12">
+      <ImageManagerModal 
+        isOpen={isImageManagerOpen} 
+        onClose={() => setIsImageManagerOpen(false)}
+        onSelect={handleImageSelected}
+      />
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-display font-bold text-slate-100 mb-2">Linktree Settings</h1>
@@ -122,7 +128,7 @@ export default function LinktreeManager() {
         <button 
           onClick={handleSave}
           disabled={loading}
-          className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+          className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-purple-500/20"
         >
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
@@ -160,7 +166,7 @@ export default function LinktreeManager() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Avatar Image URL (or upload)</label>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Avatar Image URL</label>
               <div className="flex gap-2">
                 <input 
                   type="text" 
@@ -169,10 +175,12 @@ export default function LinktreeManager() {
                   className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                   placeholder="https://..."
                 />
-                <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
-                  {uploadingImage ? '...' : 'Upload'}
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'avatarUrl')} />
-                </label>
+                <button 
+                  onClick={() => openImageManager('avatarUrl')}
+                  className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 transition-colors whitespace-nowrap"
+                >
+                  Select Image
+                </button>
               </div>
             </div>
           </div>
@@ -232,9 +240,9 @@ export default function LinktreeManager() {
           </div>
         </div>
 
-        {/* Background Settings */}
+        {/* Card Background */}
         <div className="glassmorphism rounded-2xl p-6 space-y-6">
-          <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Background</h2>
+          <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Card Background</h2>
           
           <div className="space-y-4">
             <div>
@@ -252,7 +260,7 @@ export default function LinktreeManager() {
 
             {profile.background.type === 'image' ? (
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Background Image URL (or upload)</label>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Image URL</label>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
@@ -261,10 +269,12 @@ export default function LinktreeManager() {
                     className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                     placeholder="https://..."
                   />
-                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors whitespace-nowrap">
-                    {uploadingImage ? '...' : 'Upload'}
-                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'background.imageUrl')} />
-                  </label>
+                  <button 
+                    onClick={() => openImageManager('background.imageUrl')}
+                    className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 transition-colors whitespace-nowrap"
+                  >
+                    Select Image
+                  </button>
                 </div>
               </div>
             ) : (
@@ -283,7 +293,6 @@ export default function LinktreeManager() {
                       value={profile.background.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
                       className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                      placeholder="#hex, rgb(), or var(--color-x)"
                     />
                   </div>
                 </div>
@@ -302,7 +311,86 @@ export default function LinktreeManager() {
                         value={profile.background.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
                         className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                        placeholder="#hex, rgb(), or var(--color-x)"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Page Background */}
+        <div className="glassmorphism rounded-2xl p-6 space-y-6">
+          <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Page Background</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Background Type</label>
+              <select 
+                value={profile.pageBackground.type}
+                onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, type: e.target.value}})}
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+              >
+                <option value="color">Solid Color</option>
+                <option value="gradient">Gradient</option>
+                <option value="image">Image</option>
+              </select>
+            </div>
+
+            {profile.pageBackground.type === 'image' ? (
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Image URL</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={profile.pageBackground.imageUrl}
+                    onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, imageUrl: e.target.value}})}
+                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    placeholder="https://..."
+                  />
+                  <button 
+                    onClick={() => openImageManager('pageBackground.imageUrl')}
+                    className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 transition-colors whitespace-nowrap"
+                  >
+                    Select Image
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-1">Color 1 (or Solid Color)</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="color" 
+                      value={profile.pageBackground.color1}
+                      onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color1: e.target.value}})}
+                      className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
+                    />
+                    <input 
+                      type="text" 
+                      value={profile.pageBackground.color1}
+                      onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color1: e.target.value}})}
+                      className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+                {profile.pageBackground.type === 'gradient' && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1">Color 2 (Gradient End)</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="color" 
+                        value={profile.pageBackground.color2}
+                        onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color2: e.target.value}})}
+                        className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
+                      />
+                      <input 
+                        type="text" 
+                        value={profile.pageBackground.color2}
+                        onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color2: e.target.value}})}
+                        className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
