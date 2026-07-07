@@ -139,7 +139,7 @@ export default function InboxManager() {
                   </span>
                 </div>
                 
-                <p className={`text-xs pl-4 truncate ${!msg.read ? 'text-slate-300 font-medium' : 'text-slate-500'}`}>
+                <p className={`text-xs pl-4 pr-14 truncate ${!msg.read ? 'text-slate-300 font-medium' : 'text-slate-500'}`}>
                   {msg.message}
                 </p>
                 
