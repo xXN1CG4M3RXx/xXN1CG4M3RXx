@@ -45,7 +45,7 @@ export default function Home() {
   };
 
   const glowStyle = profile.glowEnabled ? { filter: `drop-shadow(0 0 10px ${profile.accentColor})` } : {};
-  const textGlowStyle = profile.glowEnabled ? { textShadow: `0 0 10px ${profile.accentColor}, 0 0 20px ${profile.accentColor}` } : {};
+  const textGlowStyle = profile.glowEnabled ? { textShadow: `0 0 6px ${profile.accentColor}99` } : {};
 
   const getIcon = (iconName) => {
     switch (iconName) {
@@ -110,10 +110,6 @@ export default function Home() {
             <p className="text-sm font-bold truncate" style={{ color: profile.textColor }}>{profile.activity.status}</p>
             <p className="text-sm opacity-70 truncate" style={{ color: profile.textColor }}>{profile.activity.details}</p>
           </div>
-
-          <div className="w-14 h-14 bg-slate-800/80 rounded-2xl flex items-center justify-center border border-slate-700/50 flex-shrink-0">
-            <Code className="w-6 h-6 text-slate-400" />
-          </div>
         </div>
 
         {/* Social Links Stack */}
@@ -142,11 +138,6 @@ export default function Home() {
           })}
         </div>
 
-        {/* View Counter */}
-        <div className="absolute bottom-6 left-6 flex items-center gap-2" style={{ color: profile.accentColor }}>
-          <Eye className="w-5 h-5" />
-          <span className="font-bold">{profile.views}</span>
-        </div>
       </div>
     </div>
   );
