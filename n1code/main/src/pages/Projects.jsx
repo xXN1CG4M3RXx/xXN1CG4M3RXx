@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { Code } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export default function Projects() {
-  const [projects, setProjects] = useState([
-    {
-      id: "1",
-      title: "n1code Platform",
-      description: "My personal digital playground and portfolio built with React, TailwindCSS, and Firebase.",
-      tags: ["React", "Firebase", "TailwindCSS v4"],
-      githubUrl: "https://github.com/xXN1CG4M3RXx/n1code",
-      liveUrl: "https://n1code.dev"
-    },
-    {
-      id: "2",
-      title: "RPG Inventory Manager",
-      description: "A comprehensive tool to manage stats, items, and quests for tabletop RPGs.",
-      tags: ["C#", "Unity", "SQLite"],
-      githubUrl: "https://github.com/xXN1CG4M3RXx/rpg-manager"
-    }
-  ]);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mocking Firebase fetch
+  // Fetch from Firebase
   useEffect(() => {
-    // In the future: fetch from Firebase `projects` collection
+    const fetchProjects = async () => {
+      try {
+        const docRef = doc(db, "settings", "projects");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProjects(docSnap.data().list || []);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
   }, []);
 
   return (

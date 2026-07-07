@@ -1,28 +1,32 @@
 import { useEffect, useState } from "react";
 import SetupList from "../components/SetupList";
 import { Monitor, Cpu, Keyboard } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export default function Setup() {
   const [setupData, setSetupData] = useState({
-    gaming: [
-      { name: "NVIDIA RTX 4080 Super", category: "GPU" },
-      { name: "AMD Ryzen 7 7800X3D", category: "CPU" },
-      { name: "32GB Corsair Vengeance DDR5", category: "RAM" },
-      { name: "LG UltraGear 27\" 1440p 240Hz", category: "Monitor" },
-      { name: "Wooting 60HE", category: "Keyboard" },
-      { name: "Logitech G Pro X Superlight", category: "Mouse" }
-    ],
-    development: [
-      { name: "MacBook Pro 16\" (M3 Max)", category: "Laptop" },
-      { name: "Dell UltraSharp 32\" 4K", category: "Monitor" },
-      { name: "Keychron Q1 Pro", category: "Keyboard" },
-      { name: "Logitech MX Master 3S", category: "Mouse" }
-    ]
+    gaming: [],
+    development: []
   });
 
-  // Mocking Firebase fetch
+  // Fetch from Firebase
   useEffect(() => {
-    // In the future: fetch from Firebase `setup` document/collection
+    const fetchSetup = async () => {
+      try {
+        const docRef = doc(db, "settings", "setup");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setSetupData({
+            gaming: docSnap.data().gaming || [],
+            development: docSnap.data().development || []
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching setup:", error);
+      }
+    };
+    fetchSetup();
   }, []);
 
   return (
