@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Monitor, Code, Eye } from "lucide-react";
-import { FaSteam, FaGithub, FaDiscord, FaYoutube, FaTwitch, FaTiktok } from 'react-icons/fa';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { getIconComponent } from "../lib/IconRegistry";
 
 export default function Home() {
   const [profile, setProfile] = useState({
@@ -79,17 +78,8 @@ export default function Home() {
   const textGlowStyle = profile.glowEnabled ? { textShadow: `0 0 6px ${profile.accentColor}99` } : {};
 
   const getIcon = (iconName) => {
-    switch (iconName) {
-      case 'github': return <FaGithub className="w-8 h-8" />;
-      case 'youtube': return <FaYoutube className="w-8 h-8" />;
-      case 'discord': return <FaDiscord className="w-8 h-8" />;
-      case 'twitch': return <FaTwitch className="w-8 h-8" />;
-      case 'steam': return <FaSteam className="w-8 h-8" />;
-      case 'tiktok': return <FaTiktok className="w-8 h-8" />;
-      case 'monitor': return <Monitor className="w-8 h-8" />;
-      case 'code': return <Code className="w-8 h-8" />;
-      default: return null;
-    }
+    const IconComp = getIconComponent(iconName);
+    return <IconComp className="w-8 h-8" />;
   };
 
   return (

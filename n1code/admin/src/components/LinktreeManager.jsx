@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import ImageManagerModal from './ImageManagerModal';
+import IconPickerModal from './IconPickerModal';
+import { getIconComponent } from '../lib/IconRegistry';
 
 export default function LinktreeManager() {
   const [loading, setLoading] = useState(false);
@@ -10,6 +12,10 @@ export default function LinktreeManager() {
   // Image Manager State
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
   const [currentImageField, setCurrentImageField] = useState(null); // 'avatarUrl', 'background.imageUrl', 'pageBackground.imageUrl'
+  
+  // Icon Picker State
+  const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
+  const [activeLinkIdForIcon, setActiveLinkIdForIcon] = useState(null);
   
   const [profile, setProfile] = useState({
     username: "",
@@ -60,7 +66,7 @@ export default function LinktreeManager() {
     fetchProfile();
   }, []);
 
-  const iconOptions = ["steam", "github", "discord", "youtube", "twitch", "tiktok", "monitor", "code"];
+
 
   const handleSave = async () => {
     setLoading(true);
@@ -92,6 +98,17 @@ export default function LinktreeManager() {
     }
   };
 
+  const openIconPicker = (linkId) => {
+    setActiveLinkIdForIcon(linkId);
+    setIsIconPickerOpen(true);
+  };
+
+  const handleIconSelected = (iconId) => {
+    if (activeLinkIdForIcon) {
+      updateLink(activeLinkIdForIcon, 'icon', iconId);
+    }
+  };
+
   const addLink = () => {
     setProfile(p => ({
       ...p,
@@ -119,6 +136,11 @@ export default function LinktreeManager() {
         isOpen={isImageManagerOpen} 
         onClose={() => setIsImageManagerOpen(false)}
         onSelect={handleImageSelected}
+      />
+      <IconPickerModal
+        isOpen={isIconPickerOpen}
+        onClose={() => setIsIconPickerOpen(false)}
+        onSelect={handleIconSelected}
       />
 
       <div className="flex items-center justify-between">
@@ -438,14 +460,17 @@ export default function LinktreeManager() {
                 <div className="space-y-3 pr-6">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 mb-1">Icon Type</label>
-                      <select
-                        value={link.icon}
-                        onChange={(e) => updateLink(link.id, 'icon', e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Icon</label>
+                      <button
+                        onClick={() => openIconPicker(link.id)}
+                        className="w-full bg-slate-800 border border-slate-700 hover:border-sky-aqua-500 rounded-lg px-3 py-1.5 text-sm text-slate-200 transition-colors flex items-center justify-between"
                       >
-                        {iconOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
+                        {(() => {
+                          const IconComp = getIconComponent(link.icon);
+                          return <IconComp className="w-5 h-5 text-sky-aqua-400" />;
+                        })()}
+                        <span>Change</span>
+                      </button>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-400 mb-1">Link Title</label>
