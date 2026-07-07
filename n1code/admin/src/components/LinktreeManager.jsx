@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { db } from '../lib/firebase';
+import { db, storage } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function LinktreeManager() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   // This state mirrors the expected structure in main's Home.jsx
   const [profile, setProfile] = useState({
@@ -50,6 +52,31 @@ export default function LinktreeManager() {
       setLoading(false);
       setTimeout(() => setSuccess(false), 3000);
     }, 1000);
+  };
+
+  const handleImageUpload = async (e, fieldPath) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setUploadingImage(true);
+    try {
+      const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      
+      if (fieldPath === 'avatarUrl') {
+        setProfile(p => ({ ...p, avatarUrl: url }));
+      } else if (fieldPath === 'background.imageUrl') {
+        setProfile(p => ({ ...p, background: { ...p.background, imageUrl: url } }));
+      } else if (fieldPath === 'activity.icon') {
+        setProfile(p => ({ ...p, activity: { ...p.activity, icon: url } }));
+      }
+    } catch (error) {
+      console.error("Upload failed", error);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const addLink = () => {
@@ -121,13 +148,20 @@ export default function LinktreeManager() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Avatar Image URL</label>
-              <input 
-                type="text" 
-                value={profile.avatarUrl}
-                onChange={e => setProfile({...profile, avatarUrl: e.target.value})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-              />
+              <label className="block text-sm font-medium text-slate-400 mb-1">Avatar Image URL (or upload)</label>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={profile.avatarUrl}
+                  onChange={e => setProfile({...profile, avatarUrl: e.target.value})}
+                  className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  placeholder="https://..."
+                />
+                <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
+                  {uploadingImage ? '...' : 'Upload'}
+                  <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'avatarUrl')} />
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -139,23 +173,39 @@ export default function LinktreeManager() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Accent/Glow Color</label>
-              <select 
-                value={profile.accentColor}
-                onChange={e => setProfile({...profile, accentColor: e.target.value})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-              >
-                {availableColors.map(c => <option key={c.name} value={c.value}>{c.name}</option>)}
-              </select>
+              <div className="flex gap-2">
+                <input 
+                  type="color" 
+                  value={profile.accentColor.startsWith('var') ? '#00ccff' : profile.accentColor}
+                  onChange={e => setProfile({...profile, accentColor: e.target.value})}
+                  className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                />
+                <input 
+                  type="text" 
+                  value={profile.accentColor}
+                  onChange={e => setProfile({...profile, accentColor: e.target.value})}
+                  className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  placeholder="#hex, rgb(), or var(--color-x)"
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Text Color</label>
-              <select 
-                value={profile.textColor}
-                onChange={e => setProfile({...profile, textColor: e.target.value})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-              >
-                {availableColors.map(c => <option key={c.name} value={c.value}>{c.name}</option>)}
-              </select>
+              <div className="flex gap-2">
+                <input 
+                  type="color" 
+                  value={profile.textColor.startsWith('var') ? '#00ccff' : profile.textColor}
+                  onChange={e => setProfile({...profile, textColor: e.target.value})}
+                  className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                />
+                <input 
+                  type="text" 
+                  value={profile.textColor}
+                  onChange={e => setProfile({...profile, textColor: e.target.value})}
+                  className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  placeholder="#hex, rgb(), or var(--color-x)"
+                />
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <input 
@@ -190,44 +240,59 @@ export default function LinktreeManager() {
 
             {profile.background.type === 'image' ? (
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Background Image URL</label>
-                <input 
-                  type="text" 
-                  value={profile.background.imageUrl}
-                  onChange={e => setProfile({...profile, background: {...profile.background, imageUrl: e.target.value}})}
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                />
+                <label className="block text-sm font-medium text-slate-400 mb-1">Background Image URL (or upload)</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={profile.background.imageUrl}
+                    onChange={e => setProfile({...profile, background: {...profile.background, imageUrl: e.target.value}})}
+                    className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    placeholder="https://..."
+                  />
+                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
+                    {uploadingImage ? '...' : 'Upload'}
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'background.imageUrl')} />
+                  </label>
+                </div>
               </div>
             ) : (
               <>
                 <div>
                   <label className="block text-sm font-medium text-slate-400 mb-1">Color 1 (or Solid Color)</label>
-                  <select 
-                    value={profile.background.color1}
-                    onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                  >
-                    <option value="var(--color-deep-navy-900)">Deep Navy 900</option>
-                    <option value="var(--color-deep-navy-500)">Deep Navy 500</option>
-                    <option value="var(--color-deep-navy-100)">Deep Navy 100</option>
-                    <option value="var(--color-regal-navy-900)">Regal Navy 900</option>
-                    <option value="#000000">Black</option>
-                  </select>
+                  <div className="flex gap-2">
+                    <input 
+                      type="color" 
+                      value={profile.background.color1.startsWith('var') ? '#000036' : profile.background.color1}
+                      onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
+                      className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                    />
+                    <input 
+                      type="text" 
+                      value={profile.background.color1}
+                      onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
+                      className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                      placeholder="#hex, rgb(), or var(--color-x)"
+                    />
+                  </div>
                 </div>
                 {profile.background.type === 'gradient' && (
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1">Color 2 (Gradient End)</label>
-                    <select 
-                      value={profile.background.color2}
-                      onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
-                      className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                    >
-                      <option value="var(--color-deep-navy-900)">Deep Navy 900</option>
-                      <option value="var(--color-deep-navy-500)">Deep Navy 500</option>
-                      <option value="var(--color-deep-navy-100)">Deep Navy 100</option>
-                      <option value="var(--color-regal-navy-900)">Regal Navy 900</option>
-                      <option value="#000000">Black</option>
-                    </select>
+                    <div className="flex gap-2">
+                      <input 
+                        type="color" 
+                        value={profile.background.color2.startsWith('var') ? '#000016' : profile.background.color2}
+                        onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
+                        className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                      />
+                      <input 
+                        type="text" 
+                        value={profile.background.color2}
+                        onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
+                        className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                        placeholder="#hex, rgb(), or var(--color-x)"
+                      />
+                    </div>
                   </div>
                 )}
               </>
@@ -262,13 +327,20 @@ export default function LinktreeManager() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Icon URL</label>
-                <input 
-                  type="text" 
-                  value={profile.activity.icon}
-                  onChange={e => setProfile({...profile, activity: {...profile.activity, icon: e.target.value}})}
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                />
+                <label className="block text-sm font-medium text-slate-400 mb-1">Icon URL (or upload)</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={profile.activity.icon}
+                    onChange={e => setProfile({...profile, activity: {...profile.activity, icon: e.target.value}})}
+                    className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    placeholder="https://..."
+                  />
+                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
+                    {uploadingImage ? '...' : 'Upload'}
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'activity.icon')} />
+                  </label>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Badge Text (e.g. PHAS)</label>
