@@ -31,7 +31,7 @@ router.post('/contact', async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const data = await resend.emails.send({
+    const { data, error: resendError } = await resend.emails.send({
       from: 'Contact Form <no-reply@n1code.dev>',
       to: 'inbox@n1code.dev',
       subject: `New Contact Form Submission from ${name}`,
@@ -39,10 +39,15 @@ router.post('/contact', async (req, res) => {
       reply_to: email,
     });
 
+    if (resendError) {
+      console.error("Resend API error:", resendError);
+      return res.status(500).json({ error: resendError.message || JSON.stringify(resendError) });
+    }
+
     res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error("Resend error:", error);
-    res.status(500).json({ error: "Failed to send email" });
+    console.error("Resend exception:", error);
+    res.status(500).json({ error: error.message || "Failed to send email" });
   }
 });
 
@@ -55,17 +60,22 @@ router.post('/reply', async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const data = await resend.emails.send({
+    const { data, error: resendError } = await resend.emails.send({
       from: 'info@n1code.dev', // User explicitly requested info@n1code.dev for replies
       to: toEmail,
       subject: subject || "Reply to your inquiry",
       text: message,
     });
 
+    if (resendError) {
+      console.error("Resend API error:", resendError);
+      return res.status(500).json({ error: resendError.message || JSON.stringify(resendError) });
+    }
+
     res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error("Resend reply error:", error);
-    res.status(500).json({ error: "Failed to send reply email" });
+    console.error("Resend reply exception:", error);
+    res.status(500).json({ error: error.message || "Failed to send reply email" });
   }
 });
 

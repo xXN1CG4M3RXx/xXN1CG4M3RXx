@@ -82,7 +82,8 @@ export default function InboxManager() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send reply");
+        const errData = await response.json();
+        throw new Error(errData.error || "Failed to send reply");
       }
 
       setReplyStatus("success");
