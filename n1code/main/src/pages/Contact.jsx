@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { db } from "../lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
@@ -10,15 +12,11 @@ export default function Contact() {
     setStatus("submitting");
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+      await addDoc(collection(db, "messages"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+        read: false
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
 
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
