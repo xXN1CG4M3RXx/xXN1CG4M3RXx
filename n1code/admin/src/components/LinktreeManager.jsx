@@ -188,7 +188,6 @@ export default function LinktreeManager() {
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
-              <ColorSwatches onSelect={(val) => setProfile({...profile, accentColor: val})} />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Text Color</label>
@@ -207,7 +206,6 @@ export default function LinktreeManager() {
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
-              <ColorSwatches onSelect={(val) => setProfile({...profile, textColor: val})} />
             </div>
             <div className="flex items-center gap-3">
               <input 
@@ -276,7 +274,6 @@ export default function LinktreeManager() {
                       placeholder="#hex, rgb(), or var(--color-x)"
                     />
                   </div>
-                  <ColorSwatches onSelect={(val) => setProfile({...profile, background: {...profile.background, color1: val}})} />
                 </div>
                 {profile.background.type === 'gradient' && (
                   <div>
@@ -296,7 +293,6 @@ export default function LinktreeManager() {
                         placeholder="#hex, rgb(), or var(--color-x)"
                       />
                     </div>
-                    <ColorSwatches onSelect={(val) => setProfile({...profile, background: {...profile.background, color2: val}})} />
                   </div>
                 )}
               </>
@@ -411,35 +407,6 @@ export default function LinktreeManager() {
         </div>
 
       </div>
-    </div>
-  );
-}
-
-function ColorSwatches({ onSelect }) {
-  const predefinedColors = [
-    { name: "Deep Navy", value: "#000036" },
-    { name: "Regal Navy", value: "#003369" },
-    { name: "Baltic Blue", value: "#00669b" },
-    { name: "Blue Green", value: "#0099cd" },
-    { name: "Sky Aqua", value: "#00ccff" },
-    { name: "Pink", value: "#ec4899" },
-    { name: "Purple", value: "#a855f7" },
-    { name: "Emerald", value: "#10b981" },
-    { name: "White", value: "#ffffff" },
-    { name: "Black", value: "#000000" },
-  ];
-  return (
-    <div className="flex flex-wrap gap-2 mt-3">
-      {predefinedColors.map(c => (
-        <button
-          key={c.name}
-          title={c.name}
-          type="button"
-          onClick={() => onSelect(c.value)}
-          className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform shadow-sm"
-          style={{ background: c.value }}
-        />
-      ))}
     </div>
   );
 }
