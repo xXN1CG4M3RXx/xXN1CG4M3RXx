@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
 import { collection, query, orderBy, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { Trash2 } from 'lucide-react';
 
 export default function InboxManager() {
   const [messages, setMessages] = useState([]);
@@ -134,7 +135,7 @@ export default function InboxManager() {
                   <h3 className={`font-semibold text-sm truncate pr-4 ${!msg.read ? 'text-slate-200' : 'text-slate-400'}`}>
                     {msg.name}
                   </h3>
-                  <span className="text-xs text-slate-500 whitespace-nowrap">
+                  <span className="text-xs text-slate-500 whitespace-nowrap group-hover:opacity-0 transition-opacity">
                     {msg.createdAt?.toDate().toLocaleDateString() || 'Just now'}
                   </span>
                 </div>
@@ -149,9 +150,9 @@ export default function InboxManager() {
                 
                 <button 
                   onClick={(e) => deleteMessage(e, msg.id)}
-                  className="absolute top-4 right-4 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-4 right-4 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1 hover:bg-red-400/10 rounded-md"
                 >
-                  ✕
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))
