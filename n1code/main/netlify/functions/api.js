@@ -32,10 +32,11 @@ router.post('/contact', async (req, res) => {
     }
 
     const data = await resend.emails.send({
-      from: 'Acme <onboarding@resend.dev>', // Resend sandbox default
-      to: ['delivered@resend.dev'], // Send to sandbox inbox or user's email if verified
+      from: 'Contact Form <no-reply@n1code.dev>',
+      to: 'inbox@n1code.dev',
       subject: `New Contact Form Submission from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nMessage:\n${message}`,
+      reply_to: email,
     });
 
     res.status(200).json({ success: true, data });
