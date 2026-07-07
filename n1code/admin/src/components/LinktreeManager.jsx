@@ -154,7 +154,7 @@ export default function LinktreeManager() {
                   type="text" 
                   value={profile.avatarUrl}
                   onChange={e => setProfile({...profile, avatarUrl: e.target.value})}
-                  className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                   placeholder="https://..."
                 />
                 <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
@@ -184,7 +184,7 @@ export default function LinktreeManager() {
                   type="text" 
                   value={profile.accentColor}
                   onChange={e => setProfile({...profile, accentColor: e.target.value})}
-                  className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
@@ -202,7 +202,7 @@ export default function LinktreeManager() {
                   type="text" 
                   value={profile.textColor}
                   onChange={e => setProfile({...profile, textColor: e.target.value})}
-                  className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
@@ -246,10 +246,10 @@ export default function LinktreeManager() {
                     type="text" 
                     value={profile.background.imageUrl}
                     onChange={e => setProfile({...profile, background: {...profile.background, imageUrl: e.target.value}})}
-                    className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                     placeholder="https://..."
                   />
-                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
+                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors whitespace-nowrap">
                     {uploadingImage ? '...' : 'Upload'}
                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'background.imageUrl')} />
                   </label>
@@ -270,7 +270,7 @@ export default function LinktreeManager() {
                       type="text" 
                       value={profile.background.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
-                      className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                      className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                       placeholder="#hex, rgb(), or var(--color-x)"
                     />
                   </div>
@@ -289,7 +289,7 @@ export default function LinktreeManager() {
                         type="text" 
                         value={profile.background.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
-                        className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                        className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                         placeholder="#hex, rgb(), or var(--color-x)"
                       />
                     </div>
@@ -333,10 +333,10 @@ export default function LinktreeManager() {
                     type="text" 
                     value={profile.activity.icon}
                     onChange={e => setProfile({...profile, activity: {...profile.activity, icon: e.target.value}})}
-                    className="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
                     placeholder="https://..."
                   />
-                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors">
+                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors whitespace-nowrap">
                     {uploadingImage ? '...' : 'Upload'}
                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'activity.icon')} />
                   </label>
