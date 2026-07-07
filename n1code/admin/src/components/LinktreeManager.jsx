@@ -16,11 +16,6 @@ export default function LinktreeManager() {
     accentColor: "#00ccff",
     textColor: "#00ccff",
     glowEnabled: true,
-    activity: {
-      status: "",
-      details: "",
-      icon: ""
-    },
     background: {
       type: "gradient",
       color1: "#000036",
@@ -67,8 +62,6 @@ export default function LinktreeManager() {
         setProfile(p => ({ ...p, avatarUrl: url }));
       } else if (fieldPath === 'background.imageUrl') {
         setProfile(p => ({ ...p, background: { ...p.background, imageUrl: url } }));
-      } else if (fieldPath === 'activity.icon') {
-        setProfile(p => ({ ...p, activity: { ...p.activity, icon: url } }));
       }
     } catch (error) {
       console.error("Upload failed", error);
@@ -296,52 +289,6 @@ export default function LinktreeManager() {
                 )}
               </>
             )}
-          </div>
-        </div>
-
-        {/* Discord Activity */}
-        <div className="glassmorphism rounded-2xl p-6 space-y-6">
-          <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Activity Card</h2>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Status (e.g. Playing Code)</label>
-                <input 
-                  type="text" 
-                  value={profile.activity.status}
-                  onChange={e => setProfile({...profile, activity: {...profile.activity, status: e.target.value}})}
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Details (e.g. Idling)</label>
-                <input 
-                  type="text" 
-                  value={profile.activity.details}
-                  onChange={e => setProfile({...profile, activity: {...profile.activity, details: e.target.value}})}
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Icon URL (or upload)</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="text" 
-                    value={profile.activity.icon}
-                    onChange={e => setProfile({...profile, activity: {...profile.activity, icon: e.target.value}})}
-                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                    placeholder="https://..."
-                  />
-                  <label className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 cursor-pointer flex items-center justify-center transition-colors whitespace-nowrap">
-                    {uploadingImage ? '...' : 'Upload'}
-                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'activity.icon')} />
-                  </label>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

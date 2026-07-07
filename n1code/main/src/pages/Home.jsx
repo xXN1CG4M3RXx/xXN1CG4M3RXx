@@ -10,11 +10,6 @@ export default function Home() {
     accentColor: "#00ccff",
     textColor: "#00ccff",
     glowEnabled: true,
-    activity: {
-      status: "Playing Code",
-      details: "Idling",
-      icon: "https://i.imgur.com/Y171yL1.png"
-    },
     background: {
       type: "gradient", // solid, gradient, image
       color1: "#000036",
@@ -91,26 +86,6 @@ export default function Home() {
         <p className="text-lg font-medium tracking-wide mb-8" style={{ color: profile.textColor }}>
           {profile.bio}
         </p>
-
-        {/* Discord Activity Card */}
-        <div className="w-full max-w-md bg-slate-900/60 rounded-3xl p-4 flex items-center gap-4 border border-white/5 shadow-inner mb-8">
-          <div className="relative w-16 h-16 rounded-full overflow-hidden border border-white/10 flex-shrink-0">
-             {profile.activity.icon ? (
-               <img src={profile.activity.icon} alt="Activity" className="w-full h-full object-cover" />
-             ) : (
-               <div className="w-full h-full bg-slate-800"></div>
-             )}
-             <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900"></div>
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-slate-200 font-bold truncate text-lg" style={{ color: profile.textColor }}>{profile.username.toLowerCase()}</h3>
-            </div>
-            <p className="text-sm font-bold truncate" style={{ color: profile.textColor }}>{profile.activity.status}</p>
-            <p className="text-sm opacity-70 truncate" style={{ color: profile.textColor }}>{profile.activity.details}</p>
-          </div>
-        </div>
 
         {/* Social Links Stack */}
         <div className="flex flex-col gap-4 w-full px-4 mt-2">
