@@ -13,8 +13,8 @@ export default function LinktreeManager() {
     username: "",
     bio: "",
     avatarUrl: "",
-    accentColor: "var(--color-sky-aqua-500)",
-    textColor: "var(--color-sky-aqua-500)",
+    accentColor: "#00ccff",
+    textColor: "#00ccff",
     glowEnabled: true,
     activity: {
       status: "",
@@ -24,8 +24,8 @@ export default function LinktreeManager() {
     },
     background: {
       type: "gradient",
-      color1: "var(--color-deep-navy-900)",
-      color2: "var(--color-deep-navy-200)",
+      color1: "#000036",
+      color2: "#000016",
       imageUrl: ""
     },
     links: [],
@@ -176,7 +176,7 @@ export default function LinktreeManager() {
               <div className="flex gap-2">
                 <input 
                   type="color" 
-                  value={profile.accentColor.startsWith('var') ? '#00ccff' : profile.accentColor}
+                  value={profile.accentColor}
                   onChange={e => setProfile({...profile, accentColor: e.target.value})}
                   className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                 />
@@ -195,7 +195,7 @@ export default function LinktreeManager() {
               <div className="flex gap-2">
                 <input 
                   type="color" 
-                  value={profile.textColor.startsWith('var') ? '#00ccff' : profile.textColor}
+                  value={profile.textColor}
                   onChange={e => setProfile({...profile, textColor: e.target.value})}
                   className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                 />
@@ -264,7 +264,7 @@ export default function LinktreeManager() {
                   <div className="flex gap-2">
                     <input 
                       type="color" 
-                      value={profile.background.color1.startsWith('var') ? '#000036' : profile.background.color1}
+                      value={profile.background.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
                       className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                     />
@@ -284,7 +284,7 @@ export default function LinktreeManager() {
                     <div className="flex gap-2">
                       <input 
                         type="color" 
-                        value={profile.background.color2.startsWith('var') ? '#000016' : profile.background.color2}
+                        value={profile.background.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
                         className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                       />
@@ -417,11 +417,11 @@ export default function LinktreeManager() {
 
 function ColorSwatches({ onSelect }) {
   const predefinedColors = [
-    { name: "Deep Navy", value: "var(--color-deep-navy-500)" },
-    { name: "Regal Navy", value: "var(--color-regal-navy-500)" },
-    { name: "Baltic Blue", value: "var(--color-baltic-blue-500)" },
-    { name: "Blue Green", value: "var(--color-blue-green-500)" },
-    { name: "Sky Aqua", value: "var(--color-sky-aqua-500)" },
+    { name: "Deep Navy", value: "#000036" },
+    { name: "Regal Navy", value: "#003369" },
+    { name: "Baltic Blue", value: "#00669b" },
+    { name: "Blue Green", value: "#0099cd" },
+    { name: "Sky Aqua", value: "#00ccff" },
     { name: "Pink", value: "#ec4899" },
     { name: "Purple", value: "#a855f7" },
     { name: "Emerald", value: "#10b981" },
@@ -437,13 +437,7 @@ function ColorSwatches({ onSelect }) {
           type="button"
           onClick={() => onSelect(c.value)}
           className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform shadow-sm"
-          style={{ background: c.value.startsWith('var') ? (
-            c.value === 'var(--color-deep-navy-500)' ? '#000036' :
-            c.value === 'var(--color-regal-navy-500)' ? '#003369' :
-            c.value === 'var(--color-baltic-blue-500)' ? '#00669b' :
-            c.value === 'var(--color-blue-green-500)' ? '#0099cd' :
-            '#00ccff'
-          ) : c.value }}
+          style={{ background: c.value }}
         />
       ))}
     </div>
