@@ -19,8 +19,7 @@ export default function LinktreeManager() {
     activity: {
       status: "",
       details: "",
-      icon: "", 
-      badge: ""
+      icon: ""
     },
     background: {
       type: "gradient",
@@ -82,7 +81,7 @@ export default function LinktreeManager() {
   const addLink = () => {
     setProfile(p => ({
       ...p,
-      links: [...p.links, { id: Date.now().toString(), title: "New Link", url: "", icon: "github" }]
+      links: [...p.links, { id: Date.now().toString(), title: "New Link", description: "", url: "", icon: "github" }]
     }));
   };
 
@@ -325,7 +324,7 @@ export default function LinktreeManager() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Icon URL (or upload)</label>
                 <div className="flex gap-2">
@@ -341,15 +340,6 @@ export default function LinktreeManager() {
                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'activity.icon')} />
                   </label>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-1">Badge Text (e.g. PHAS)</label>
-                <input 
-                  type="text" 
-                  value={profile.activity.badge}
-                  onChange={e => setProfile({...profile, activity: {...profile.activity, badge: e.target.value}})}
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
-                />
               </div>
             </div>
           </div>
@@ -377,15 +367,37 @@ export default function LinktreeManager() {
                   ✕
                 </button>
                 <div className="space-y-3 pr-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Icon Type</label>
+                      <select
+                        value={link.icon}
+                        onChange={(e) => updateLink(link.id, 'icon', e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
+                      >
+                        {iconOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-400 mb-1">Link Title</label>
+                      <input 
+                        type="text" 
+                        value={link.title || ""}
+                        onChange={(e) => updateLink(link.id, 'title', e.target.value)}
+                        placeholder="e.g. GitHub"
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">Icon Type</label>
-                    <select
-                      value={link.icon}
-                      onChange={(e) => updateLink(link.id, 'icon', e.target.value)}
+                    <label className="block text-xs font-medium text-slate-400 mb-1">Description (optional)</label>
+                    <input 
+                      type="text" 
+                      value={link.description || ""}
+                      onChange={(e) => updateLink(link.id, 'description', e.target.value)}
+                      placeholder="e.g. Check out my projects"
                       className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
-                    >
-                      {iconOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-slate-400 mb-1">URL / Link</label>

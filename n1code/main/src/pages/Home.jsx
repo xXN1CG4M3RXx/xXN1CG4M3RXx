@@ -13,8 +13,7 @@ export default function Home() {
     activity: {
       status: "Playing Code",
       details: "Idling",
-      icon: "https://i.imgur.com/Y171yL1.png", 
-      badge: "PHAS"
+      icon: "https://i.imgur.com/Y171yL1.png"
     },
     background: {
       type: "gradient", // solid, gradient, image
@@ -23,12 +22,10 @@ export default function Home() {
       imageUrl: ""
     },
     links: [
-      { id: "1", title: "Steam", url: "https://steamcommunity.com", icon: "steam" },
-      { id: "2", title: "GitHub", url: "https://github.com", icon: "github" },
-      { id: "3", title: "Discord", url: "https://discord.com", icon: "discord" },
-      { id: "4", title: "YouTube", url: "https://youtube.com", icon: "youtube" },
-      { id: "5", title: "Twitch", url: "https://twitch.tv", icon: "twitch" },
-      { id: "6", title: "TikTok", url: "https://tiktok.com", icon: "tiktok" }
+      { id: "1", title: "Steam", url: "https://steamcommunity.com", icon: "steam", description: "Add me on Steam to play games together!" },
+      { id: "2", title: "GitHub", url: "https://github.com", icon: "github", description: "Check out my latest open source projects" },
+      { id: "3", title: "Discord", url: "https://discord.com", icon: "discord", description: "Join my community Discord server" },
+      { id: "4", title: "YouTube", url: "https://youtube.com", icon: "youtube", description: "Watch my newest videos and streams" }
     ],
     views: 44
   });
@@ -109,11 +106,6 @@ export default function Home() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-slate-200 font-bold truncate text-lg" style={{ color: profile.textColor }}>{profile.username.toLowerCase()}</h3>
-              {profile.activity.badge && (
-                <span className="text-[10px] bg-slate-800/80 px-2 py-0.5 rounded-full border border-slate-700 font-bold flex items-center gap-1" style={{ color: profile.textColor }}>
-                  💀 {profile.activity.badge}
-                </span>
-              )}
             </div>
             <p className="text-sm font-bold truncate" style={{ color: profile.textColor }}>{profile.activity.status}</p>
             <p className="text-sm opacity-70 truncate" style={{ color: profile.textColor }}>{profile.activity.details}</p>
@@ -124,19 +116,30 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Social Icons Row */}
-        <div className="flex flex-wrap justify-center gap-4 w-full px-4">
-          {profile.links.map((link) => (
-            link.internal ? (
-              <Link key={link.id} to={link.url} className="w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-300" style={{ color: profile.accentColor, ...glowStyle }}>
-                {getIcon(link.icon)}
+        {/* Social Links Stack */}
+        <div className="flex flex-col gap-4 w-full px-4 mt-2">
+          {profile.links.map((link) => {
+            const inner = (
+              <div className="bg-slate-900/60 border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:bg-slate-800/60 transition-all w-full group shadow-lg hover:shadow-xl hover:-translate-y-1">
+                <div className="flex-shrink-0 group-hover:scale-110 transition-transform duration-300 w-12 h-12 flex items-center justify-center" style={{ color: profile.accentColor, ...glowStyle }}>
+                  {getIcon(link.icon)}
+                </div>
+                <div className="flex flex-col text-left flex-1 min-w-0">
+                  <span className="font-bold text-lg truncate" style={{ color: profile.textColor, ...textGlowStyle }}>{link.title}</span>
+                  {link.description && <span className="text-sm opacity-70 truncate mt-0.5" style={{ color: profile.textColor }}>{link.description}</span>}
+                </div>
+              </div>
+            );
+            return link.internal ? (
+              <Link key={link.id} to={link.url} className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-2xl">
+                {inner}
               </Link>
             ) : (
-              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-300" style={{ color: profile.accentColor, ...glowStyle }}>
-                {getIcon(link.icon)}
+              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-2xl">
+                {inner}
               </a>
-            )
-          ))}
+            );
+          })}
         </div>
 
         {/* View Counter */}
