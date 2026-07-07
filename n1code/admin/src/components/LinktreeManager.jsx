@@ -178,7 +178,7 @@ export default function LinktreeManager() {
                   type="color" 
                   value={profile.accentColor.startsWith('var') ? '#00ccff' : profile.accentColor}
                   onChange={e => setProfile({...profile, accentColor: e.target.value})}
-                  className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                  className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                 />
                 <input 
                   type="text" 
@@ -188,6 +188,7 @@ export default function LinktreeManager() {
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
+              <ColorSwatches onSelect={(val) => setProfile({...profile, accentColor: val})} />
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Text Color</label>
@@ -196,7 +197,7 @@ export default function LinktreeManager() {
                   type="color" 
                   value={profile.textColor.startsWith('var') ? '#00ccff' : profile.textColor}
                   onChange={e => setProfile({...profile, textColor: e.target.value})}
-                  className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                  className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                 />
                 <input 
                   type="text" 
@@ -206,6 +207,7 @@ export default function LinktreeManager() {
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
+              <ColorSwatches onSelect={(val) => setProfile({...profile, textColor: val})} />
             </div>
             <div className="flex items-center gap-3">
               <input 
@@ -264,7 +266,7 @@ export default function LinktreeManager() {
                       type="color" 
                       value={profile.background.color1.startsWith('var') ? '#000036' : profile.background.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
-                      className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                      className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                     />
                     <input 
                       type="text" 
@@ -274,6 +276,7 @@ export default function LinktreeManager() {
                       placeholder="#hex, rgb(), or var(--color-x)"
                     />
                   </div>
+                  <ColorSwatches onSelect={(val) => setProfile({...profile, background: {...profile.background, color1: val}})} />
                 </div>
                 {profile.background.type === 'gradient' && (
                   <div>
@@ -283,7 +286,7 @@ export default function LinktreeManager() {
                         type="color" 
                         value={profile.background.color2.startsWith('var') ? '#000016' : profile.background.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
-                        className="h-10 w-14 bg-slate-900/50 border border-slate-700 rounded-xl cursor-pointer"
+                        className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                       />
                       <input 
                         type="text" 
@@ -293,6 +296,7 @@ export default function LinktreeManager() {
                         placeholder="#hex, rgb(), or var(--color-x)"
                       />
                     </div>
+                    <ColorSwatches onSelect={(val) => setProfile({...profile, background: {...profile.background, color2: val}})} />
                   </div>
                 )}
               </>
@@ -407,6 +411,41 @@ export default function LinktreeManager() {
         </div>
 
       </div>
+    </div>
+  );
+}
+
+function ColorSwatches({ onSelect }) {
+  const predefinedColors = [
+    { name: "Deep Navy", value: "var(--color-deep-navy-500)" },
+    { name: "Regal Navy", value: "var(--color-regal-navy-500)" },
+    { name: "Baltic Blue", value: "var(--color-baltic-blue-500)" },
+    { name: "Blue Green", value: "var(--color-blue-green-500)" },
+    { name: "Sky Aqua", value: "var(--color-sky-aqua-500)" },
+    { name: "Pink", value: "#ec4899" },
+    { name: "Purple", value: "#a855f7" },
+    { name: "Emerald", value: "#10b981" },
+    { name: "White", value: "#ffffff" },
+    { name: "Black", value: "#000000" },
+  ];
+  return (
+    <div className="flex flex-wrap gap-2 mt-3">
+      {predefinedColors.map(c => (
+        <button
+          key={c.name}
+          title={c.name}
+          type="button"
+          onClick={() => onSelect(c.value)}
+          className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform shadow-sm"
+          style={{ background: c.value.startsWith('var') ? (
+            c.value === 'var(--color-deep-navy-500)' ? '#000036' :
+            c.value === 'var(--color-regal-navy-500)' ? '#003369' :
+            c.value === 'var(--color-baltic-blue-500)' ? '#00669b' :
+            c.value === 'var(--color-blue-green-500)' ? '#0099cd' :
+            '#00ccff'
+          ) : c.value }}
+        />
+      ))}
     </div>
   );
 }
