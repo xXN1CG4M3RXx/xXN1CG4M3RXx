@@ -5,33 +5,8 @@ import { db } from "../lib/firebase";
 import { getIconComponent } from "../lib/IconRegistry";
 
 export default function Home() {
-  const [profile, setProfile] = useState({
-    username: "xX_N1C_G4M3R_Xx",
-    bio: "Gamer 🎮 | Software Engineer 💻 | Anime Fan 🌸",
-    avatarUrl: "https://i.imgur.com/Y171yL1.png", // Using a placeholder that looks somewhat like the image
-    accentColor: "#00ccff",
-    textColor: "#00ccff",
-    glowEnabled: true,
-    background: {
-      type: "gradient", // solid, gradient, image
-      color1: "#000036",
-      color2: "#000016",
-      imageUrl: ""
-    },
-    pageBackground: {
-      type: "color",
-      color1: "#0b0f19",
-      color2: "#000000",
-      imageUrl: ""
-    },
-    links: [
-      { id: "1", title: "Steam", url: "https://steamcommunity.com", icon: "steam", description: "Add me on Steam to play games together!" },
-      { id: "2", title: "GitHub", url: "https://github.com", icon: "github", description: "Check out my latest open source projects" },
-      { id: "3", title: "Discord", url: "https://discord.com", icon: "discord", description: "Join my community Discord server" },
-      { id: "4", title: "YouTube", url: "https://youtube.com", icon: "youtube", description: "Watch my newest videos and streams" }
-    ],
-    views: 44
-  });
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch from Firebase
   useEffect(() => {
@@ -45,13 +20,27 @@ export default function Home() {
             data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
           }
           setProfile(data);
+        } else {
+          setProfile(null);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProfile();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-screen bg-[#0b0f19]">
+        <div className="w-16 h-16 border-4 border-sky-aqua-500/20 border-t-sky-aqua-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!profile) return null;
 
   const getCardBackgroundStyle = () => {
     if (profile.background.type === 'image') {
@@ -141,11 +130,11 @@ export default function Home() {
               </div>
             );
             return link.internal ? (
-              <Link key={link.id} to={link.url} className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-2xl">
+              <Link key={link.id} to={link.url} className="w-full focus:outline-none rounded-2xl">
                 {inner}
               </Link>
             ) : (
-              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-2xl">
+              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full focus:outline-none rounded-2xl">
                 {inner}
               </a>
             );
