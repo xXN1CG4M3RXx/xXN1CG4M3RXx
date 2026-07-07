@@ -29,7 +29,7 @@ export default function Projects() {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mb-24">
       <div className="flex flex-col items-center text-center mb-16">
-        <div className="w-16 h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center border border-pink-500/20 text-pink-400 mb-6">
+        <div className="w-16 h-16 rounded-2xl bg-sky-aqua-500/10 flex items-center justify-center border border-sky-aqua-500/20 text-sky-aqua-400 mb-6">
           <Code className="w-8 h-8" />
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 font-display">

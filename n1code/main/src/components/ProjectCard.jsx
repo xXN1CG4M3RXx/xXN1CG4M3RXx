@@ -2,7 +2,7 @@ import { ExternalLink as ExternalLinkIcon } from "lucide-react";
 
 export default function ProjectCard({ project }) {
   return (
-    <div className="glassmorphism rounded-2xl overflow-hidden hover-scale group border border-purple-500/10 hover:border-purple-500/30 transition-all flex flex-col">
+    <div className="glassmorphism rounded-2xl overflow-hidden hover-scale group border border-sky-aqua-500/10 hover:border-sky-aqua-500/30 transition-all flex flex-col">
       <div className="relative h-48 w-full bg-slate-800 overflow-hidden">
         {project.imageUrl ? (
           <img 
@@ -26,7 +26,7 @@ export default function ProjectCard({ project }) {
         
         <div className="flex flex-wrap gap-2 mb-6">
           {project.tags?.map(tag => (
-            <span key={tag} className="text-xs font-mono bg-purple-500/10 text-purple-300 px-2.5 py-1 rounded-md border border-purple-500/20">
+            <span key={tag} className="text-xs font-mono bg-sky-aqua-500/10 text-sky-aqua-300 px-2.5 py-1 rounded-md border border-sky-aqua-500/20">
               {tag}
             </span>
           ))}
@@ -39,7 +39,7 @@ export default function ProjectCard({ project }) {
             </a>
           )}
           {project.liveUrl && (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-pink-400 transition-colors ml-auto flex items-center gap-1 text-sm font-mono uppercase tracking-wider">
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-aqua-400 transition-colors ml-auto flex items-center gap-1 text-sm font-mono uppercase tracking-wider">
               <span>View Live</span>
               <ExternalLinkIcon className="w-4 h-4" />
             </a>
