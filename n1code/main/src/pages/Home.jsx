@@ -55,11 +55,11 @@ export default function Home() {
 
   const getCardBackgroundStyle = () => {
     if (profile.background.type === 'image') {
-      return { backgroundImage: `url(${profile.background.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundColor: 'transparent' };
+      return { backgroundImage: `url(${profile.background.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
     } else if (profile.background.type === 'gradient') {
-      return { background: `linear-gradient(135deg, ${profile.background.color1}, ${profile.background.color2})`, backgroundColor: 'transparent' };
+      return { background: `linear-gradient(135deg, ${profile.background.color1}, ${profile.background.color2})` };
     }
-    return { backgroundColor: profile.background.color1, background: 'none' };
+    return { backgroundColor: profile.background.color1 };
   };
 
   const getPageBackgroundStyle = () => {
@@ -97,8 +97,18 @@ export default function Home() {
       {/* Main Glassmorphism Card */}
       <div 
         className="glassmorphism rounded-[2.5rem] p-8 md:p-12 w-full max-w-2xl mx-auto flex flex-col items-center relative overflow-hidden border border-white/10 shadow-2xl"
-        style={getCardBackgroundStyle()}
       >
+        {/* Independent Background Layer for Opacity */}
+        <div 
+          className="absolute inset-0 z-0" 
+          style={{
+            ...getCardBackgroundStyle(),
+            opacity: (profile.background.opacity ?? 100) / 100
+          }}
+        />
+        
+        {/* Content Layer */}
+        <div className="relative z-10 w-full flex flex-col items-center">
         
         {/* Profile Image with splash effect behind it */}
         <div className="relative w-32 h-32 mb-6">
@@ -151,6 +161,7 @@ export default function Home() {
           })}
         </div>
 
+        </div>
       </div>
     </div>
   );

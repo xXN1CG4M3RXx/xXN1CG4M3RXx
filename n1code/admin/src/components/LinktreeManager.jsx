@@ -22,7 +22,8 @@ export default function LinktreeManager() {
       type: "gradient",
       color1: "#000036",
       color2: "#000016",
-      imageUrl: ""
+      imageUrl: "",
+      opacity: 100
     },
     pageBackground: {
       type: "color",
@@ -317,6 +318,19 @@ export default function LinktreeManager() {
                 )}
               </>
             )}
+
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">
+                Background Opacity: {profile.background.opacity ?? 100}%
+              </label>
+              <input 
+                type="range" 
+                min="0" max="100" 
+                value={profile.background.opacity ?? 100}
+                onChange={e => setProfile({...profile, background: {...profile.background, opacity: parseInt(e.target.value)}})}
+                className="w-full accent-purple-500"
+              />
+            </div>
           </div>
         </div>
 
