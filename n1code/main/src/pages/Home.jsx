@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Monitor, Code, Eye } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export default function Home() {
   const [profile, setProfile] = useState({
@@ -25,9 +27,20 @@ export default function Home() {
     views: 44
   });
 
-  // Mocking Firebase fetch for now
+  // Fetch from Firebase
   useEffect(() => {
-    // In the future: fetch from Firebase `profileSettings` document
+    const fetchProfile = async () => {
+      try {
+        const docRef = doc(db, "settings", "profile");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProfile(docSnap.data());
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
   }, []);
 
   const getBackgroundStyle = () => {

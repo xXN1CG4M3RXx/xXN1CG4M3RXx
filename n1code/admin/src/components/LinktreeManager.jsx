@@ -26,6 +26,21 @@ export default function LinktreeManager() {
     views: 0
   });
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const docRef = doc(db, "settings", "profile");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProfile(docSnap.data());
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const availableColors = [
     { name: "Deep Navy", value: "var(--color-deep-navy-500)" },
     { name: "Regal Navy", value: "var(--color-regal-navy-500)" },
@@ -40,12 +55,17 @@ export default function LinktreeManager() {
 
   const handleSave = async () => {
     setLoading(true);
-    // Simulate save for now
-    setTimeout(() => {
+    try {
+      const docRef = doc(db, "settings", "profile");
+      await setDoc(docRef, profile);
       setSuccess(true);
-      setLoading(false);
       setTimeout(() => setSuccess(false), 3000);
-    }, 1000);
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert("Failed to save profile. Please check console for details.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleImageUpload = async (e, fieldPath) => {
