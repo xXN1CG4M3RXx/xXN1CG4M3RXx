@@ -51,7 +51,7 @@ function Settings() {
               type="text"
               value={profile.siteName}
               onChange={(e) => handleInputChange('siteName', e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-hidden focus:border-purple-500 transition-colors"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-hidden focus:border-sky-aqua-500 transition-colors"
             />
           </div>
 
@@ -63,7 +63,7 @@ function Settings() {
               type="email"
               value={profile.supportEmail}
               onChange={(e) => handleInputChange('supportEmail', e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-hidden focus:border-purple-500 transition-colors"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-hidden focus:border-sky-aqua-500 transition-colors"
             />
           </div>
         </div>
@@ -79,7 +79,7 @@ function Settings() {
               type="button"
               onClick={() => handleToggle('maintenanceMode')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-hidden ${
-                profile.maintenanceMode ? 'bg-purple-600' : 'bg-slate-800'
+                profile.maintenanceMode ? 'bg-sky-aqua-600' : 'bg-slate-800'
               }`}
             >
               <span
@@ -99,7 +99,7 @@ function Settings() {
               type="button"
               onClick={() => handleToggle('analyticsEnabled')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-hidden ${
-                profile.analyticsEnabled ? 'bg-purple-600' : 'bg-slate-800'
+                profile.analyticsEnabled ? 'bg-sky-aqua-600' : 'bg-slate-800'
               }`}
             >
               <span
@@ -116,7 +116,7 @@ function Settings() {
           <button
             type="submit"
             disabled={saveStatus !== 'idle'}
-            className="px-6 py-2.5 rounded-xl font-medium bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-500/20 transition-all duration-200 flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2.5 rounded-xl font-medium bg-gradient-to-r from-sky-aqua-600 to-baltic-blue-600 hover:from-sky-aqua-500 hover:to-baltic-blue-500 text-white shadow-lg shadow-sky-aqua-500/20 transition-all duration-200 flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saveStatus === 'saving' && (
               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">

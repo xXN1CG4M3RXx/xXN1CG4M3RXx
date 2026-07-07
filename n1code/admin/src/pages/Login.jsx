@@ -21,7 +21,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
-      <div className="max-w-md w-full glassmorphism rounded-2xl p-8 border border-purple-500/20">
+      <div className="max-w-md w-full glassmorphism rounded-2xl p-8 border border-sky-aqua-500/20">
         <h2 className="text-3xl font-display font-bold text-center text-slate-100 mb-8">Admin Login</h2>
         
         {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg mb-6 text-sm text-center">{error}</div>}
@@ -33,7 +33,7 @@ export default function Login() {
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-purple-500 transition-colors"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-aqua-500 transition-colors"
               required 
             />
           </div>
@@ -43,13 +43,13 @@ export default function Login() {
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-purple-500 transition-colors"
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-sky-aqua-500 transition-colors"
               required 
             />
           </div>
           <button 
             type="submit"
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-purple-500/25"
+            className="w-full bg-gradient-to-r from-sky-aqua-600 to-baltic-blue-600 hover:from-sky-aqua-500 hover:to-baltic-blue-500 text-white font-medium py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-sky-aqua-500/25"
           >
             Sign In
           </button>

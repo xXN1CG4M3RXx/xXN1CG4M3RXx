@@ -55,7 +55,7 @@ function FirebasePlayground() {
         {/* Environment Monitor */}
         <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xs">
           <h2 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-amber-500"></span>
+            <span className="h-2 w-2 rounded-full bg-sky-aqua-500"></span>
             Environment Variables
           </h2>
           <div className="space-y-3">
@@ -67,7 +67,7 @@ function FirebasePlayground() {
                     {env.value.substring(0, 6)}...{env.value.substring(env.value.length - 4)}
                   </span>
                 ) : (
-                  <span className="font-mono text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded text-xs">
+                  <span className="font-mono text-sky-aqua-500 bg-sky-aqua-500/10 px-2 py-0.5 rounded text-xs">
                     Not Defined
                   </span>
                 )}
@@ -80,7 +80,7 @@ function FirebasePlayground() {
         <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-xs flex flex-col justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-purple-500"></span>
+              <span className="h-2 w-2 rounded-full bg-sky-aqua-500"></span>
               Firestore Write Sandbox
             </h2>
             <form onSubmit={handleTestWrite} className="space-y-4">
@@ -93,12 +93,12 @@ function FirebasePlayground() {
                   value={testData}
                   onChange={(e) => setTestData(e.target.value)}
                   placeholder="Enter custom text for Firestore doc..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-hidden focus:border-purple-500 transition-colors"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-hidden focus:border-sky-aqua-500 transition-colors"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium py-2 px-4 rounded-xl text-sm transition-all duration-200 shadow-md shadow-purple-500/10"
+                className="w-full bg-gradient-to-r from-sky-aqua-600 to-baltic-blue-600 hover:from-sky-aqua-500 hover:to-baltic-blue-500 text-white font-medium py-2 px-4 rounded-xl text-sm transition-all duration-200 shadow-md shadow-sky-aqua-500/10"
               >
                 Write Simulated Document
               </button>
@@ -109,7 +109,7 @@ function FirebasePlayground() {
             <span className="text-xs text-slate-400">Mock Firebase Auth Flow</span>
             <button
               onClick={triggerMockAuth}
-              className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors"
+              className="text-xs text-sky-aqua-400 hover:text-sky-aqua-300 font-medium transition-colors"
             >
               Sign In (Mock Account)
             </button>
@@ -120,14 +120,14 @@ function FirebasePlayground() {
       {/* Terminal Sandbox Console */}
       <div className="bg-slate-950 border border-slate-900 rounded-2xl p-6">
         <h2 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2 font-mono">
-          <span className="text-purple-500">&gt;</span> Console Log Monitor
+          <span className="text-sky-aqua-500">&gt;</span> Console Log Monitor
         </h2>
         <div className="bg-slate-950 p-4 rounded-xl border border-slate-900 h-40 overflow-y-auto font-mono text-xs text-slate-400 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800">
           {logs.length === 0 ? (
             <p className="text-slate-600 italic">Console idle. Trigger actions above to view mock client-side operations...</p>
           ) : (
             logs.map((log, idx) => (
-              <p key={idx} className={log.includes('Success') ? 'text-emerald-400' : log.includes('Initiating') || log.includes('Simulating') ? 'text-indigo-400' : 'text-slate-300'}>
+              <p key={idx} className={log.includes('Success') ? 'text-emerald-400' : log.includes('Initiating') || log.includes('Simulating') ? 'text-baltic-blue-400' : 'text-slate-300'}>
                 {log}
               </p>
             ))

@@ -129,7 +129,7 @@ export default function LinktreeManager() {
         <button 
           onClick={handleSave}
           disabled={loading}
-          className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-purple-500/20"
+          className="bg-sky-aqua-600 hover:bg-sky-aqua-500 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-sky-aqua-500/20"
         >
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
@@ -154,7 +154,7 @@ export default function LinktreeManager() {
                 type="text" 
                 value={profile.username}
                 onChange={e => setProfile({...profile, username: e.target.value})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               />
             </div>
             <div>
@@ -163,7 +163,7 @@ export default function LinktreeManager() {
                 type="text" 
                 value={profile.bio}
                 onChange={e => setProfile({...profile, bio: e.target.value})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               />
             </div>
             <div>
@@ -173,7 +173,7 @@ export default function LinktreeManager() {
                   type="text" 
                   value={profile.avatarUrl}
                   onChange={e => setProfile({...profile, avatarUrl: e.target.value})}
-                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                   placeholder="https://..."
                 />
                 <button 
@@ -205,7 +205,7 @@ export default function LinktreeManager() {
                   type="text" 
                   value={profile.accentColor}
                   onChange={e => setProfile({...profile, accentColor: e.target.value})}
-                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
@@ -223,7 +223,7 @@ export default function LinktreeManager() {
                   type="text" 
                   value={profile.textColor}
                   onChange={e => setProfile({...profile, textColor: e.target.value})}
-                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                  className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                   placeholder="#hex, rgb(), or var(--color-x)"
                 />
               </div>
@@ -234,7 +234,7 @@ export default function LinktreeManager() {
                 id="glowToggle"
                 checked={profile.glowEnabled}
                 onChange={e => setProfile({...profile, glowEnabled: e.target.checked})}
-                className="w-5 h-5 rounded border-slate-700 text-purple-600 focus:ring-purple-500 bg-slate-900/50"
+                className="w-5 h-5 rounded border-slate-700 text-sky-aqua-600 focus:ring-sky-aqua-500 bg-slate-900/50"
               />
               <label htmlFor="glowToggle" className="text-sm font-medium text-slate-200">Enable Neon Glow Effects (Text, Avatar, Icons)</label>
             </div>
@@ -251,7 +251,7 @@ export default function LinktreeManager() {
               <select 
                 value={profile.background.type}
                 onChange={e => setProfile({...profile, background: {...profile.background, type: e.target.value}})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               >
                 <option value="solid">Solid Color</option>
                 <option value="gradient">Gradient</option>
@@ -267,7 +267,7 @@ export default function LinktreeManager() {
                     type="text" 
                     value={profile.background.imageUrl}
                     onChange={e => setProfile({...profile, background: {...profile.background, imageUrl: e.target.value}})}
-                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     placeholder="https://..."
                   />
                   <button 
@@ -293,7 +293,7 @@ export default function LinktreeManager() {
                       type="text" 
                       value={profile.background.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
-                      className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                      className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     />
                   </div>
                 </div>
@@ -311,7 +311,7 @@ export default function LinktreeManager() {
                         type="text" 
                         value={profile.background.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
-                        className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                        className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                       />
                     </div>
                   </div>
@@ -328,7 +328,7 @@ export default function LinktreeManager() {
                 min="0" max="100" 
                 value={profile.background.opacity ?? 100}
                 onChange={e => setProfile({...profile, background: {...profile.background, opacity: parseInt(e.target.value)}})}
-                className="w-full accent-purple-500"
+                className="w-full accent-sky-aqua-500"
               />
             </div>
           </div>
@@ -344,7 +344,7 @@ export default function LinktreeManager() {
               <select 
                 value={profile.pageBackground.type}
                 onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, type: e.target.value}})}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               >
                 <option value="color">Solid Color</option>
                 <option value="gradient">Gradient</option>
@@ -360,7 +360,7 @@ export default function LinktreeManager() {
                     type="text" 
                     value={profile.pageBackground.imageUrl}
                     onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, imageUrl: e.target.value}})}
-                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                    className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     placeholder="https://..."
                   />
                   <button 
@@ -386,7 +386,7 @@ export default function LinktreeManager() {
                       type="text" 
                       value={profile.pageBackground.color1}
                       onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color1: e.target.value}})}
-                      className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                      className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     />
                   </div>
                 </div>
@@ -404,7 +404,7 @@ export default function LinktreeManager() {
                         type="text" 
                         value={profile.pageBackground.color2}
                         onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color2: e.target.value}})}
-                        className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-purple-500"
+                        className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                       />
                     </div>
                   </div>
@@ -442,7 +442,7 @@ export default function LinktreeManager() {
                       <select
                         value={link.icon}
                         onChange={(e) => updateLink(link.id, 'icon', e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                       >
                         {iconOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                       </select>
@@ -454,7 +454,7 @@ export default function LinktreeManager() {
                         value={link.title || ""}
                         onChange={(e) => updateLink(link.id, 'title', e.target.value)}
                         placeholder="e.g. GitHub"
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                       />
                     </div>
                   </div>
@@ -465,7 +465,7 @@ export default function LinktreeManager() {
                       value={link.description || ""}
                       onChange={(e) => updateLink(link.id, 'description', e.target.value)}
                       placeholder="e.g. Check out my projects"
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     />
                   </div>
                   <div>
@@ -475,7 +475,7 @@ export default function LinktreeManager() {
                       value={link.url}
                       onChange={(e) => updateLink(link.id, 'url', e.target.value)}
                       placeholder="https://..."
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     />
                   </div>
                 </div>
