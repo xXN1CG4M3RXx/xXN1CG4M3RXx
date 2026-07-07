@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import LinktreeManager from './components/LinktreeManager'
 import ProjectManager from './components/ProjectManager'
 import SetupManager from './components/SetupManager'
+import InboxManager from './components/InboxManager'
 
 function ProtectedRoute({ children, user }) {
   if (!user) return <Navigate to="/login" replace />
@@ -53,6 +54,7 @@ function App() {
               <NavLink to="/linktree" className={({ isActive }) => `transition-colors hover:text-slate-200 whitespace-nowrap ${isActive ? 'text-sky-aqua-400 font-semibold' : 'text-slate-400'}`}>Linktree</NavLink>
               <NavLink to="/projects" className={({ isActive }) => `transition-colors hover:text-slate-200 whitespace-nowrap ${isActive ? 'text-sky-aqua-400 font-semibold' : 'text-slate-400'}`}>Projects</NavLink>
               <NavLink to="/setup" className={({ isActive }) => `transition-colors hover:text-slate-200 whitespace-nowrap ${isActive ? 'text-sky-aqua-400 font-semibold' : 'text-slate-400'}`}>Setup</NavLink>
+              <NavLink to="/inbox" className={({ isActive }) => `transition-colors hover:text-slate-200 whitespace-nowrap ${isActive ? 'text-sky-aqua-400 font-semibold' : 'text-slate-400'}`}>Inbox</NavLink>
             </nav>
 
             <div className="hidden sm:flex items-center gap-4 text-sm">
@@ -69,6 +71,7 @@ function App() {
           <Route path="/linktree" element={<ProtectedRoute user={user}><LinktreeManager /></ProtectedRoute>} />
           <Route path="/projects" element={<ProtectedRoute user={user}><ProjectManager /></ProtectedRoute>} />
           <Route path="/setup" element={<ProtectedRoute user={user}><SetupManager /></ProtectedRoute>} />
+          <Route path="/inbox" element={<ProtectedRoute user={user}><InboxManager /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

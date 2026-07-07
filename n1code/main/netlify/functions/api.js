@@ -46,6 +46,29 @@ router.post('/contact', async (req, res) => {
   }
 });
 
+// 3. Reply endpoint (Used by Admin Panel Inbox)
+router.post('/reply', async (req, res) => {
+  try {
+    const { toEmail, subject, message } = req.body;
+    
+    if (!toEmail || !message) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const data = await resend.emails.send({
+      from: 'info@n1code.dev', // User explicitly requested info@n1code.dev for replies
+      to: toEmail,
+      subject: subject || "Reply to your inquiry",
+      text: message,
+    });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error("Resend reply error:", error);
+    res.status(500).json({ error: "Failed to send reply email" });
+  }
+});
+
 // Prefix configurations for local dev server redirects and Netlify functions routing
 app.use('/.netlify/functions/api', router);
 app.use('/api', router);
