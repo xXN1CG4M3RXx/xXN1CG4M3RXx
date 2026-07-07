@@ -70,11 +70,8 @@ export default function InboxManager() {
     setReplying(true);
     setReplyStatus("idle");
     
-    // Admin runs on port 5174, Main API runs on 8888 in local dev
-    const API_BASE = import.meta.env.DEV ? 'http://localhost:8888/api' : '/api';
-    
     try {
-      const response = await fetch(`${API_BASE}/reply`, {
+      const response = await fetch(`/api/reply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
