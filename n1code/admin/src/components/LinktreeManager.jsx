@@ -143,7 +143,7 @@ export default function LinktreeManager() {
         onSelect={handleIconSelected}
       />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-display font-bold text-slate-100 mb-2">Linktree Settings</h1>
           <p className="text-slate-400">Customize your public linktree page appearance and data.</p>
@@ -151,7 +151,7 @@ export default function LinktreeManager() {
         <button 
           onClick={handleSave}
           disabled={loading}
-          className="bg-sky-aqua-600 hover:bg-sky-aqua-500 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-sky-aqua-500/20"
+          className="whitespace-nowrap bg-sky-aqua-600 hover:bg-sky-aqua-500 text-white px-6 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-sky-aqua-500/20"
         >
           {loading ? 'Saving...' : 'Save Changes'}
         </button>

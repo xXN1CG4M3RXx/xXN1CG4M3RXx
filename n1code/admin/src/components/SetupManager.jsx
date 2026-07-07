@@ -133,7 +133,7 @@ export default function SetupManager() {
 
   return (
     <div className="glassmorphism rounded-2xl p-8 border border-sky-aqua-500/20">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-display font-bold text-slate-100">Hardware Setup</h2>
           <p className="text-slate-400 mt-1">Manage items in your Gaming and Development setup.</p>
@@ -141,7 +141,7 @@ export default function SetupManager() {
         <button 
           onClick={handleSave}
           disabled={saving}
-          className="bg-sky-aqua-600 hover:bg-sky-aqua-500 disabled:opacity-50 text-white px-6 py-2 rounded-lg transition-colors shadow-lg shadow-sky-aqua-500/20"
+          className="whitespace-nowrap bg-sky-aqua-600 hover:bg-sky-aqua-500 disabled:opacity-50 text-white px-6 py-2 rounded-xl font-medium transition-colors shadow-lg shadow-sky-aqua-500/20"
         >
           {saving ? 'Saving...' : 'Save Changes'}
         </button>

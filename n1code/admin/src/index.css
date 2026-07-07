@@ -57,3 +57,29 @@
   --color-sky-aqua-900: #ccf5ff;
   --color-sky-aqua: #00ccff;
 }
+
+/* Custom styling for range sliders */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-sky-aqua-500);
+  cursor: pointer;
+  margin-top: -6px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+input[type=range]:focus {
+  outline: none;
+}

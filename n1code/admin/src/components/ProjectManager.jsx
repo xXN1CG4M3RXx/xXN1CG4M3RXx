@@ -97,22 +97,22 @@ export default function ProjectManager() {
         onSelect={handleImageSelected}
       />
       
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-display font-bold text-slate-100">Project Showcase</h2>
           <p className="text-slate-400 mt-1">Manage the projects shown on your portfolio.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <button 
             onClick={addProject}
-            className="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg transition-colors"
+            className="whitespace-nowrap bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-xl transition-colors"
           >
             Add Project
           </button>
           <button 
             onClick={handleSave}
             disabled={saving}
-            className="bg-sky-aqua-600 hover:bg-sky-aqua-500 disabled:opacity-50 text-white px-6 py-2 rounded-lg transition-colors shadow-lg shadow-sky-aqua-500/20"
+            className="whitespace-nowrap bg-sky-aqua-600 hover:bg-sky-aqua-500 disabled:opacity-50 text-white px-6 py-2 rounded-xl font-medium transition-colors shadow-lg shadow-sky-aqua-500/20"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
