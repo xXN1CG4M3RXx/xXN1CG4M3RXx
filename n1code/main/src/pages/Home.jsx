@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { Monitor, Code } from "lucide-react";
 
 export default function Home() {
