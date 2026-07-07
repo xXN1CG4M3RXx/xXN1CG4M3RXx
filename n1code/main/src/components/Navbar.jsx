@@ -19,7 +19,7 @@ export default function Navbar() {
         <NavLink 
           to="/projects" 
           className={({ isActive }) => 
-            `flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${isActive ? 'text-baltic-blue-400' : 'text-slate-400 hover:text-slate-200'}`
+            `flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${isActive ? 'text-sky-aqua-400' : 'text-slate-400 hover:text-slate-200'}`
           }
         >
           <Code size={20} />
@@ -29,7 +29,7 @@ export default function Navbar() {
         <NavLink 
           to="/setup" 
           className={({ isActive }) => 
-            `flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${isActive ? 'text-sky-aqua-600' : 'text-slate-400 hover:text-slate-200'}`
+            `flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${isActive ? 'text-sky-aqua-400' : 'text-slate-400 hover:text-slate-200'}`
           }
         >
           <Monitor size={20} />
