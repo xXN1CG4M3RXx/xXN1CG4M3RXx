@@ -8,7 +8,8 @@ export default function SetupManager() {
   const [success, setSuccess] = useState(false);
   
   const [setupData, setSetupData] = useState({
-    gaming: [],
+    gamingPc: [],
+    gamingPeripherals: [],
     development: []
   });
 
@@ -20,7 +21,8 @@ export default function SetupManager() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setSetupData({
-            gaming: docSnap.data().gaming || [],
+            gamingPc: docSnap.data().gamingPc || docSnap.data().gaming || [],
+            gamingPeripherals: docSnap.data().gamingPeripherals || [],
             development: docSnap.data().development || []
           });
         }
@@ -153,8 +155,9 @@ export default function SetupManager() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {renderSetupList("Gaming Rig", "gaming")}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {renderSetupList("PC Specs", "gamingPc")}
+        {renderSetupList("Peripherals", "gamingPeripherals")}
         {renderSetupList("Development Setup", "development")}
       </div>
     </div>
