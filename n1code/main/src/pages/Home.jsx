@@ -13,15 +13,19 @@ export default function Home() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const data = await fetchCachedData("profile");
-        if (data) {
-          if (!data.pageBackground) {
-            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+        const handleData = (data) => {
+          if (data) {
+            if (!data.pageBackground) {
+              data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+            }
+            setProfile(data);
+          } else {
+            setProfile(null);
           }
-          setProfile(data);
-        } else {
-          setProfile(null);
-        }
+        };
+        
+        const data = await fetchCachedData("profile", handleData);
+        handleData(data);
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {

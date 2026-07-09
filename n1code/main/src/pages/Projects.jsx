@@ -12,10 +12,13 @@ export default function Projects() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const data = await fetchCachedData("projects");
-        if (data) {
-          setProjects(data.list || []);
-        }
+        const handleData = (data) => {
+          if (data) {
+            setProjects(data.list || []);
+          }
+        };
+        const data = await fetchCachedData("projects", handleData);
+        handleData(data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {

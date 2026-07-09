@@ -15,14 +15,17 @@ export default function Setup() {
   useEffect(() => {
     const fetchSetup = async () => {
       try {
-        const data = await fetchCachedData("setup");
-        if (data) {
-          setSetupData({
-            gamingPc: data.gamingPc || data.gaming || [],
-            gamingPeripherals: data.gamingPeripherals || [],
-            development: data.development || []
-          });
-        }
+        const handleData = (data) => {
+          if (data) {
+            setSetupData({
+              gamingPc: data.gamingPc || data.gaming || [],
+              gamingPeripherals: data.gamingPeripherals || [],
+              development: data.development || []
+            });
+          }
+        };
+        const data = await fetchCachedData("setup", handleData);
+        handleData(data);
       } catch (error) {
         console.error("Error fetching setup:", error);
       }

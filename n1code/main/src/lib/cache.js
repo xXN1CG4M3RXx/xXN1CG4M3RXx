@@ -24,9 +24,17 @@ const fetchFromFirebase = async (type) => {
   return null;
 };
 
-export const fetchCachedData = async (type) => {
+export const fetchCachedData = async (type, onUpdate) => {
+  const fetchFresh = async () => {
+    const freshData = await fetchFromFirebase(type);
+    if (freshData && onUpdate) {
+      onUpdate(freshData);
+    }
+  };
+
   // 1. Return in-memory cache instantly if available (for fast navigation)
   if (dataCache[type]) {
+    fetchFresh(); // Always revalidate in background
     return dataCache[type];
   }
 
@@ -36,7 +44,7 @@ export const fetchCachedData = async (type) => {
     try {
       dataCache[type] = JSON.parse(local);
       // Background revalidate to ensure fresh data for next time
-      fetchFromFirebase(type);
+      fetchFresh();
       return dataCache[type];
     } catch (e) {
       console.warn("Failed to parse local cache");
@@ -44,5 +52,9 @@ export const fetchCachedData = async (type) => {
   }
 
   // 3. Fallback to network fetch if absolutely no cache exists
-  return await fetchFromFirebase(type);
+  const fresh = await fetchFromFirebase(type);
+  if (fresh && onUpdate) {
+    onUpdate(fresh);
+  }
+  return fresh;
 };

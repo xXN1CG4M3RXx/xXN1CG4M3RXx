@@ -10,10 +10,13 @@ export default function Skills() {
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        const data = await fetchCachedData("skills");
-        if (data) {
-          setSkills(data.list || []);
-        }
+        const handleData = (data) => {
+          if (data) {
+            setSkills(data.list || []);
+          }
+        };
+        const data = await fetchCachedData("skills", handleData);
+        handleData(data);
       } catch (error) {
         console.error("Error fetching skills:", error);
       } finally {
