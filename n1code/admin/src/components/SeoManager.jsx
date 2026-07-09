@@ -171,12 +171,14 @@ export default function SeoManager() {
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Theme Color</label>
               <div className="flex items-center gap-3">
-                <input 
-                  type="color" 
-                  value={seoData.themeColor || "#0ea5e9"}
-                  onChange={(e) => updateField('themeColor', e.target.value)}
-                  className="w-12 h-10 p-0.5 rounded cursor-pointer bg-slate-950 border border-slate-700"
-                />
+                <div className="w-12 h-10 rounded-lg border border-slate-700 overflow-hidden shrink-0 relative">
+                  <input 
+                    type="color" 
+                    value={seoData.themeColor || "#0ea5e9"}
+                    onChange={(e) => updateField('themeColor', e.target.value)}
+                    className="absolute -inset-4 w-[200%] h-[200%] cursor-pointer bg-transparent border-0 p-0"
+                  />
+                </div>
                 <input 
                   type="text" 
                   value={seoData.themeColor || "#0ea5e9"}
