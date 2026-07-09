@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import ImageManagerModal from './ImageManagerModal';
 
 export default function SeoManager() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   
   const [seoData, setSeoData] = useState({
     title: "",
@@ -142,13 +144,21 @@ export default function SeoManager() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Preview Image URL (OG Image)</label>
-              <input 
-                type="text" 
-                value={seoData.ogImage || ""}
-                onChange={(e) => updateField('ogImage', e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500 transition-colors"
-                placeholder="https://example.com/preview.png"
-              />
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={seoData.ogImage || ""}
+                  onChange={(e) => updateField('ogImage', e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500 transition-colors"
+                  placeholder="https://example.com/preview.png"
+                />
+                <button
+                  onClick={() => setIsImageModalOpen(true)}
+                  className="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                >
+                  Browse Library
+                </button>
+              </div>
               <p className="text-xs text-slate-500 mt-1">The image that shows up when you link your site on Discord, Twitter, or iMessage. (1200x630 recommended)</p>
               
               {seoData.ogImage && (
@@ -165,7 +175,7 @@ export default function SeoManager() {
                   type="color" 
                   value={seoData.themeColor || "#0ea5e9"}
                   onChange={(e) => updateField('themeColor', e.target.value)}
-                  className="w-10 h-10 rounded cursor-pointer bg-slate-950 border border-slate-700"
+                  className="w-12 h-10 p-0.5 rounded cursor-pointer bg-slate-950 border border-slate-700"
                 />
                 <input 
                   type="text" 
@@ -199,6 +209,12 @@ export default function SeoManager() {
         </div>
 
       </div>
+
+      <ImageManagerModal 
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onSelect={(url) => updateField('ogImage', url)}
+      />
     </div>
   );
 }
