@@ -1,5 +1,5 @@
 import { NavLink } from "react-router";
-import { User, Code, Monitor, Mail } from "lucide-react";
+import { User, Code, Monitor, Mail, Terminal } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -13,7 +13,7 @@ export default function Navbar() {
           }
         >
           <User size={20} />
-          <span className="text-[10px] uppercase font-mono tracking-widest">Links</span>
+          <span className="text-[10px] uppercase font-mono tracking-widest">About</span>
         </NavLink>
         
         <NavLink 
@@ -24,6 +24,16 @@ export default function Navbar() {
         >
           <Code size={20} />
           <span className="text-[10px] uppercase font-mono tracking-widest">Projects</span>
+        </NavLink>
+
+        <NavLink 
+          to="/skills" 
+          className={({ isActive }) => 
+            `flex flex-col items-center gap-1 transition-all duration-300 hover:scale-110 ${isActive ? 'text-sky-aqua-400' : 'text-slate-400 hover:text-slate-200'}`
+          }
+        >
+          <Terminal size={20} />
+          <span className="text-[10px] uppercase font-mono tracking-widest">Stack</span>
         </NavLink>
 
         <NavLink 

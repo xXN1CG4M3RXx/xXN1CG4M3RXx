@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { db } from "../lib/firebase";
+import { doc, updateDoc, increment } from "firebase/firestore";
 import { fetchCachedData } from "../lib/cache";
 import { getIconComponent } from "../lib/IconRegistry";
 
@@ -29,6 +30,17 @@ export default function Home() {
     };
     fetchProfile();
   }, []);
+
+  const handleLinkClick = async (linkId) => {
+    try {
+      const analyticsRef = doc(db, "settings", "analytics");
+      await updateDoc(analyticsRef, {
+        [`clicks.${linkId}`]: increment(1)
+      });
+    } catch (error) {
+      console.error("Failed to track click:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -128,11 +140,11 @@ export default function Home() {
               </div>
             );
             return link.internal ? (
-              <Link key={link.id} to={link.url} className="w-full focus:outline-none rounded-2xl">
+              <Link key={link.id} to={link.url} onClick={() => handleLinkClick(link.id)} className="w-full focus:outline-none rounded-2xl">
                 {inner}
               </Link>
             ) : (
-              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="w-full focus:outline-none rounded-2xl">
+              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link.id)} className="w-full focus:outline-none rounded-2xl">
                 {inner}
               </a>
             );

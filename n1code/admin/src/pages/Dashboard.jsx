@@ -11,10 +11,17 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link to="/linktree" className="glassmorphism rounded-2xl p-6 hover-scale border border-sky-aqua-500/20 hover:border-sky-aqua-500/40 transition-colors group">
           <div className="w-12 h-12 rounded-xl bg-sky-aqua-500/10 flex items-center justify-center text-sky-aqua-400 mb-4 group-hover:bg-sky-aqua-500/20 transition-colors">
-             <span className="text-2xl font-bold font-display">L</span>
+            <span className="text-2xl font-bold font-display">L</span>
           </div>
           <h2 className="text-xl font-bold text-slate-100 mb-2">Linktree</h2>
-          <p className="text-slate-400 text-sm">Manage profile details, colors, and custom links.</p>
+          <p className="text-slate-400 text-sm">Manage your profile, background, and social links.</p>
+        </Link>
+        <Link to="/analytics" className="glassmorphism rounded-2xl p-6 hover-scale border border-emerald-500/20 hover:border-emerald-500/40 transition-colors group">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-4 group-hover:bg-emerald-500/20 transition-colors">
+             <span className="text-2xl font-bold font-display">A</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-100 mb-2">Analytics</h2>
+          <p className="text-slate-400 text-sm">View visitor stats and link clicks.</p>
         </Link>
 
         <Link to="/projects" className="glassmorphism rounded-2xl p-6 hover-scale border border-sky-aqua-500/20 hover:border-sky-aqua-500/40 transition-colors group">
@@ -22,7 +29,14 @@ export default function Dashboard() {
              <span className="text-2xl font-bold font-display">P</span>
           </div>
           <h2 className="text-xl font-bold text-slate-100 mb-2">Projects</h2>
-          <p className="text-slate-400 text-sm">Add, edit, or remove showcase projects.</p>
+          <p className="text-slate-400 text-sm">Manage your portfolio projects and apps.</p>
+        </Link>
+        <Link to="/skills" className="glassmorphism rounded-2xl p-6 hover-scale border border-sky-aqua-500/20 hover:border-sky-aqua-500/40 transition-colors group">
+          <div className="w-12 h-12 rounded-xl bg-sky-aqua-500/10 flex items-center justify-center text-sky-aqua-400 mb-4 group-hover:bg-sky-aqua-500/20 transition-colors">
+             <span className="text-2xl font-bold font-display">T</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-100 mb-2">Tech Stack</h2>
+          <p className="text-slate-400 text-sm">Showcase your languages and programming skills.</p>
         </Link>
 
         <Link to="/setup" className="glassmorphism rounded-2xl p-6 hover-scale border border-sky-aqua-500/20 hover:border-sky-aqua-500/40 transition-colors group">
