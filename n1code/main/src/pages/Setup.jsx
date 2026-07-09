@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import SetupList from "../components/SetupList";
 import { Monitor, Cpu, Keyboard } from "lucide-react";
-import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { fetchCachedData } from "../lib/cache";
 
 export default function Setup() {
   const [setupData, setSetupData] = useState({
-    gaming: [],
+    gamingPc: [],
+    gamingPeripherals: [],
     development: []
   });
 
@@ -14,12 +15,12 @@ export default function Setup() {
   useEffect(() => {
     const fetchSetup = async () => {
       try {
-        const docRef = doc(db, "settings", "setup");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
+        const data = await fetchCachedData("setup");
+        if (data) {
           setSetupData({
-            gaming: docSnap.data().gaming || [],
-            development: docSnap.data().development || []
+            gamingPc: data.gamingPc || data.gaming || [],
+            gamingPeripherals: data.gamingPeripherals || [],
+            development: data.development || []
           });
         }
       } catch (error) {
@@ -43,11 +44,16 @@ export default function Setup() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         <SetupList 
-          title="Gaming Rig" 
+          title="PC Specs" 
           icon={<Cpu className="w-6 h-6" />} 
-          items={setupData.gaming} 
+          items={setupData.gamingPc} 
+        />
+        <SetupList 
+          title="Peripherals" 
+          icon={<Monitor className="w-6 h-6" />} 
+          items={setupData.gamingPeripherals} 
         />
         <SetupList 
           title="Development Setup" 

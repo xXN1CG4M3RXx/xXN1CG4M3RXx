@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { fetchCachedData } from "../lib/cache";
 import { getIconComponent } from "../lib/IconRegistry";
 
 export default function Home() {
@@ -12,10 +12,8 @@ export default function Home() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const docRef = doc(db, "settings", "profile");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        const data = await fetchCachedData("profile");
+        if (data) {
           if (!data.pageBackground) {
             data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
           }

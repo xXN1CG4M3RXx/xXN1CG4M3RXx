@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import ProjectCard from "../components/ProjectCard";
 import { Code } from "lucide-react";
-import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { fetchCachedData } from "../lib/cache";
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
@@ -12,10 +12,9 @@ export default function Projects() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const docRef = doc(db, "settings", "projects");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setProjects(docSnap.data().list || []);
+        const data = await fetchCachedData("projects");
+        if (data) {
+          setProjects(data.list || []);
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
