@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { db } from "../lib/firebase";
-import { doc, updateDoc, increment } from "firebase/firestore";
+import { doc, setDoc, increment } from "firebase/firestore";
 import { fetchCachedData } from "../lib/cache";
 import { getIconComponent } from "../lib/IconRegistry";
 
@@ -38,9 +38,9 @@ export default function Home() {
   const handleLinkClick = async (linkId) => {
     try {
       const analyticsRef = doc(db, "settings", "analytics");
-      await updateDoc(analyticsRef, {
+      await setDoc(analyticsRef, {
         [`clicks.${linkId}`]: increment(1)
-      });
+      }, { merge: true });
     } catch (error) {
       console.error("Failed to track click:", error);
     }

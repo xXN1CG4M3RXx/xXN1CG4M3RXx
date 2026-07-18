@@ -7,7 +7,7 @@ import Setup from "./pages/Setup";
 import Contact from "./pages/Contact";
 import { useEffect } from "react";
 import { db } from "./lib/firebase";
-import { doc, updateDoc, increment } from "firebase/firestore";
+import { doc, setDoc, increment } from "firebase/firestore";
 
 export default function App() {
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function App() {
       const trackView = async () => {
         try {
           const analyticsRef = doc(db, "settings", "analytics");
-          await updateDoc(analyticsRef, { views: increment(1) });
+          await setDoc(analyticsRef, { views: increment(1) }, { merge: true });
           sessionStorage.setItem("hasTrackedView", "true");
         } catch (error) {
           console.error("Failed to track view:", error);
