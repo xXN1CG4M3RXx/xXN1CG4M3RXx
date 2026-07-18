@@ -32,10 +32,7 @@ function App() {
   if (loading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading...</div>
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-sky-aqua-500 selection:text-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-aqua-600/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-baltic-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="min-h-screen text-slate-100 flex flex-col font-sans selection:bg-sky-aqua-500 selection:text-white relative overflow-hidden">
 
       {user && (
         <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
