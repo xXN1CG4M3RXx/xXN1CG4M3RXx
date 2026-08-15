@@ -36,10 +36,13 @@ export default function Home() {
   }, []);
 
   const handleLinkClick = async (linkId) => {
+    if (!linkId) return;
     try {
       const analyticsRef = doc(db, "settings", "analytics");
       await setDoc(analyticsRef, {
-        [`clicks.${linkId}`]: increment(1)
+        clicks: {
+          [linkId]: increment(1)
+        }
       }, { merge: true });
     } catch (error) {
       console.error("Failed to track click:", error);

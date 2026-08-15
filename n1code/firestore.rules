@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    // Check if the user is authenticated via Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if the user is an authorized admin
+    function isAdmin() {
+      return isAuthenticated();
+    }
+
+    // Validate Contact Message Creation by public visitors
+    function isValidMessageCreate() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['name', 'email', 'message', 'createdAt', 'read'])
+        && data.name is string 
+        && data.name.size() > 0 
+        && data.name.size() <= 100
+        && data.email is string 
+        && data.email.size() > 3 
+        && data.email.size() <= 200
+        && data.email.matches('.+@.+\\..+')
+        && data.message is string 
+        && data.message.size() > 0 
+        && data.message.size() <= 5000
+        && data.read == false
+        && data.createdAt == request.time;
+    }
+
+    // Validate Analytics Document Creation (first view/click)
+    function isValidAnalyticsCreate() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['views', 'clicks'])
+        && (!('views' in data) || (data.views is int && data.views >= 0))
+        && (!('clicks' in data) || data.clicks is map);
+    }
+
+    // Validate Analytics Increment Updates by public visitors
+    function isValidAnalyticsUpdate() {
+      let incoming = request.resource.data;
+      let existing = resource.data;
+      let diff = incoming.diff(existing);
+      
+      return diff.affectedKeys().hasOnly(['views', 'clicks'])
+        && (!diff.affectedKeys().hasAny(['views']) || (incoming.views is int && incoming.views >= (('views' in existing && existing.views is int) ? existing.views : 0)))
+        && (!diff.affectedKeys().hasAny(['clicks']) || incoming.clicks is map);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // 1. Settings Collection (/settings/profile, /settings/projects, etc.)
+    match /settings/{docId} {
+      // Public can read portfolio settings (profile, projects, skills, setup, seo)
+      // Admin can read all settings including analytics
+      allow read: if docId in ['profile', 'projects', 'skills', 'setup', 'seo']
+                  || (docId == 'analytics' && isAdmin());
+
+      // Admin has full read and write access to all settings docs
+      allow write: if isAdmin();
+
+      // Public visitors can only increment views and clicks on the analytics doc
+      allow create: if docId == 'analytics' && isValidAnalyticsCreate();
+      allow update: if docId == 'analytics' && isValidAnalyticsUpdate();
+    }
+
+    // 2. Messages / Inbox Collection (/messages/{messageId})
+    match /messages/{messageId} {
+      // Visitors can submit contact form messages
+      allow create: if isValidMessageCreate();
+
+      // Only authenticated admin can read, update (mark read/replied), or delete messages
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Default Deny for any other collection
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -20,7 +20,15 @@ export default function AnalyticsDashboard() {
         if (analyticsSnap.exists()) {
           const data = analyticsSnap.data();
           views = data.views || 0;
-          clicks = data.clicks || {};
+          clicks = { ...(data.clicks || {}) };
+
+          // Also catch any legacy flat keys like "clicks.12345"
+          Object.keys(data).forEach(key => {
+            if (key.startsWith("clicks.")) {
+              const linkId = key.replace("clicks.", "");
+              clicks[linkId] = (clicks[linkId] || 0) + (data[key] || 0);
+            }
+          });
         }
 
         // Fetch Links to map IDs to titles
