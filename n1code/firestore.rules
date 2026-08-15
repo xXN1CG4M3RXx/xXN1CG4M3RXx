@@ -59,9 +59,9 @@ service cloud.firestore {
 
     // 1. Settings Collection (/settings/profile, /settings/projects, etc.)
     match /settings/{docId} {
-      // Public can read portfolio settings (profile, projects, skills, setup, seo)
+      // Public can read portfolio settings (profile, projects, skills, setup, seo, interests)
       // Admin can read all settings including analytics
-      allow read: if docId in ['profile', 'projects', 'skills', 'setup', 'seo']
+      allow read: if docId in ['profile', 'projects', 'skills', 'setup', 'seo', 'interests']
                   || (docId == 'analytics' && isAdmin());
 
       // Admin has full read and write access to all settings docs

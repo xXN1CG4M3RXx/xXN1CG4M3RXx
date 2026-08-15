@@ -4,7 +4,9 @@ import { db } from "./firebase";
 export const dataCache = {
   profile: null,
   projects: null,
+  skills: null,
   setup: null,
+  interests: null,
 };
 
 const fetchFromFirebase = async (type) => {

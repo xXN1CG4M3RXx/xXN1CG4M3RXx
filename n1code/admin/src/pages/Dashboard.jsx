@@ -46,6 +46,13 @@ export default function Dashboard() {
           <h2 className="text-xl font-bold text-slate-100 mb-2">Setup</h2>
           <p className="text-slate-400 text-sm">Manage hardware items in your setup specs.</p>
         </Link>
+        <Link to="/interests" className="glassmorphism rounded-2xl p-6 hover-scale border border-sky-aqua-500/20 hover:border-sky-aqua-500/40 transition-colors group">
+          <div className="w-12 h-12 rounded-xl bg-sky-aqua-500/10 flex items-center justify-center text-sky-aqua-400 mb-4 group-hover:bg-sky-aqua-500/20 transition-colors">
+             <span className="text-2xl font-bold font-display">G</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-100 mb-2">Interests</h2>
+          <p className="text-slate-400 text-sm">Manage gaming hub, anime masterpieces, and AniList.</p>
+        </Link>
         <Link to="/seo" className="glassmorphism rounded-2xl p-6 hover-scale border border-sky-aqua-500/20 hover:border-sky-aqua-500/40 transition-colors group">
           <div className="w-12 h-12 rounded-xl bg-sky-aqua-500/10 flex items-center justify-center text-sky-aqua-400 mb-4 group-hover:bg-sky-aqua-500/20 transition-colors">
              <span className="text-2xl font-bold font-display">S</span>

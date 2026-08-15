@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Projects from "./pages/Projects";
 import Skills from "./pages/Skills";
 import Setup from "./pages/Setup";
+import Interests from "./pages/Interests";
 import Contact from "./pages/Contact";
 import { useEffect } from "react";
 import { db } from "./lib/firebase";
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/projects" element={<Projects />} />
         <Route path="/skills" element={<Skills />} />
         <Route path="/setup" element={<Setup />} />
+        <Route path="/interests" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
       <Navbar />
