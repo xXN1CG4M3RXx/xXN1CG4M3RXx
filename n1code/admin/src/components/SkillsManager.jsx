@@ -19,7 +19,8 @@ export default function SkillsManager() {
         const docRef = doc(db, "settings", "skills");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setSkills(docSnap.data().list || []);
+          const data = docSnap.data();
+          setSkills(data.list || data.skills || []);
         }
       } catch (error) {
         console.error("Error fetching skills:", error);

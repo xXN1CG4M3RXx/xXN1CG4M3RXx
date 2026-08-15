@@ -6,6 +6,7 @@ import IconPickerModal from './IconPickerModal';
 import { getIconComponent } from '../lib/IconRegistry';
 
 export default function LinktreeManager() {
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   
@@ -43,6 +44,7 @@ export default function LinktreeManager() {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      setInitialLoading(true);
       try {
         const docRef = doc(db, "settings", "profile");
         const docSnap = await getDoc(docRef);
@@ -61,6 +63,8 @@ export default function LinktreeManager() {
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
+      } finally {
+        setInitialLoading(false);
       }
     };
     fetchProfile();
@@ -129,6 +133,8 @@ export default function LinktreeManager() {
       links: p.links.map(l => l.id === id ? { ...l, [field]: value } : l)
     }));
   };
+
+  if (initialLoading) return <div className="text-slate-400 p-8">Loading profile data...</div>;
 
   return (
     <div className="space-y-8 pb-12">

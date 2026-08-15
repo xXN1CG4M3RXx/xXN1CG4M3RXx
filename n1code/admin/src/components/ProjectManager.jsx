@@ -19,7 +19,8 @@ export default function ProjectManager() {
         const docRef = doc(db, "settings", "projects");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setProjects(docSnap.data().list || []);
+          const data = docSnap.data();
+          setProjects(data.list || data.projects || []);
         }
       } catch (error) {
         console.error("Error fetching projects:", error);

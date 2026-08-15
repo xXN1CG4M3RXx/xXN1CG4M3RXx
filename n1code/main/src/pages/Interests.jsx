@@ -1,73 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCachedData } from "../lib/cache";
-import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink, Flame, Bookmark, PlayCircle, Layers } from "lucide-react";
-
-// Default starter items if database is empty initially
-const DEFAULT_GAMES = [
-  {
-    id: "g1",
-    title: "Elden Ring",
-    status: "Favorite",
-    platform: "PC",
-    genre: "Action RPG / Soulsborne",
-    rating: "10/10",
-    hours: "250+ hrs",
-    bannerUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
-    notes: "Absolute masterpiece of world design, exploration, and combat."
-  },
-  {
-    id: "g2",
-    title: "Valorant",
-    status: "Currently Playing",
-    platform: "PC",
-    genre: "Tactical FPS",
-    rating: "9/10",
-    hours: "Immortal / Diamond",
-    bannerUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
-    notes: "Primary competitive shooter. Always grinding ranked with the squad."
-  },
-  {
-    id: "g3",
-    title: "Cyberpunk 2077: Phantom Liberty",
-    status: "Favorite",
-    platform: "PC",
-    genre: "Sci-Fi / Open World RPG",
-    rating: "10/10",
-    hours: "140 hrs",
-    bannerUrl: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=80",
-    notes: "Peak atmosphere, breathtaking visuals, and unforgettable storytelling."
-  }
-];
-
-const DEFAULT_ANIME = [
-  {
-    id: "a1",
-    title: "Steins;Gate",
-    type: "Anime",
-    score: "10/10",
-    favCharacter: "Rintaro Okabe",
-    coverUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80",
-    quote: "El Psy Kongroo. The pinnacle of sci-fi time travel narrative and character payoff."
-  },
-  {
-    id: "a2",
-    title: "Frieren: Beyond Journey's End",
-    type: "Anime",
-    score: "10/10",
-    favCharacter: "Fern",
-    coverUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
-    quote: "A poetic exploration of time, legacy, and human connections."
-  },
-  {
-    id: "a3",
-    title: "Berserk",
-    type: "Manga",
-    score: "10/10",
-    favCharacter: "Guts",
-    coverUrl: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80",
-    quote: "Unmatched dark fantasy artwork, endurance, and philosophical depth."
-  }
-];
+import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink } from "lucide-react";
 
 export default function Interests() {
   const [activeTab, setActiveTab] = useState("gaming"); // "gaming" | "anime"
@@ -75,8 +8,8 @@ export default function Interests() {
   const [animeFilter, setAnimeFilter] = useState("all"); // "all" | "anime" | "manga"
   
   const [interestsData, setInterestsData] = useState({
-    games: DEFAULT_GAMES,
-    anime: DEFAULT_ANIME,
+    games: [],
+    anime: [],
     anilistUsername: "",
     anilistSyncEnabled: true
   });
@@ -92,8 +25,8 @@ export default function Interests() {
         const handleData = (data) => {
           if (data) {
             setInterestsData({
-              games: data.games && data.games.length > 0 ? data.games : DEFAULT_GAMES,
-              anime: data.anime && data.anime.length > 0 ? data.anime : DEFAULT_ANIME,
+              games: data.games || [],
+              anime: data.anime || [],
               anilistUsername: data.anilistUsername || "",
               anilistSyncEnabled: data.anilistSyncEnabled !== false
             });

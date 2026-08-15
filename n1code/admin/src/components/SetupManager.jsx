@@ -20,10 +20,11 @@ export default function SetupManager() {
         const docRef = doc(db, "settings", "setup");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
+          const data = docSnap.data();
           setSetupData({
-            gamingPc: docSnap.data().gamingPc || docSnap.data().gaming || [],
-            gamingPeripherals: docSnap.data().gamingPeripherals || [],
-            development: docSnap.data().development || []
+            gamingPc: data.gamingPc || data.gaming || data.pc || [],
+            gamingPeripherals: data.gamingPeripherals || data.peripherals || [],
+            development: data.development || data.dev || []
           });
         }
       } catch (error) {
