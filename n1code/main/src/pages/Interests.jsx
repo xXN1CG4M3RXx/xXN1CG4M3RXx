@@ -97,7 +97,8 @@ export default function Interests() {
   // Fetch AniList live data if username is configured
   useEffect(() => {
     if (!interestsData.anilistUsername || !interestsData.anilistSyncEnabled) {
-      setAnilistEntries([]);
+      setAnilistWatching([]);
+      setAnilistWatched([]);
       return;
     }
 
