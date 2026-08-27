@@ -16,6 +16,8 @@ export default function InterestsManager() {
 
   const [interests, setInterests] = useState({
     anilistUsername: '',
+    steamId: '',
+    steamSyncEnabled: true,
     anilistSyncEnabled: true,
     games: [],
     anime: []
@@ -31,6 +33,8 @@ export default function InterestsManager() {
           const data = docSnap.data();
           setInterests({
             anilistUsername: data.anilistUsername || '',
+            steamId: data.steamId || '',
+            steamSyncEnabled: data.steamSyncEnabled !== false,
             anilistSyncEnabled: data.anilistSyncEnabled !== false,
             games: data.games || [],
             anime: data.anime || []
@@ -191,6 +195,60 @@ export default function InterestsManager() {
       </div>
 
       {status && <StatusMessage status={status} />}
+
+      {/* Steam Sync Configuration Box */}
+      <div className="glassmorphism rounded-2xl p-6 border border-slate-800 space-y-4 mb-6">
+        <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+            <Gamepad2 className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-slate-100">Live Steam Integration</h2>
+            <p className="text-xs text-slate-400">Syncs your Steam library via the Steam Web API.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <div>
+            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              Steam ID (64-bit)
+            </label>
+            <input
+              type="text"
+              value={interests.steamId || ''}
+              onChange={e => setInterests(prev => ({ ...prev, steamId: e.target.value }))}
+              placeholder="e.g. 765611980..."
+              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-sky-aqua-500"
+            />
+            <p className="text-xs text-slate-500 mt-1.5">Leave blank if you don't want to sync a Steam profile.</p>
+          </div>
+
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="steamToggle"
+                checked={interests.steamSyncEnabled}
+                onChange={e => setInterests(prev => ({ ...prev, steamSyncEnabled: e.target.checked }))}
+                className="w-5 h-5 rounded border-slate-700 text-blue-600 focus:ring-blue-500 bg-slate-900"
+              />
+              <label htmlFor="steamToggle" className="text-sm font-medium text-slate-200 cursor-pointer">
+                Display live Steam library on the Interests page
+              </label>
+            </div>
+            {interests.steamId && (
+              <a
+                href={`https://steamcommunity.com/profiles/${interests.steamId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+              >
+                Verify Steam Profile
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* AniList Sync Configuration Box */}
       <div className="glassmorphism rounded-2xl p-6 border border-slate-800 space-y-4">

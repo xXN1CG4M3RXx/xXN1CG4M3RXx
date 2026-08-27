@@ -2,6 +2,27 @@ import { useEffect, useState } from "react";
 import { fetchCachedData } from "../lib/cache";
 import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink } from "lucide-react";
 
+
+const SteamCard = ({ game }) => {
+  const hours = (game.playtime_forever / 60).toFixed(1);
+  return (
+    <div className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 group flex flex-col transition-all hover-scale bg-slate-900/50">
+      <div className="aspect-[460/215] w-full bg-slate-950 overflow-hidden relative">
+        <img loading="lazy"
+          src={`https://steamcdn-a.akamaihd.net/steam/apps/${game.appid}/header.jpg`}
+          alt={game.name}
+          onError={(e) => { e.target.src = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`; }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80" />
+      </div>
+      <div className="p-3">
+        <h3 className="text-sm font-bold text-slate-200 line-clamp-1 mb-1" title={game.name}>{game.name}</h3>
+        <p className="text-xs text-blue-400">{hours} hrs</p>
+      </div>
+    </div>
+  );
+};
 const AnimeCard = ({ entry }) => {
   const media = entry.media;
   const title = media.title.english || media.title.romaji;
@@ -55,6 +76,13 @@ export default function Interests() {
   const [activeTab, setActiveTab] = useState("gaming"); // "gaming" | "anime"
   const [gameFilter, setGameFilter] = useState("all"); // "all" | "playing" | "favorites"
   const [animeFilter, setAnimeFilter] = useState("all"); // "all" | "anime" | "manga"
+  const [animeSort, setAnimeSort] = useState("name"); // "name" | "myRating" | "overallRating"
+  const [gameSort, setGameSort] = useState("name"); // "name" | "playtime"
+  
+  const [steamGames, setSteamGames] = useState([]);
+  const [steamLoading, setSteamLoading] = useState(false);
+  const [visibleSteam, setVisibleSteam] = useState(10);
+
   
   const [interestsData, setInterestsData] = useState({
     games: [],
@@ -155,9 +183,10 @@ export default function Interests() {
         // Filter and sort alphabetically by title
         const getTitle = (e) => e.media.title.english || e.media.title.romaji || "";
         
-        const watching = flattenedEntries.filter(e => e.status === 'CURRENT').sort((a, b) => getTitle(a).localeCompare(getTitle(b)));
-        const watched = flattenedEntries.filter(e => e.status !== 'CURRENT').sort((a, b) => getTitle(a).localeCompare(getTitle(b)));
+        const watching = flattenedEntries.filter(e => e.status === 'CURRENT');
+        const watched = flattenedEntries.filter(e => e.status !== 'CURRENT');
         
+        // Sorting handled during render
         setAnilistWatching(watching);
         setAnilistWatched(watched);
       } catch (err) {
@@ -170,18 +199,72 @@ export default function Interests() {
     fetchAniList();
   }, [interestsData.anilistUsername, interestsData.anilistSyncEnabled]);
 
+  // Fetch Steam live data
+  useEffect(() => {
+    if (!interestsData.steamId || !interestsData.steamSyncEnabled) {
+      setSteamGames([]);
+      return;
+    }
+
+    const fetchSteam = async () => {
+      setSteamLoading(true);
+      try {
+        const response = await fetch(`/api/steam?steamId=${interestsData.steamId.trim()}`);
+        if (!response.ok) throw new Error("Failed to fetch steam games");
+        const data = await response.json();
+        setSteamGames(data);
+      } catch (err) {
+        console.error("Failed to fetch Steam live data:", err);
+      } finally {
+        setSteamLoading(false);
+      }
+    };
+
+    fetchSteam();
+  }, [interestsData.steamId, interestsData.steamSyncEnabled]);
+
+
   // Filtered lists
   const filteredGames = interestsData.games.filter(game => {
     if (gameFilter === "playing") return game.status === "Currently Playing";
     if (gameFilter === "favorites") return game.status === "Favorite";
     return true;
+  }).sort((a, b) => {
+    if (gameSort === "playtime") return (Number(b.hours) || 0) - (Number(a.hours) || 0);
+    return a.title.localeCompare(b.title);
   });
 
   const filteredAnime = interestsData.anime.filter(item => {
     if (animeFilter === "anime") return item.type === "Anime";
     if (animeFilter === "manga") return item.type === "Manga";
     return true;
+  }).sort((a, b) => {
+    if (animeSort === "myRating") {
+      const aScore = parseFloat(a.score) || 0;
+      const bScore = parseFloat(b.score) || 0;
+      return bScore - aScore;
+    }
+    return a.title.localeCompare(b.title);
   });
+
+  const getSortedAniList = (list) => {
+    return [...list].sort((a, b) => {
+      if (animeSort === "myRating") return (b.score || 0) - (a.score || 0);
+      if (animeSort === "overallRating") return (b.media?.averageScore || 0) - (a.media?.averageScore || 0);
+      return getTitle(a).localeCompare(getTitle(b));
+    });
+  };
+  
+  const sortedWatching = getSortedAniList(anilistWatching);
+  const sortedWatched = getSortedAniList(anilistWatched);
+  
+  const getSortedSteam = () => {
+    return [...steamGames].sort((a, b) => {
+      if (gameSort === "name") return a.name.localeCompare(b.name);
+      return b.playtime_forever - a.playtime_forever;
+    });
+  };
+  const sortedSteam = getSortedSteam();
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mb-24 min-h-screen">
@@ -253,6 +336,19 @@ export default function Interests() {
             </div>
             <div className="text-xs font-mono text-slate-500">
               {filteredGames.length} {filteredGames.length === 1 ? "title" : "titles"}
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
+                <select
+                  value={gameSort}
+                  onChange={(e) => setGameSort(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="playtime">Playtime</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -355,6 +451,61 @@ export default function Interests() {
             ))}
           </div>
 
+          {/* ======================================================== */}
+          {/* LIVE STEAM INTEGRATION SECTION */}
+          {/* ======================================================== */}
+          {interestsData.steamId && interestsData.steamSyncEnabled && (
+            <div className="mt-16 pt-10 border-t border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping" />
+                    <h2 className="text-2xl font-bold font-display text-slate-100">Live Steam Library</h2>
+                  </div>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Live updates of my Steam games and playtime via Steam Web API.
+                  </p>
+                </div>
+                <a
+                  href={`https://steamcommunity.com/profiles/${interestsData.steamId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-xs font-mono text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-4 py-2 rounded-xl transition-all self-start sm:self-auto shadow-sm"
+                >
+                  <span>Steam Profile</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+              {steamLoading ? (
+                <div className="flex items-center justify-center p-12 text-slate-500">
+                  <div className="w-8 h-8 border-3 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mr-3" />
+                  <span>Loading Steam library...</span>
+                </div>
+              ) : steamGames.length === 0 ? (
+                <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-500">
+                  No public Steam games found. Check your privacy settings.
+                </div>
+              ) : (
+                <div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                    {sortedSteam.slice(0, visibleSteam).map(game => <SteamCard key={game.appid} game={game} />)}
+                  </div>
+                  {visibleSteam < sortedSteam.length && (
+                    <div className="mt-8 flex justify-center">
+                      <button
+                        onClick={() => setVisibleSteam(prev => prev + 12)}
+                        className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
+                      >
+                        Load More Steam Games
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {filteredGames.length === 0 && (
             <div className="text-center py-16 text-slate-500">
               No games found under this filter.
@@ -389,6 +540,20 @@ export default function Interests() {
             </div>
             <div className="text-xs font-mono text-slate-500">
               {filteredAnime.length} {filteredAnime.length === 1 ? "entry" : "entries"}
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
+                <select
+                  value={animeSort}
+                  onChange={(e) => setAnimeSort(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="myRating">My Rating (High to Low)</option>
+                  <option value="overallRating">Overall Rating (High to Low)</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -500,7 +665,7 @@ export default function Interests() {
                     <div>
                       <h3 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 mb-4">Currently Watching</h3>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {anilistWatching.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                        {sortedWatching.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
                       </div>
                     </div>
                   )}
@@ -509,7 +674,7 @@ export default function Interests() {
                     <div>
                       <h3 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 mb-4">Other Activity</h3>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {anilistWatched.slice(0, visibleWatched).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                        {sortedWatched.slice(0, visibleWatched).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
                       </div>
                       
                       {visibleWatched < anilistWatched.length && (

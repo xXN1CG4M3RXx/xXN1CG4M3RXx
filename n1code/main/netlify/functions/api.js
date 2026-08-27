@@ -79,6 +79,34 @@ router.post('/reply', async (req, res) => {
   }
 });
 
+// 4. Steam API proxy endpoint
+router.get('/steam', async (req, res) => {
+  try {
+    const { steamId } = req.query;
+    if (!steamId) {
+      return res.status(400).json({ error: "Missing steamId" });
+    }
+
+    const apiKey = process.env.STEAM_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "STEAM_API_KEY not configured" });
+    }
+
+    const url = `http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${apiKey}&steamid=${steamId}&include_appinfo=1&include_played_free_games=1&format=json`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: data });
+    }
+
+    res.status(200).json(data.response.games || []);
+  } catch (error) {
+    console.error("Steam API proxy error:", error);
+    res.status(500).json({ error: error.message || "Failed to fetch Steam data" });
+  }
+});
+
 // Prefix configurations for local dev server redirects and Netlify functions routing
 app.use('/.netlify/functions/api', router);
 app.use('/api', router);
