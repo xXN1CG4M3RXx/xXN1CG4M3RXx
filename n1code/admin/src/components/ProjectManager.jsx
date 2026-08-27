@@ -20,7 +20,11 @@ export default function ProjectManager() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setProjects(data.list || data.projects || []);
+          const loadedProjects = data.list || data.projects || [];
+          setProjects(loadedProjects.map(p => ({
+            ...p,
+            _tagsInput: (p.tags || []).join(", ")
+          })));
         }
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -35,7 +39,21 @@ export default function ProjectManager() {
     setSaving(true);
     try {
       const docRef = doc(db, "settings", "projects");
-      await setDoc(docRef, { list: projects });
+      const projectsToSave = projects.map(p => {
+        const { _tagsInput, ...rest } = p;
+        return {
+          ...rest,
+          tags: _tagsInput !== undefined ? _tagsInput.split(',').map(t => t.trim()).filter(Boolean) : (p.tags || [])
+        };
+      });
+      await setDoc(docRef, { list: projectsToSave });
+      
+      // Update local state to show formatted tags
+      setProjects(projectsToSave.map(p => ({
+        ...p,
+        _tagsInput: (p.tags || []).join(", ")
+      })));
+      
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
@@ -54,6 +72,7 @@ export default function ProjectManager() {
         title: "New Project",
         description: "",
         tags: [],
+        _tagsInput: "",
         githubUrl: "",
         liveUrl: "",
         imageUrl: ""
@@ -69,7 +88,7 @@ export default function ProjectManager() {
     setProjects(projects.map(p => {
       if (p.id === id) {
         if (field === 'tags') {
-          return { ...p, tags: value.split(',').map(t => t.trim()).filter(Boolean) };
+          return { ...p, _tagsInput: value };
         }
         return { ...p, [field]: value };
       }
@@ -149,7 +168,7 @@ export default function ProjectManager() {
                 <label className="block text-sm font-medium text-slate-400 mb-1">Tags (comma separated)</label>
                 <input 
                   type="text" 
-                  value={(project.tags || []).join(", ")}
+                  value={project._tagsInput ?? (project.tags || []).join(", ")}
                   onChange={(e) => updateProject(project.id, 'tags', e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                   placeholder="React, Firebase, Tailwind"

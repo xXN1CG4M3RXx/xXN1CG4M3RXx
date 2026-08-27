@@ -254,7 +254,13 @@ export default function Interests() {
                       )}
                     </div>
 
-                    <p className="text-xs font-mono text-sky-aqua-400/80 mb-3">{game.genre}</p>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {(game.genre || '').split(',').map(g => g.trim()).filter(Boolean).map((g, i) => (
+                        <span key={i} className="text-[10px] font-mono font-bold text-sky-aqua-400 bg-sky-aqua-500/10 border border-sky-aqua-500/20 px-2 py-0.5 rounded-md">
+                          {g}
+                        </span>
+                      ))}
+                    </div>
 
                     {game.notes && (
                       <p className="text-slate-400 text-sm font-light leading-relaxed">
