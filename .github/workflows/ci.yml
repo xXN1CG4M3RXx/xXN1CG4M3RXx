@@ -19,14 +19,14 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: main/package-lock.json
+          cache-dependency-path: n1code/main/package-lock.json
 
       - name: Install Dependencies
-        working-directory: ./main
+        working-directory: ./n1code/main
         run: npm ci
 
       - name: Run Tests
-        working-directory: ./main
+        working-directory: ./n1code/main
         run: npm run test
 
   test-admin:
@@ -39,12 +39,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: admin/package-lock.json
+          cache-dependency-path: n1code/admin/package-lock.json
 
       - name: Install Dependencies
-        working-directory: ./admin
+        working-directory: ./n1code/admin
         run: npm ci
 
       - name: Run Tests
-        working-directory: ./admin
+        working-directory: ./n1code/admin
         run: npm run test
