@@ -257,8 +257,10 @@ export default function Interests() {
     });
   };
   
-  const sortedWatching = getSortedAniList(anilistWatching);
-  const sortedWatched = getSortedAniList(anilistWatched);
+  const sortedWatchingAnime = getSortedAniList(anilistWatchingAnime);
+  const sortedWatchedAnime = getSortedAniList(anilistWatchedAnime);
+  const sortedReadingManga = getSortedAniList(anilistReadingManga);
+  const sortedReadManga = getSortedAniList(anilistReadManga);
   
   const getSortedSteam = () => {
     return [...steamGames].sort((a, b) => {
