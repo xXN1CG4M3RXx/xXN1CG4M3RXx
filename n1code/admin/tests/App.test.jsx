@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import App from './App';
+import App from '../src/App';
 
 describe('App (Admin)', () => {
   it('renders without crashing', () => {

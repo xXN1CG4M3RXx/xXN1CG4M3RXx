@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
-import { app } from './api.js';
+import { app } from '../netlify/functions/api.js';
 
-// Mock the resend API
 vi.mock('resend', () => {
   return {
     Resend: class {
