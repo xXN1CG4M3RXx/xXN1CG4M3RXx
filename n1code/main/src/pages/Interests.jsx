@@ -248,6 +248,7 @@ export default function Interests() {
   });
 
   const getSortedAniList = (list) => {
+    const getTitle = (e) => e.media?.title?.english || e.media?.title?.romaji || "";
     return [...list].sort((a, b) => {
       if (animeSort === "myRating") return (b.score || 0) - (a.score || 0);
       if (animeSort === "overallRating") return (b.media?.averageScore || 0) - (a.media?.averageScore || 0);
