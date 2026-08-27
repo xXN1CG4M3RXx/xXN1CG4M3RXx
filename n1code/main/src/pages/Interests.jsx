@@ -152,9 +152,11 @@ export default function Interests() {
         const allLists = resData?.data?.MediaListCollection?.lists || [];
         const flattenedEntries = allLists.flatMap(list => list.entries);
         
-        // Filter and sort
-        const watching = flattenedEntries.filter(e => e.status === 'CURRENT').sort((a, b) => b.updatedAt - a.updatedAt);
-        const watched = flattenedEntries.filter(e => e.status !== 'CURRENT').sort((a, b) => b.updatedAt - a.updatedAt);
+        // Filter and sort alphabetically by title
+        const getTitle = (e) => e.media.title.english || e.media.title.romaji || "";
+        
+        const watching = flattenedEntries.filter(e => e.status === 'CURRENT').sort((a, b) => getTitle(a).localeCompare(getTitle(b)));
+        const watched = flattenedEntries.filter(e => e.status !== 'CURRENT').sort((a, b) => getTitle(a).localeCompare(getTitle(b)));
         
         setAnilistWatching(watching);
         setAnilistWatched(watched);
