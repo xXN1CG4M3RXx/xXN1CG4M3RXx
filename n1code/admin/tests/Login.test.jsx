@@ -4,6 +4,11 @@ import { vi } from 'vitest';
 import { BrowserRouter } from 'react-router';
 import Login from '../src/pages/Login';
 
+vi.mock('firebase/analytics', () => ({
+  getAnalytics: vi.fn(),
+  isSupported: vi.fn(() => Promise.resolve(false))
+}));
+
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(),
   signInWithEmailAndPassword: vi.fn((auth, email, pw) => {
