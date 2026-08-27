@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
-import AdminDashboard from '../src/components/AdminDashboard';
+import AnalyticsDashboard from '../src/components/AnalyticsDashboard';
 import IconPickerModal from '../src/components/IconPickerModal';
 import ImageManagerModal from '../src/components/ImageManagerModal';
 
-describe('Modals and AdminDashboard', () => {
-  it('renders AdminDashboard', () => {
-    const { container } = render(<AdminDashboard stats={{}} />);
+describe('Modals and AnalyticsDashboard', () => {
+  it('renders AnalyticsDashboard', () => {
+    const { container } = render(<AnalyticsDashboard stats={{}} />);
     expect(container).toBeInTheDocument();
   });
   
