@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
+import StatusMessage from './StatusMessage';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default function SetupManager() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [status, setStatus] = useState(null);
   
   const [setupData, setSetupData] = useState({
     gamingPc: [],
@@ -41,11 +42,11 @@ export default function SetupManager() {
     try {
       const docRef = doc(db, "settings", "setup");
       await setDoc(docRef, setupData);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setStatus({ type: 'success', message: 'Changes saved successfully!' });
+      setTimeout(() => setStatus(null), 3000);
     } catch (error) {
       console.error("Error saving setup:", error);
-      alert("Failed to save setup. Check console.");
+      setStatus({ type: 'error', message: 'Failed to save setup. Check console.' });
     } finally {
       setSaving(false);
     }
@@ -150,11 +151,7 @@ export default function SetupManager() {
         </button>
       </div>
 
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl mb-6">
-          Setup saved successfully!
-        </div>
-      )}
+      {status && <StatusMessage status={status} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {renderSetupList("PC Specs", "gamingPc")}

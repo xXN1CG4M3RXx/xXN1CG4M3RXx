@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import StatusMessage from './StatusMessage';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import ImageManagerModal from './ImageManagerModal';
@@ -6,7 +7,7 @@ import ImageManagerModal from './ImageManagerModal';
 export default function ProjectManager() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [status, setStatus] = useState(null);
   
   const [projects, setProjects] = useState([]);
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
@@ -54,11 +55,11 @@ export default function ProjectManager() {
         _tagsInput: (p.tags || []).join(", ")
       })));
       
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setStatus({ type: 'success', message: 'Changes saved successfully!' });
+      setTimeout(() => setStatus(null), 3000);
     } catch (error) {
       console.error("Error saving projects:", error);
-      alert("Failed to save projects. Check console.");
+      setStatus({ type: 'error', message: 'Failed to save projects. Check console.' });
     } finally {
       setSaving(false);
     }
@@ -139,11 +140,7 @@ export default function ProjectManager() {
         </div>
       </div>
 
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl mb-6">
-          Projects saved successfully!
-        </div>
-      )}
+      {status && <StatusMessage status={status} />}
 
       <div className="space-y-6">
         {projects.map((project) => (

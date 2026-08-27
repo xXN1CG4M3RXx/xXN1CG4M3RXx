@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import StatusMessage from './StatusMessage';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import ImageManagerModal from './ImageManagerModal';
@@ -6,8 +7,7 @@ import ImageManagerModal from './ImageManagerModal';
 export default function SeoManager() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   
   const [seoData, setSeoData] = useState({
@@ -38,8 +38,7 @@ export default function SeoManager() {
 
   const handleSave = async () => {
     setSaving(true);
-    setError("");
-    setSuccess("");
+    setStatus(null);
     try {
       const docRef = doc(db, "settings", "seo");
       await setDoc(docRef, seoData);
@@ -60,11 +59,11 @@ export default function SeoManager() {
         }
       }
       
-      setSuccess(message);
-      setTimeout(() => setSuccess(""), 5000);
+      setStatus({ type: "success", message });
+      setTimeout(() => setStatus(null), 5000);
     } catch (error) {
       console.error("Error saving SEO:", error);
-      setError("Failed to save SEO settings.");
+      setStatus({ type: "error", message: "Failed to save SEO settings." });
     } finally {
       setSaving(false);
     }
@@ -92,17 +91,7 @@ export default function SeoManager() {
         </button>
       </div>
 
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl mb-6">
-          {success}
-        </div>
-      )}
-      
-      {error && (
-        <div className="bg-red-500/20 border border-red-500/50 text-red-400 p-4 rounded-xl mb-6">
-          {error}
-        </div>
-      )}
+      {status && <StatusMessage status={status} />}
 
       <div className="space-y-6">
         

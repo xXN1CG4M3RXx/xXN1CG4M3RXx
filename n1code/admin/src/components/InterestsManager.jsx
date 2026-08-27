@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import StatusMessage from './StatusMessage';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import ImageManagerModal from './ImageManagerModal';
@@ -7,7 +8,7 @@ import { Gamepad2, Film, Sparkles, Plus, Trash2, ArrowUp, ArrowDown, ExternalLin
 export default function InterestsManager() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [status, setStatus] = useState(null);
 
   // Modal State for image uploads
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
@@ -51,11 +52,11 @@ export default function InterestsManager() {
       // Strip undefined values which cause setDoc to crash
       const cleanInterests = JSON.parse(JSON.stringify(interests));
       await setDoc(docRef, cleanInterests);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setStatus({ type: 'success', message: 'Changes saved successfully!' });
+      setTimeout(() => setStatus(null), 3000);
     } catch (error) {
       console.error('Error saving interests:', error);
-      alert('Failed to save interests. Please check console.');
+      setStatus({ type: 'error', message: 'Failed to save interests. Please check console.' });
     } finally {
       setSaving(false);
     }
@@ -189,33 +190,7 @@ export default function InterestsManager() {
         </button>
       </div>
 
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl">
-          Interests settings saved successfully!
-        </div>
-      )}
-
-      {/* AniList Sync Configuration Box */}
-      <div className="glassmorphism rounded-2xl p-6 border border-slate-800 space-y-4">
-        <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-          <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center text-sky-400">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-slate-100">Live AniList Integration</h2>
-            <p className="text-xs text-slate-400">Syncs what you're currently watching directly via the public AniList API.</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              AniList Username
-            </label>
-            <input
-              type="text"
-              value={interests.anilistUsername || ''}
-              onChange={e => setInterests(prev => ({ ...prev, anilistUsername: e.target.value }))}
+      {status && <StatusMessage status={status} />})}
               placeholder="e.g. your_anilist_name"
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-sky-aqua-500"
             />

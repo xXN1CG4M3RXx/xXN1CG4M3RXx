@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import StatusMessage from './StatusMessage';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import IconPickerModal from './IconPickerModal';
@@ -6,7 +7,7 @@ import IconPickerModal from './IconPickerModal';
 export default function SkillsManager() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [status, setStatus] = useState(null);
   
   const [skills, setSkills] = useState([]);
   const [isIconModalOpen, setIsIconModalOpen] = useState(false);
@@ -36,11 +37,11 @@ export default function SkillsManager() {
     try {
       const docRef = doc(db, "settings", "skills");
       await setDoc(docRef, { list: skills });
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setStatus({ type: 'success', message: 'Changes saved successfully!' });
+      setTimeout(() => setStatus(null), 3000);
     } catch (error) {
       console.error("Error saving skills:", error);
-      alert("Failed to save skills. Check console.");
+      setStatus({ type: 'error', message: 'Failed to save skills. Check console.' });
     } finally {
       setSaving(false);
     }
@@ -101,11 +102,7 @@ export default function SkillsManager() {
         </button>
       </div>
 
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl mb-6">
-          Skills saved successfully!
-        </div>
-      )}
+      {status && <StatusMessage status={status} />}
 
       <div className="space-y-4 mb-6">
         {skills.map((skill, index) => (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import StatusMessage from './StatusMessage';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import ImageManagerModal from './ImageManagerModal';
@@ -8,7 +9,7 @@ import { getIconComponent } from '../lib/IconRegistry';
 export default function LinktreeManager() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [status, setStatus] = useState(null);
   
   // Image Manager State
   const [isImageManagerOpen, setIsImageManagerOpen] = useState(false);
@@ -77,11 +78,11 @@ export default function LinktreeManager() {
     try {
       const docRef = doc(db, "settings", "profile");
       await setDoc(docRef, profile);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      setStatus({ type: 'success', message: 'Changes saved successfully!' });
+      setTimeout(() => setStatus(null), 3000);
     } catch (error) {
       console.error("Error saving profile:", error);
-      alert("Failed to save profile. Please check console for details.");
+      setStatus({ type: 'error', message: 'Failed to save profile. Please check console for details.' });
     } finally {
       setLoading(false);
     }
@@ -163,25 +164,7 @@ export default function LinktreeManager() {
         </button>
       </div>
 
-      {success && (
-        <div className="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-4 rounded-xl">
-          Profile settings saved successfully!
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        {/* Basic Profile */}
-        <div className="glassmorphism rounded-2xl p-6 space-y-6">
-          <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Basic Info</h2>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
-              <input 
-                type="text" 
-                value={profile.username}
-                onChange={e => setProfile({...profile, username: e.target.value})}
+      {status && <StatusMessage status={status} />}}
                 className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               />
             </div>
