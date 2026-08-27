@@ -655,38 +655,87 @@ export default function Interests() {
               {anilistLoading ? (
                 <div className="flex items-center justify-center p-12 text-slate-500">
                   <div className="w-8 h-8 border-3 border-sky-aqua-500/20 border-t-sky-aqua-500 rounded-full animate-spin mr-3" />
-                  <span>Loading live anime list...</span>
+                  <span>Loading live AniList feed...</span>
                 </div>
-              ) : (anilistWatching.length === 0 && anilistWatched.length === 0) ? (
+              ) : (anilistWatchingAnime.length === 0 && anilistWatchedAnime.length === 0 && anilistReadingManga.length === 0 && anilistReadManga.length === 0) ? (
                 <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-500">
                   No recent AniList activity found for this user.
                 </div>
               ) : (
-                <div className="space-y-12">
-                  {anilistWatching.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 mb-4">Currently Watching</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {sortedWatching.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                <div className="space-y-16">
+                  {/* ANIME SECTION */}
+                  {(anilistWatchingAnime.length > 0 || anilistWatchedAnime.length > 0) && (
+                    <div className="space-y-8">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Film className="w-5 h-5 text-sky-aqua-400" />
+                        <h3 className="text-xl font-bold font-display text-slate-100">Anime</h3>
                       </div>
+                      
+                      {anilistWatchingAnime.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Currently Watching</h4>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {sortedWatchingAnime.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                          </div>
+                        </div>
+                      )}
+
+                      {anilistWatchedAnime.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Other Anime Activity</h4>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {sortedWatchedAnime.slice(0, visibleAnime).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                          </div>
+                          
+                          {visibleAnime < anilistWatchedAnime.length && (
+                            <div className="mt-6 flex justify-center">
+                              <button
+                                onClick={() => setVisibleAnime(prev => prev + 10)}
+                                className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
+                              >
+                                Load More Anime
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {anilistWatched.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 mb-4">Other Activity</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {sortedWatched.slice(0, visibleWatched).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                  {/* MANGA SECTION */}
+                  {(anilistReadingManga.length > 0 || anilistReadManga.length > 0) && (
+                    <div className="space-y-8 pt-8 border-t border-slate-800/50">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-5 h-5 flex items-center justify-center bg-emerald-500/10 rounded text-emerald-400 border border-emerald-500/20">M</div>
+                        <h3 className="text-xl font-bold font-display text-slate-100">Manga & Light Novels</h3>
                       </div>
                       
-                      {visibleWatched < anilistWatched.length && (
-                        <div className="mt-8 flex justify-center">
-                          <button
-                            onClick={() => setVisibleWatched(prev => prev + 10)}
-                            className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
-                          >
-                            Load More
-                          </button>
+                      {anilistReadingManga.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Currently Reading</h4>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {sortedReadingManga.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                          </div>
+                        </div>
+                      )}
+
+                      {anilistReadManga.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Other Manga Activity</h4>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {sortedReadManga.slice(0, visibleManga).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                          </div>
+                          
+                          {visibleManga < anilistReadManga.length && (
+                            <div className="mt-6 flex justify-center">
+                              <button
+                                onClick={() => setVisibleManga(prev => prev + 10)}
+                                className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
+                              >
+                                Load More Manga
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
