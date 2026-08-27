@@ -87,6 +87,7 @@ export default function InterestsManager() {
           genre: 'Action RPG',
           rating: '10/10',
           hours: '',
+          rank: '',
           bannerUrl: '',
           notes: ''
         }
@@ -212,7 +213,7 @@ export default function InterestsManager() {
             <input
               type="text"
               value={interests.anilistUsername}
-              onChange={e => setInterests({ ...interests, anilistUsername: e.target.value.trim() })}
+              onChange={e => setInterests(prev => ({ ...prev, anilistUsername: e.target.value }))}
               placeholder="e.g. your_anilist_name"
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-sky-aqua-500"
             />
@@ -225,7 +226,7 @@ export default function InterestsManager() {
                 type="checkbox"
                 id="anilistToggle"
                 checked={interests.anilistSyncEnabled}
-                onChange={e => setInterests({ ...interests, anilistSyncEnabled: e.target.checked })}
+                onChange={e => setInterests(prev => ({ ...prev, anilistSyncEnabled: e.target.checked }))}
                 className="w-5 h-5 rounded border-slate-700 text-sky-aqua-600 focus:ring-sky-aqua-500 bg-slate-900"
               />
               <label htmlFor="anilistToggle" className="text-sm font-medium text-slate-200 cursor-pointer">
@@ -362,12 +363,23 @@ export default function InterestsManager() {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Hours / Rank</label>
+                  <label className="block text-xs text-slate-400 mb-1">Playtime</label>
                   <input
                     type="text"
                     value={game.hours || ''}
                     onChange={e => updateGame(game.id, 'hours', e.target.value)}
-                    placeholder="250 hrs / Diamond"
+                    placeholder="250 hrs"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Rank</label>
+                  <input
+                    type="text"
+                    value={game.rank || ''}
+                    onChange={e => updateGame(game.id, 'rank', e.target.value)}
+                    placeholder="Diamond / Unranked"
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                   />
                 </div>

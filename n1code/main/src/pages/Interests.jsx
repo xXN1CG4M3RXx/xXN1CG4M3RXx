@@ -264,10 +264,20 @@ export default function Interests() {
                   </div>
 
                   {/* Footer with hours / rank */}
-                  {game.hours && (
-                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-500">
-                      <span>Progression / Rank:</span>
-                      <span className="text-slate-300 font-bold">{game.hours}</span>
+                  {(game.hours || game.rank) && (
+                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-4 text-xs font-mono text-slate-500">
+                      {game.hours && (
+                        <div className="flex items-center gap-1.5">
+                          <PlayCircle className="w-3.5 h-3.5 text-sky-aqua-500" />
+                          <span className="text-slate-300">{game.hours}</span>
+                        </div>
+                      )}
+                      {game.rank && (
+                        <div className="flex items-center gap-1.5 ml-auto">
+                          <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                          <span className="text-slate-300 font-bold">{game.rank}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
