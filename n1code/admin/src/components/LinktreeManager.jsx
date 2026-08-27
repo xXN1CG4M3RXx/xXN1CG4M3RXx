@@ -164,7 +164,21 @@ export default function LinktreeManager() {
         </button>
       </div>
 
-      {status && <StatusMessage status={status} />}}
+      {status && <StatusMessage status={status} />}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Basic Profile */}
+        <div className="glassmorphism rounded-2xl p-6 space-y-6">
+          <h2 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Basic Info</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Username</label>
+              <input 
+                type="text" 
+                value={profile.username}
+                onChange={e => setProfile({...profile, username: e.target.value})}
                 className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               />
             </div>
