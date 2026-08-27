@@ -2,6 +2,55 @@ import { useEffect, useState } from "react";
 import { fetchCachedData } from "../lib/cache";
 import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink } from "lucide-react";
 
+const AnimeCard = ({ entry }) => {
+  const media = entry.media;
+  const title = media.title.english || media.title.romaji;
+  const maxEps = media.episodes || "?";
+  const progressPercent = media.episodes ? Math.round((entry.progress / media.episodes) * 100) : 0;
+
+  return (
+    <a
+      key={entry.id}
+      href={media.siteUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/50 group flex flex-col transition-all hover-scale"
+    >
+      <div className="relative aspect-[3/4] w-full bg-slate-950 overflow-hidden">
+        <img loading="lazy"
+          src={media.coverImage.large}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+        
+        <div className="absolute bottom-2 left-2 right-2">
+          <div className="flex justify-between items-center text-[10px] font-mono text-slate-300 font-bold mb-1">
+            <span>Ep {entry.progress} / {maxEps}</span>
+            {media.averageScore && (
+              <span className="text-emerald-400">★ {media.averageScore}%</span>
+            )}
+          </div>
+          {media.episodes && (
+            <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-sky-aqua-400 h-full rounded-full"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="p-3">
+        <h3 className="text-xs font-bold text-slate-200 line-clamp-1 mb-1" title={title}>{title}</h3>
+        {media.genres && media.genres.length > 0 && (
+          <p className="text-[10px] text-slate-500 line-clamp-1">{media.genres.slice(0, 2).join(', ')}</p>
+        )}
+      </div>
+    </a>
+  );
+};
+
 export default function Interests() {
   const [activeTab, setActiveTab] = useState("gaming"); // "gaming" | "anime"
   const [gameFilter, setGameFilter] = useState("all"); // "all" | "playing" | "favorites"
@@ -16,7 +65,9 @@ export default function Interests() {
   const [loading, setLoading] = useState(true);
 
   // AniList Live Feed State
-  const [anilistEntries, setAnilistEntries] = useState([]);
+  const [anilistWatching, setAnilistWatching] = useState([]);
+  const [anilistWatched, setAnilistWatched] = useState([]);
+  const [visibleWatched, setVisibleWatched] = useState(10);
   const [anilistLoading, setAnilistLoading] = useState(false);
 
   useEffect(() => {
@@ -97,12 +148,15 @@ export default function Interests() {
 
         const resData = await response.json();
         
-        // Flatten all lists (watching, completed, planning), sort by recently updated, take top 10
         const allLists = resData?.data?.MediaListCollection?.lists || [];
         const flattenedEntries = allLists.flatMap(list => list.entries);
-        const sortedEntries = flattenedEntries.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 10);
         
-        setAnilistEntries(sortedEntries);
+        // Filter and sort
+        const watching = flattenedEntries.filter(e => e.status === 'CURRENT').sort((a, b) => b.updatedAt - a.updatedAt);
+        const watched = flattenedEntries.filter(e => e.status !== 'CURRENT').sort((a, b) => b.updatedAt - a.updatedAt);
+        
+        setAnilistWatching(watching);
+        setAnilistWatched(watched);
       } catch (err) {
         console.error("Failed to fetch AniList live data:", err);
       } finally {
@@ -433,64 +487,40 @@ export default function Interests() {
                   <div className="w-8 h-8 border-3 border-sky-aqua-500/20 border-t-sky-aqua-500 rounded-full animate-spin mr-3" />
                   <span>Loading live anime list...</span>
                 </div>
-              ) : anilistEntries.length === 0 ? (
+              ) : (anilistWatching.length === 0 && anilistWatched.length === 0) ? (
                 <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-500">
                   No recent AniList activity found for this user.
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {anilistEntries.map((entry) => {
-                    const media = entry.media;
-                    const title = media.title.english || media.title.romaji;
-                    const maxEps = media.episodes || "?";
-                    const progressPercent = media.episodes ? Math.round((entry.progress / media.episodes) * 100) : 0;
+                <div className="space-y-12">
+                  {anilistWatching.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 mb-4">Currently Watching</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {anilistWatching.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                      </div>
+                    </div>
+                  )}
 
-                    return (
-                      <a
-                        key={entry.id}
-                        href={media.siteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/50 group flex flex-col transition-all hover-scale"
-                      >
-                        <div className="relative aspect-[3/4] w-full bg-slate-950 overflow-hidden">
-                          <img loading="lazy"
-                            src={media.coverImage.large}
-                            alt={title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
-                          
-                          {/* Progress Badge */}
-                          <div className="absolute bottom-2 left-2 right-2">
-                            <div className="flex justify-between items-center text-[10px] font-mono text-slate-300 font-bold mb-1">
-                              <span>Ep {entry.progress} / {maxEps}</span>
-                              {media.averageScore && (
-                                <span className="text-emerald-400">★ {media.averageScore}%</span>
-                              )}
-                            </div>
-                            {media.episodes && (
-                              <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                                <div
-                                  className="bg-sky-aqua-400 h-full rounded-full"
-                                  style={{ width: `${progressPercent}%` }}
-                                />
-                              </div>
-                            )}
-                          </div>
+                  {anilistWatched.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-200 border-b border-slate-800 pb-2 mb-4">Other Activity</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {anilistWatched.slice(0, visibleWatched).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                      </div>
+                      
+                      {visibleWatched < anilistWatched.length && (
+                        <div className="mt-8 flex justify-center">
+                          <button
+                            onClick={() => setVisibleWatched(prev => prev + 10)}
+                            className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
+                          >
+                            Load More
+                          </button>
                         </div>
-
-                        <div className="p-3 flex-1 flex flex-col justify-between">
-                          <h4 className="font-bold text-xs text-slate-200 line-clamp-2 group-hover:text-sky-aqua-300 transition-colors">
-                            {title}
-                          </h4>
-                          <span className="text-[10px] text-slate-500 truncate mt-1">
-                            {media.genres?.slice(0, 2).join(", ")}
-                          </span>
-                        </div>
-                      </a>
-                    );
-                  })}
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
