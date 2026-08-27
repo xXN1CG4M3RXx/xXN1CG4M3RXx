@@ -135,27 +135,26 @@ export default function Interests() {
       try {
         const query = `
           query ($userName: String) {
-            MediaListCollection(userName: $userName, type: ANIME, sort: [UPDATED_TIME_DESC]) {
+            anime: MediaListCollection(userName: $userName, type: ANIME) {
               lists {
                 entries {
-                  id
-                  progress
-                  score
-                  status
-                  updatedAt
+                  id progress score status updatedAt
                   media {
-                    id
-                    title {
-                      romaji
-                      english
-                    }
-                    coverImage {
-                      large
-                    }
-                    episodes
-                    genres
-                    averageScore
-                    siteUrl
+                    id title { romaji english }
+                    coverImage { large }
+                    episodes genres averageScore siteUrl
+                  }
+                }
+              }
+            }
+            manga: MediaListCollection(userName: $userName, type: MANGA) {
+              lists {
+                entries {
+                  id progress score status updatedAt
+                  media {
+                    id title { romaji english }
+                    coverImage { large }
+                    episodes: chapters genres averageScore siteUrl
                   }
                 }
               }
@@ -177,7 +176,9 @@ export default function Interests() {
 
         const resData = await response.json();
         
-        const allLists = resData?.data?.MediaListCollection?.lists || [];
+        const animeLists = resData?.data?.anime?.lists || [];
+        const mangaLists = resData?.data?.manga?.lists || [];
+        const allLists = [...animeLists, ...mangaLists];
         const flattenedEntries = allLists.flatMap(list => list.entries);
         
         // Filter and sort alphabetically by title
