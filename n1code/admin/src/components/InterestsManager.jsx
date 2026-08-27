@@ -48,7 +48,9 @@ export default function InterestsManager() {
     setSaving(true);
     try {
       const docRef = doc(db, 'settings', 'interests');
-      await setDoc(docRef, interests);
+      // Strip undefined values which cause setDoc to crash
+      const cleanInterests = JSON.parse(JSON.stringify(interests));
+      await setDoc(docRef, cleanInterests);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
@@ -212,7 +214,7 @@ export default function InterestsManager() {
             </label>
             <input
               type="text"
-              value={interests.anilistUsername}
+              value={interests.anilistUsername || ''}
               onChange={e => setInterests(prev => ({ ...prev, anilistUsername: e.target.value }))}
               placeholder="e.g. your_anilist_name"
               className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-sky-aqua-500"
