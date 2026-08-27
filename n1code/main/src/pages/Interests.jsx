@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchCachedData } from "../lib/cache";
-import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink } from "lucide-react";
+import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink, PlayCircle } from "lucide-react";
 
 
 const SteamCard = ({ game }) => {
