@@ -202,7 +202,7 @@ export default function Interests() {
                 {/* Banner / Poster */}
                 <div className="relative h-44 w-full bg-slate-950 overflow-hidden">
                   {game.bannerUrl ? (
-                    <img
+                    <img loading="lazy"
                       src={game.bannerUrl}
                       alt={game.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
@@ -322,7 +322,7 @@ export default function Interests() {
                 {/* Poster Container */}
                 <div className="relative h-56 w-full bg-slate-950 overflow-hidden">
                   {item.coverUrl ? (
-                    <img
+                    <img loading="lazy"
                       src={item.coverUrl}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
@@ -431,7 +431,7 @@ export default function Interests() {
                         className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/50 group flex flex-col transition-all hover-scale"
                       >
                         <div className="relative aspect-[3/4] w-full bg-slate-950 overflow-hidden">
-                          <img
+                          <img loading="lazy"
                             src={media.coverImage.large}
                             alt={title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

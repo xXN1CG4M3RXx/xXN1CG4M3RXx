@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { storage } from '../lib/firebase';
 import { ref, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
+import imageCompression from 'browser-image-compression';
 
 export default function ImageManagerModal({ isOpen, onClose, onSelect }) {
   const [images, setImages] = useState([]);
@@ -43,12 +44,23 @@ export default function ImageManagerModal({ isOpen, onClose, onSelect }) {
     
     setUploading(true);
     try {
-      const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
+      // Compress the image before uploading to save bandwidth and improve load times
+      const options = {
+        maxSizeMB: 0.5, // 500KB max
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/webp' // Convert to modern webp format
+      };
+      
+      const compressedFile = await imageCompression(file, options);
+      
+      // Keep original extension or swap to webp based on file type output
+      const storageRef = ref(storage, `images/${Date.now()}_optimized.webp`);
+      await uploadBytes(storageRef, compressedFile);
       await fetchImages(); // Refresh the list
     } catch (error) {
       console.error("Upload failed", error);
-      alert("Failed to upload image. Please try again.");
+      alert("Failed to upload and compress image. Please try again.");
     } finally {
       setUploading(false);
     }

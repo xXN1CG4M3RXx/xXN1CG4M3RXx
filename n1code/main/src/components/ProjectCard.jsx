@@ -8,6 +8,7 @@ export default function ProjectCard({ project }) {
           <img 
             src={project.imageUrl} 
             alt={project.title} 
+            loading="lazy"
             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
           />
         ) : (
