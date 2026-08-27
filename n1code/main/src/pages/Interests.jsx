@@ -55,12 +55,14 @@ export default function Interests() {
       try {
         const query = `
           query ($userName: String) {
-            MediaListCollection(userName: $userName, type: ANIME, status: CURRENT) {
+            MediaListCollection(userName: $userName, type: ANIME, sort: [UPDATED_TIME_DESC]) {
               lists {
                 entries {
                   id
                   progress
                   score
+                  status
+                  updatedAt
                   media {
                     id
                     title {
@@ -89,13 +91,18 @@ export default function Interests() {
           },
           body: JSON.stringify({
             query,
-            variables: { userName: interestsData.anilistUsername }
+            variables: { userName: interestsData.anilistUsername.trim() }
           })
         });
 
         const resData = await response.json();
-        const entries = resData?.data?.MediaListCollection?.lists?.[0]?.entries || [];
-        setAnilistEntries(entries);
+        
+        // Flatten all lists (watching, completed, planning), sort by recently updated, take top 10
+        const allLists = resData?.data?.MediaListCollection?.lists || [];
+        const flattenedEntries = allLists.flatMap(list => list.entries);
+        const sortedEntries = flattenedEntries.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 10);
+        
+        setAnilistEntries(sortedEntries);
       } catch (err) {
         console.error("Failed to fetch AniList live data:", err);
       } finally {
@@ -428,7 +435,7 @@ export default function Interests() {
                 </div>
               ) : anilistEntries.length === 0 ? (
                 <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-500">
-                  No anime currently marked as "Watching" on AniList right now. Check back soon!
+                  No recent AniList activity found for this user.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
