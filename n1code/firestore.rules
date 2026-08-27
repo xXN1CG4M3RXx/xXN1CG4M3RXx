@@ -77,8 +77,18 @@ service cloud.firestore {
       // Visitors can submit contact form messages
       allow create: if isValidMessageCreate();
 
-      // Only authenticated admin can read, update (mark read/replied), or delete messages
-      allow read, update, delete: if isAdmin();
+      // Authenticated admin can read, create, update (mark read/replied), or delete messages
+      allow read, write: if isAdmin();
+    }
+
+    // 3. Mail Collections (/mail/{mailId} and /emails/{emailId})
+    // Used by Firebase Trigger Email / SendGrid / Resend extensions
+    match /mail/{mailId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /emails/{emailId} {
+      allow read, write: if isAdmin();
     }
 
     // ===============================================================
