@@ -5,6 +5,11 @@ import AnalyticsDashboard from '../src/components/AnalyticsDashboard';
 import IconPickerModal from '../src/components/IconPickerModal';
 import ImageManagerModal from '../src/components/ImageManagerModal';
 
+vi.mock('firebase/analytics', () => ({
+  getAnalytics: vi.fn(),
+  isSupported: vi.fn(() => Promise.resolve(false))
+}));
+
 describe('Modals and AnalyticsDashboard', () => {
   it('renders AnalyticsDashboard', () => {
     const { container } = render(<AnalyticsDashboard stats={{}} />);
