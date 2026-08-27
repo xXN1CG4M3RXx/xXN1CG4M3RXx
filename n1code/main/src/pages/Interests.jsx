@@ -93,9 +93,13 @@ export default function Interests() {
   const [loading, setLoading] = useState(true);
 
   // AniList Live Feed State
-  const [anilistWatching, setAnilistWatching] = useState([]);
-  const [anilistWatched, setAnilistWatched] = useState([]);
-  const [visibleWatched, setVisibleWatched] = useState(10);
+  const [anilistWatchingAnime, setAnilistWatchingAnime] = useState([]);
+  const [anilistWatchedAnime, setAnilistWatchedAnime] = useState([]);
+  const [anilistReadingManga, setAnilistReadingManga] = useState([]);
+  const [anilistReadManga, setAnilistReadManga] = useState([]);
+  
+  const [visibleAnime, setVisibleAnime] = useState(10);
+  const [visibleManga, setVisibleManga] = useState(10);
   const [anilistLoading, setAnilistLoading] = useState(false);
 
   useEffect(() => {
@@ -125,8 +129,10 @@ export default function Interests() {
   // Fetch AniList live data if username is configured
   useEffect(() => {
     if (!interestsData.anilistUsername || !interestsData.anilistSyncEnabled) {
-      setAnilistWatching([]);
-      setAnilistWatched([]);
+      setAnilistWatchingAnime([]);
+      setAnilistWatchedAnime([]);
+      setAnilistReadingManga([]);
+      setAnilistReadManga([]);
       return;
     }
 
@@ -178,18 +184,14 @@ export default function Interests() {
         
         const animeLists = resData?.data?.anime?.lists || [];
         const mangaLists = resData?.data?.manga?.lists || [];
-        const allLists = [...animeLists, ...mangaLists];
-        const flattenedEntries = allLists.flatMap(list => list.entries);
+        const flatAnime = animeLists.flatMap(list => list.entries);
+        const flatManga = mangaLists.flatMap(list => list.entries);
         
-        // Filter and sort alphabetically by title
-        const getTitle = (e) => e.media.title.english || e.media.title.romaji || "";
+        setAnilistWatchingAnime(flatAnime.filter(e => e.status === 'CURRENT'));
+        setAnilistWatchedAnime(flatAnime.filter(e => e.status !== 'CURRENT'));
         
-        const watching = flattenedEntries.filter(e => e.status === 'CURRENT');
-        const watched = flattenedEntries.filter(e => e.status !== 'CURRENT');
-        
-        // Sorting handled during render
-        setAnilistWatching(watching);
-        setAnilistWatched(watched);
+        setAnilistReadingManga(flatManga.filter(e => e.status === 'CURRENT'));
+        setAnilistReadManga(flatManga.filter(e => e.status !== 'CURRENT'));
       } catch (err) {
         console.error("Failed to fetch AniList live data:", err);
       } finally {
@@ -232,7 +234,7 @@ export default function Interests() {
     return true;
   }).sort((a, b) => {
     if (gameSort === "playtime") return (Number(b.hours) || 0) - (Number(a.hours) || 0);
-    return a.title.localeCompare(b.title);
+    return (a.title || "").localeCompare(b.title || "");
   });
 
   const filteredAnime = interestsData.anime.filter(item => {
@@ -245,7 +247,7 @@ export default function Interests() {
       const bScore = parseFloat(b.score) || 0;
       return bScore - aScore;
     }
-    return a.title.localeCompare(b.title);
+    return (a.title || "").localeCompare(b.title || "");
   });
 
   const getSortedAniList = (list) => {
@@ -264,7 +266,7 @@ export default function Interests() {
   
   const getSortedSteam = () => {
     return [...steamGames].sort((a, b) => {
-      if (gameSort === "name") return a.name.localeCompare(b.name);
+      if (gameSort === "name") return (a.name || "").localeCompare(b.name || "");
       return b.playtime_forever - a.playtime_forever;
     });
   };
