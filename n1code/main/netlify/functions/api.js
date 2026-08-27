@@ -113,3 +113,4 @@ app.use('/api', router);
 app.use('/', router);
 
 export const handler = serverless(app);
+export { app };
