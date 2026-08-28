@@ -101,7 +101,7 @@ export default function Home() {
           className="absolute inset-0 z-0" 
           style={{
             ...getCardBackgroundStyle(),
-            opacity: (profile.background.opacity ?? 100) / 100
+            opacity: (profile.background?.opacity ?? 100) / 100
           }}
         />
         
