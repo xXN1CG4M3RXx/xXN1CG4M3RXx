@@ -88,7 +88,9 @@ export default function Interests() {
     games: [],
     anime: [],
     anilistUsername: "",
-    anilistSyncEnabled: true
+    anilistSyncEnabled: true,
+    steamId: "",
+    steamSyncEnabled: true
   });
   const [loading, setLoading] = useState(true);
 
@@ -111,7 +113,9 @@ export default function Interests() {
               games: data.games || [],
               anime: data.anime || [],
               anilistUsername: data.anilistUsername || "",
-              anilistSyncEnabled: data.anilistSyncEnabled !== false
+              anilistSyncEnabled: data.anilistSyncEnabled !== false,
+              steamId: data.steamId || "",
+              steamSyncEnabled: data.steamSyncEnabled !== false
             });
           }
         };

@@ -32,7 +32,7 @@ global.fetch = vi.fn((url) => {
       ok: true,
       json: () => Promise.resolve({
         data: {
-          anime: { lists: [] },
+          anime: { lists: [{ entries: [{ id: 1, status: 'CURRENT', progress: 5, media: { id: 1, title: { english: 'Test' }, episodes: 12, coverImage: { large: 'test.jpg' } } }] }] },
           manga: { lists: [] }
         }
       })
