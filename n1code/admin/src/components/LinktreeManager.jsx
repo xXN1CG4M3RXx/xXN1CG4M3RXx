@@ -50,7 +50,7 @@ export default function LinktreeManager() {
         const docRef = doc(db, "settings", "profile");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-                    data = docSnap.data();
+          const data = docSnap.data();
           if (!data.background) {
             data.background = { type: "gradient", color1: "#000036", color2: "#000016", imageUrl: "", opacity: 100 };
           }
