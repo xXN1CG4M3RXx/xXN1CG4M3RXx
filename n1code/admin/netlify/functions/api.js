@@ -31,6 +31,18 @@ router.post('/reply', async (req, res) => {
       return res.status(400).json({ error: "Missing required fields (toEmail, message)" });
     }
 
+    // Validate email format and prevent multiple emails (comma separated)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(toEmail)) {
+      return res.status(400).json({ error: "Invalid email address format" });
+    }
+
+    // Basic authorization check (e.g. check for a secret token set in Netlify env)
+    const authHeader = req.headers.authorization;
+    if (process.env.API_SECRET && authHeader !== `Bearer ${process.env.API_SECRET}`) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     if (!process.env.RESEND_API_KEY) {
       return res.status(500).json({ error: "RESEND_API_KEY is not configured in Netlify environment variables" });
     }

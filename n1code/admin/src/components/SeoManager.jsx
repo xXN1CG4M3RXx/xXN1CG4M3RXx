@@ -25,7 +25,13 @@ export default function SeoManager() {
         const docRef = doc(db, "settings", "seo");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setSeoData(docSnap.data());
+          setSeoData(prev => ({ ...prev, ...docSnap.data() }));
+        }
+        
+        const hookRef = doc(db, "private_settings", "buildHook");
+        const hookSnap = await getDoc(hookRef);
+        if (hookSnap.exists()) {
+          setSeoData(prev => ({ ...prev, buildHookUrl: hookSnap.data().url }));
         }
       } catch (error) {
         console.error("Error fetching SEO:", error);
@@ -40,15 +46,20 @@ export default function SeoManager() {
     setSaving(true);
     setStatus(null);
     try {
+      const { buildHookUrl, ...publicSeoData } = seoData;
+      
       const docRef = doc(db, "settings", "seo");
-      await setDoc(docRef, seoData);
+      await setDoc(docRef, publicSeoData);
+      
+      const hookRef = doc(db, "private_settings", "buildHook");
+      await setDoc(hookRef, { url: buildHookUrl || "" });
       
       let message = "SEO settings saved successfully!";
       
       // Trigger rebuild if hook is provided
-      if (seoData.buildHookUrl && seoData.buildHookUrl.trim() !== "") {
+      if (buildHookUrl && buildHookUrl.trim() !== "") {
         try {
-          const res = await fetch(seoData.buildHookUrl, { method: 'POST' });
+          const res = await fetch(buildHookUrl, { method: 'POST' });
           if (res.ok) {
             message += " Site rebuild triggered successfully.";
           } else {
