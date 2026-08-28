@@ -93,6 +93,7 @@ export default function Interests() {
     steamSyncEnabled: true
   });
   const [loading, setLoading] = useState(true);
+  const [steamError, setSteamError] = useState(null);
 
   // AniList Live Feed State
   const [anilistWatchingAnime, setAnilistWatchingAnime] = useState([]);
@@ -215,13 +216,17 @@ export default function Interests() {
 
     const fetchSteam = async () => {
       setSteamLoading(true);
+      setSteamError(null);
       try {
         const response = await fetch(`/api/steam?steamId=${interestsData.steamId.trim()}`);
-        if (!response.ok) throw new Error("Failed to fetch steam games");
         const data = await response.json();
+        if (!response.ok) {
+           throw new Error(data.error || "Failed to fetch steam games");
+        }
         setSteamGames(data);
       } catch (err) {
         console.error("Failed to fetch Steam live data:", err);
+        setSteamError(err.message);
       } finally {
         setSteamLoading(false);
       }
@@ -473,7 +478,7 @@ export default function Interests() {
                     <h2 className="text-2xl font-bold font-display text-slate-100">Live Steam Library</h2>
                   </div>
                   <p className="text-slate-400 text-sm mt-1">
-                    Live updates of my Steam games and playtime via Steam Web API.
+                    Live updates of my Steam library and playtime.
                   </p>
                 </div>
                 <a
@@ -487,7 +492,13 @@ export default function Interests() {
                 </a>
               </div>
 
-              {steamLoading ? (
+              {steamError ? (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8 text-center text-red-400 mt-4">
+                  <p className="font-bold mb-2">Failed to load Steam games</p>
+                  <p className="text-sm">{steamError}</p>
+                  <p className="text-xs mt-4 opacity-70">Check console for details or ensure your Steam ID is a 64-bit numeric ID and your "Game details" privacy setting is Public.</p>
+                </div>
+              ) : steamLoading ? (
                 <div className="flex items-center justify-center p-12 text-slate-500">
                   <div className="w-8 h-8 border-3 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mr-3" />
                   <span>Loading Steam library...</span>
