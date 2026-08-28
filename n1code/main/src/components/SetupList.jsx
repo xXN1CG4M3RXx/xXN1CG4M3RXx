@@ -1,3 +1,5 @@
+import { sanitizeUrl } from "../lib/sanitize";
+
 export default function SetupList({ title, icon, items }) {
   return (
     <div className="glassmorphism rounded-2xl p-8 border border-slate-800/60 hover:border-sky-aqua-500/30 transition-all duration-300">
@@ -21,7 +23,7 @@ export default function SetupList({ title, icon, items }) {
             </div>
             {item.link && (
               <a 
-                href={item.link} 
+                href={sanitizeUrl(item.link)} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-slate-600 hover:text-sky-aqua-400 transition-colors p-2"

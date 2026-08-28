@@ -5,6 +5,8 @@ import { doc, setDoc, increment } from "firebase/firestore";
 import { fetchCachedData } from "../lib/cache";
 import { getIconComponent } from "../lib/IconRegistry";
 
+import { sanitizeUrl } from "../lib/sanitize";
+
 export default function Home() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -148,11 +150,11 @@ export default function Home() {
               </div>
             );
             return link.internal ? (
-              <Link key={link.id} to={link.url} onClick={() => handleLinkClick(link.id)} className="w-full focus:outline-none rounded-2xl">
+              <Link key={link.id} to={sanitizeUrl(link.url)} onClick={() => handleLinkClick(link.id)} className="w-full focus:outline-none rounded-2xl">
                 {inner}
               </Link>
             ) : (
-              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link.id)} className="w-full focus:outline-none rounded-2xl">
+              <a key={link.id} href={sanitizeUrl(link.url)} target="_blank" rel="noopener noreferrer" onClick={() => handleLinkClick(link.id)} className="w-full focus:outline-none rounded-2xl">
                 {inner}
               </a>
             );

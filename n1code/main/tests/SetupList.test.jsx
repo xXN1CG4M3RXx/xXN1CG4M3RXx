@@ -18,6 +18,6 @@ describe("SetupList", () => {
     expect(screen.getByText("Mouse")).toBeInTheDocument();
     
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "https://example.com");
+    expect(link).toHaveAttribute("href", "https://example.com/");
   });
 });

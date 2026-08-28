@@ -14,7 +14,9 @@ export default function Contact() {
     try {
       // 1. Save to Firebase
       await addDoc(collection(db, "messages"), {
-        ...formData,
+        name: String(formData.name),
+        email: String(formData.email),
+        message: String(formData.message),
         createdAt: serverTimestamp(),
         read: false
       });

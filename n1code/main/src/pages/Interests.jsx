@@ -3,6 +3,8 @@ import { fetchCachedData } from "../lib/cache";
 import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink, PlayCircle } from "lucide-react";
 
 
+import { sanitizeUrl } from "../lib/sanitize";
+
 const SteamCard = ({ game }) => {
   const hours = (game.playtime_forever / 60).toFixed(1);
   return (
@@ -32,7 +34,7 @@ const AnimeCard = ({ entry }) => {
   return (
     <a
       key={entry.id}
-      href={media.siteUrl}
+      href={sanitizeUrl(media.siteUrl)}
       target="_blank"
       rel="noopener noreferrer"
       className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/50 group flex flex-col transition-all hover-scale"

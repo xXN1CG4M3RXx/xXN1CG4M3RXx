@@ -1,5 +1,7 @@
 import { ExternalLink as ExternalLinkIcon } from "lucide-react";
 
+import { sanitizeUrl } from "../lib/sanitize";
+
 export default function ProjectCard({ project }) {
   return (
     <div className="glassmorphism rounded-2xl overflow-hidden hover-scale group border border-sky-aqua-500/10 hover:border-sky-aqua-500/30 transition-all flex flex-col">
@@ -35,12 +37,12 @@ export default function ProjectCard({ project }) {
 
         <div className="flex items-center gap-4 mt-auto">
           {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200 transition-colors">
+            <a href={sanitizeUrl(project.githubUrl)} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-200 transition-colors">
               <GithubIcon className="w-5 h-5" />
             </a>
           )}
           {project.liveUrl && (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-aqua-400 transition-colors ml-auto flex items-center gap-1 text-sm font-mono uppercase tracking-wider">
+            <a href={sanitizeUrl(project.liveUrl)} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-sky-aqua-400 transition-colors ml-auto flex items-center gap-1 text-sm font-mono uppercase tracking-wider">
               <span>View Live</span>
               <ExternalLinkIcon className="w-4 h-4" />
             </a>

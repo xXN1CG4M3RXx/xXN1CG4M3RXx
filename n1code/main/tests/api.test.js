@@ -40,6 +40,6 @@ describe('Netlify API Serverless Functions', () => {
   it('GET /api/steam should return 400 if steamId is missing', async () => {
     const res = await request(app).get('/api/steam');
     expect(res.statusCode).toEqual(400);
-    expect(res.body).toHaveProperty('error', 'Missing steamId');
+    expect(res.body).toHaveProperty('error', 'Missing or invalid steamId');
   });
 });

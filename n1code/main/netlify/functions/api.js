@@ -54,8 +54,13 @@ router.post('/contact', async (req, res) => {
 // 3. Reply endpoint (Used by Admin Panel Inbox)
 router.post('/reply', async (req, res) => {
   try {
-    const { toEmail, subject, message } = req.body;
+    const { toEmail, subject, message, adminKey } = req.body;
     
+    // Authenticate the request
+    if (!process.env.ADMIN_API_KEY || adminKey !== process.env.ADMIN_API_KEY) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     if (!toEmail || !message) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -83,8 +88,8 @@ router.post('/reply', async (req, res) => {
 router.get('/steam', async (req, res) => {
   try {
     const { steamId } = req.query;
-    if (!steamId) {
-      return res.status(400).json({ error: "Missing steamId" });
+    if (!steamId || !/^\d{17}$/.test(steamId)) {
+      return res.status(400).json({ error: "Missing or invalid steamId" });
     }
 
     const apiKey = process.env.STEAM_API_KEY;
