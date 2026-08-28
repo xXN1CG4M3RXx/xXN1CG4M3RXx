@@ -60,6 +60,7 @@ export default function Home() {
   if (!profile) return null;
 
   const getCardBackgroundStyle = () => {
+    if (!profile?.background) return {};
     if (profile.background.type === 'image') {
       return { backgroundImage: `url(${profile.background.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
     } else if (profile.background.type === 'gradient') {
