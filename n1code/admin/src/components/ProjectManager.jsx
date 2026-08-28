@@ -20,7 +20,16 @@ export default function ProjectManager() {
         const docRef = doc(db, "settings", "projects");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
+                    data = docSnap.data();
+          if (!data.background) {
+            data.background = { type: "gradient", color1: "#000036", color2: "#000016", imageUrl: "", opacity: 100 };
+          }
+          if (!data.pageBackground) {
+            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+          }
+          if (!data.links) {
+            data.links = [];
+          }
           const loadedProjects = data.list || data.projects || [];
           setProjects(loadedProjects.map(p => ({
             ...p,
@@ -40,7 +49,7 @@ export default function ProjectManager() {
     setSaving(true);
     try {
       const docRef = doc(db, "settings", "projects");
-      const projectsToSave = projects.map(p => {
+      const projectsToSave = (projects || []).map(p => {
         const { _tagsInput, ...rest } = p;
         return {
           ...rest,
@@ -86,7 +95,7 @@ export default function ProjectManager() {
   };
 
   const updateProject = (id, field, value) => {
-    setProjects(projects.map(p => {
+    setProjects((projects || []).map(p => {
       if (p.id === id) {
         if (field === 'tags') {
           return { ...p, _tagsInput: value };
@@ -143,7 +152,7 @@ export default function ProjectManager() {
       {status && <StatusMessage status={status} />}
 
       <div className="space-y-6">
-        {projects.map((project) => (
+        {(projects || []).map((project) => (
           <div key={project.id} className="bg-slate-900/60 p-6 rounded-xl border border-slate-700/50 relative">
             <button 
               onClick={() => removeProject(project.id)}

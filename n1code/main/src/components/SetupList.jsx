@@ -9,7 +9,7 @@ export default function SetupList({ title, icon, items }) {
       </div>
 
       <div className="space-y-4">
-        {items.map((item, index) => (
+        {items?.map((item, index) => (
           <div key={index} className="flex justify-between items-center group">
             <div className="flex flex-col">
               <span className="text-slate-300 font-medium tracking-wide group-hover:text-sky-aqua-400 transition-colors">

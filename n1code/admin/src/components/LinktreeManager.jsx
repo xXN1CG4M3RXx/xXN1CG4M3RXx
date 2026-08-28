@@ -50,7 +50,16 @@ export default function LinktreeManager() {
         const docRef = doc(db, "settings", "profile");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
+                    data = docSnap.data();
+          if (!data.background) {
+            data.background = { type: "gradient", color1: "#000036", color2: "#000016", imageUrl: "", opacity: 100 };
+          }
+          if (!data.pageBackground) {
+            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+          }
+          if (!data.links) {
+            data.links = [];
+          }
           // Ensure pageBackground exists if migrating from old data
           if (!data.pageBackground) {
             data.pageBackground = {
@@ -131,7 +140,7 @@ export default function LinktreeManager() {
   const updateLink = (id, field, value) => {
     setProfile(p => ({
       ...p,
-      links: p.links.map(l => l.id === id ? { ...l, [field]: value } : l)
+      links: (p.links || []).map(l => l.id === id ? { ...l, [field]: value } : l)
     }));
   };
 
@@ -274,7 +283,7 @@ export default function LinktreeManager() {
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Background Type</label>
               <select 
-                value={profile.background.type}
+                value={profile.background?.type}
                 onChange={e => setProfile({...profile, background: {...profile.background, type: e.target.value}})}
                 className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               >
@@ -284,13 +293,13 @@ export default function LinktreeManager() {
               </select>
             </div>
 
-            {profile.background.type === 'image' ? (
+            {profile.background?.type === 'image' ? (
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Image URL</label>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
-                    value={profile.background.imageUrl}
+                    value={profile.background?.imageUrl}
                     onChange={e => setProfile({...profile, background: {...profile.background, imageUrl: e.target.value}})}
                     className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     placeholder="https://..."
@@ -310,31 +319,31 @@ export default function LinktreeManager() {
                   <div className="flex gap-2">
                     <input 
                       type="color" 
-                      value={profile.background.color1}
+                      value={profile.background?.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
                       className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                     />
                     <input 
                       type="text" 
-                      value={profile.background.color1}
+                      value={profile.background?.color1}
                       onChange={e => setProfile({...profile, background: {...profile.background, color1: e.target.value}})}
                       className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     />
                   </div>
                 </div>
-                {profile.background.type === 'gradient' && (
+                {profile.background?.type === 'gradient' && (
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1">Color 2 (Gradient End)</label>
                     <div className="flex gap-2">
                       <input 
                         type="color" 
-                        value={profile.background.color2}
+                        value={profile.background?.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
                         className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                       />
                       <input 
                         type="text" 
-                        value={profile.background.color2}
+                        value={profile.background?.color2}
                         onChange={e => setProfile({...profile, background: {...profile.background, color2: e.target.value}})}
                         className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                       />
@@ -346,12 +355,12 @@ export default function LinktreeManager() {
 
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">
-                Background Opacity: {profile.background.opacity ?? 100}%
+                Background Opacity: {profile.background?.opacity ?? 100}%
               </label>
               <input 
                 type="range" 
                 min="0" max="100" 
-                value={profile.background.opacity ?? 100}
+                value={profile.background?.opacity ?? 100}
                 onChange={e => setProfile({...profile, background: {...profile.background, opacity: parseInt(e.target.value)}})}
                 className="w-full accent-sky-aqua-500"
               />
@@ -367,7 +376,7 @@ export default function LinktreeManager() {
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Background Type</label>
               <select 
-                value={profile.pageBackground.type}
+                value={profile.pageBackground?.type}
                 onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, type: e.target.value}})}
                 className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
               >
@@ -377,13 +386,13 @@ export default function LinktreeManager() {
               </select>
             </div>
 
-            {profile.pageBackground.type === 'image' ? (
+            {profile.pageBackground?.type === 'image' ? (
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">Image URL</label>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
-                    value={profile.pageBackground.imageUrl}
+                    value={profile.pageBackground?.imageUrl}
                     onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, imageUrl: e.target.value}})}
                     className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     placeholder="https://..."
@@ -403,31 +412,31 @@ export default function LinktreeManager() {
                   <div className="flex gap-2">
                     <input 
                       type="color" 
-                      value={profile.pageBackground.color1}
+                      value={profile.pageBackground?.color1}
                       onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color1: e.target.value}})}
                       className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                     />
                     <input 
                       type="text" 
-                      value={profile.pageBackground.color1}
+                      value={profile.pageBackground?.color1}
                       onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color1: e.target.value}})}
                       className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                     />
                   </div>
                 </div>
-                {profile.pageBackground.type === 'gradient' && (
+                {profile.pageBackground?.type === 'gradient' && (
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1">Color 2 (Gradient End)</label>
                     <div className="flex gap-2">
                       <input 
                         type="color" 
-                        value={profile.pageBackground.color2}
+                        value={profile.pageBackground?.color2}
                         onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color2: e.target.value}})}
                         className="h-10 w-14 p-0 border-0 bg-transparent rounded-lg cursor-pointer overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-none"
                       />
                       <input 
                         type="text" 
-                        value={profile.pageBackground.color2}
+                        value={profile.pageBackground?.color2}
                         onChange={e => setProfile({...profile, pageBackground: {...profile.pageBackground, color2: e.target.value}})}
                         className="flex-1 min-w-0 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500"
                       />
@@ -452,7 +461,7 @@ export default function LinktreeManager() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {profile.links.map((link) => (
+            {(profile.links || []).map((link) => (
               <div key={link.id} className="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 relative">
                 <button 
                   onClick={() => removeLink(link.id)}

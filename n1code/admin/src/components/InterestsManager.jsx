@@ -30,7 +30,16 @@ export default function InterestsManager() {
         const docRef = doc(db, 'settings', 'interests');
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
+                    data = docSnap.data();
+          if (!data.background) {
+            data.background = { type: "gradient", color1: "#000036", color2: "#000016", imageUrl: "", opacity: 100 };
+          }
+          if (!data.pageBackground) {
+            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+          }
+          if (!data.links) {
+            data.links = [];
+          }
           setInterests({
             anilistUsername: data.anilistUsername || '',
             steamId: data.steamId || '',
@@ -112,7 +121,7 @@ export default function InterestsManager() {
   const updateGame = (id, field, value) => {
     setInterests(prev => ({
       ...prev,
-      games: prev.games.map(g => g.id === id ? { ...g, [field]: value } : g)
+      games: (prev.games || []).map(g => g.id === id ? { ...g, [field]: value } : g)
     }));
   };
 
@@ -155,7 +164,7 @@ export default function InterestsManager() {
   const updateAnime = (id, field, value) => {
     setInterests(prev => ({
       ...prev,
-      anime: prev.anime.map(a => a.id === id ? { ...a, [field]: value } : a)
+      anime: (prev.anime || []).map(a => a.id === id ? { ...a, [field]: value } : a)
     }));
   };
 
@@ -327,7 +336,7 @@ export default function InterestsManager() {
         </div>
 
         <div className="space-y-4">
-          {interests.games.map((game, index) => (
+          {(interests.games || []).map((game, index) => (
             <div key={game.id} className="bg-slate-900/60 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-4 relative group">
               {/* Order Controls */}
               <div className="flex md:flex-col gap-1 items-center justify-center">
@@ -511,7 +520,7 @@ export default function InterestsManager() {
         </div>
 
         <div className="space-y-4">
-          {interests.anime.map((item, index) => (
+          {(interests.anime || []).map((item, index) => (
             <div key={item.id} className="bg-slate-900/60 p-5 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-4 relative group">
               {/* Order Controls */}
               <div className="flex md:flex-col gap-1 items-center justify-center">

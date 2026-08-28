@@ -61,24 +61,24 @@ export default function Home() {
 
   const getCardBackgroundStyle = () => {
     if (!profile?.background) return {};
-    if (profile.background.type === 'image') {
-      return { backgroundImage: `url(${profile.background.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
-    } else if (profile.background.type === 'gradient') {
-      return { background: `linear-gradient(135deg, ${profile.background.color1}, ${profile.background.color2})` };
+    if (profile.background?.type === 'image') {
+      return { backgroundImage: `url(${profile.background?.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+    } else if (profile.background?.type === 'gradient') {
+      return { background: `linear-gradient(135deg, ${profile.background?.color1}, ${profile.background?.color2})` };
     }
-    return { backgroundColor: profile.background.color1 };
+    return { backgroundColor: profile.background?.color1 };
   };
 
   const getPageBackgroundStyle = () => {
     // Check if pageBackground exists (to prevent errors if migrating old data)
-    if (!profile.pageBackground) return {}; 
+    if (!profile?.pageBackground) return {}; 
     
-    if (profile.pageBackground.type === 'image') {
-      return { backgroundImage: `url(${profile.pageBackground.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
-    } else if (profile.pageBackground.type === 'gradient') {
-      return { background: `linear-gradient(135deg, ${profile.pageBackground.color1}, ${profile.pageBackground.color2})` };
+    if (profile.pageBackground?.type === 'image') {
+      return { backgroundImage: `url(${profile.pageBackground?.imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' };
+    } else if (profile.pageBackground?.type === 'gradient') {
+      return { background: `linear-gradient(135deg, ${profile.pageBackground?.color1}, ${profile.pageBackground?.color2})` };
     }
-    return { backgroundColor: profile.pageBackground.color1, background: 'none' };
+    return { backgroundColor: profile.pageBackground?.color1, background: 'none' };
   };
 
   const glowStyle = profile.glowEnabled ? { filter: `drop-shadow(0 0 10px ${profile.accentColor})` } : {};
@@ -135,7 +135,7 @@ export default function Home() {
 
         {/* Social Links Stack */}
         <div className="flex flex-col gap-4 w-full px-4 mt-2">
-          {profile.links.map((link) => {
+          {(profile.links || []).map((link) => {
             const inner = (
               <div className="bg-slate-900/60 border border-white/5 rounded-2xl p-4 flex items-center gap-4 hover:bg-slate-800/60 transition-all w-full group shadow-lg hover:shadow-xl hover:-translate-y-1">
                 <div className="flex-shrink-0 group-hover:scale-110 transition-transform duration-300 w-12 h-12 flex items-center justify-center" style={{ color: profile.accentColor, ...glowStyle }}>

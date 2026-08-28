@@ -21,7 +21,16 @@ export default function SetupManager() {
         const docRef = doc(db, "settings", "setup");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
+                    data = docSnap.data();
+          if (!data.background) {
+            data.background = { type: "gradient", color1: "#000036", color2: "#000016", imageUrl: "", opacity: 100 };
+          }
+          if (!data.pageBackground) {
+            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+          }
+          if (!data.links) {
+            data.links = [];
+          }
           setSetupData({
             gamingPc: data.gamingPc || data.gaming || data.pc || [],
             gamingPeripherals: data.gamingPeripherals || data.peripherals || [],
@@ -88,7 +97,7 @@ export default function SetupManager() {
         </div>
         
         <div className="space-y-4">
-          {items.map((item) => (
+          {(items || []).map((item) => (
             <div key={item.id} className="bg-slate-800/50 p-4 rounded-lg relative group border border-slate-700/30">
               <button 
                 onClick={() => removeItem(categoryKey, item.id)}

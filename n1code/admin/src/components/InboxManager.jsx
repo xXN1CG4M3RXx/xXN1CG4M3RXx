@@ -121,7 +121,7 @@ export default function InboxManager() {
           ) : messages.length === 0 ? (
             <div className="p-8 text-center text-slate-500">No messages yet.</div>
           ) : (
-            messages.map(msg => (
+            (messages || []).map(msg => (
               <div 
                 key={msg.id}
                 onClick={() => selectMessage(msg)}

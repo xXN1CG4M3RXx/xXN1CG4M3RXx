@@ -20,7 +20,16 @@ export default function SkillsManager() {
         const docRef = doc(db, "settings", "skills");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          const data = docSnap.data();
+                    data = docSnap.data();
+          if (!data.background) {
+            data.background = { type: "gradient", color1: "#000036", color2: "#000016", imageUrl: "", opacity: 100 };
+          }
+          if (!data.pageBackground) {
+            data.pageBackground = { type: "color", color1: "#0b0f19", color2: "#000000", imageUrl: "" };
+          }
+          if (!data.links) {
+            data.links = [];
+          }
           setSkills(data.list || data.skills || []);
         }
       } catch (error) {
@@ -56,7 +65,7 @@ export default function SkillsManager() {
   };
 
   const updateSkill = (id, field, value) => {
-    setSkills(skills.map(s => s.id === id ? { ...s, [field]: value } : s));
+    setSkills((skills || []).map(s => s.id === id ? { ...s, [field]: value } : s));
   };
 
   const moveUp = (index) => {
@@ -105,7 +114,7 @@ export default function SkillsManager() {
       {status && <StatusMessage status={status} />}
 
       <div className="space-y-4 mb-6">
-        {skills.map((skill, index) => (
+        {(skills || []).map((skill, index) => (
           <div key={skill.id} className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-4 items-start md:items-center group">
             
             {/* Reorder Buttons */}

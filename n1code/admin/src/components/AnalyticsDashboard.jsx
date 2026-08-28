@@ -54,7 +54,7 @@ export default function AnalyticsDashboard() {
   if (loading) return <div className="text-slate-400 p-8">Loading analytics...</div>;
 
   // Merge link data with click counts
-  const sortedLinks = links.map(link => ({
+  const sortedLinks = (links || []).map(link => ({
     ...link,
     clicks: analytics.clicks[link.id] || 0
   })).sort((a, b) => b.clicks - a.clicks);
