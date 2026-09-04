@@ -91,6 +91,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // 4. Private Settings Collection
+    // Protects build hooks and other sensitive backend-only settings
+    match /private_settings/{docId} {
+      allow read, write: if isAdmin();
+    }
+
     // ===============================================================
     // Default Deny for any other collection
     // ===============================================================

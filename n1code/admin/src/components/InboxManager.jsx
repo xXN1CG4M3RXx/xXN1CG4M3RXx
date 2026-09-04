@@ -74,7 +74,10 @@ export default function InboxManager() {
     try {
       const response = await fetch(`/api/reply`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_API_SECRET}`
+        },
         body: JSON.stringify({
           toEmail: selectedMessage.email,
           subject: `Re: Contact Form Submission`,
