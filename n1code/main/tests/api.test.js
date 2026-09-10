@@ -31,7 +31,8 @@ describe('Netlify API Serverless Functions', () => {
     const res = await request(app).post('/api/contact').send({
       name: 'Test',
       email: 'test@example.com',
-      message: 'Hello'
+      message: 'Hello',
+      turnstileToken: 'mock-token'
     });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('success', true);

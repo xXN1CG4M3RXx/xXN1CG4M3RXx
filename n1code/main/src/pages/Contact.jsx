@@ -2,17 +2,38 @@ import { useState } from "react";
 import { Mail, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { db } from "../lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("idle"); // idle, submitting, success, error
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!turnstileToken) {
+      setStatus("error");
+      console.error("No turnstile token generated");
+      return;
+    }
+
     setStatus("submitting");
 
     try {
-      // 1. Save to Firebase
+      // 1. Send Email Notification First (it handles turnstile validation)
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, turnstileToken })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to trigger email notification:", errorData);
+        throw new Error("Failed validation or email sending");
+      }
+
+      // 2. Save to Firebase (only if validation passed)
       await addDoc(collection(db, "messages"), {
         name: String(formData.name),
         email: String(formData.email),
@@ -20,18 +41,6 @@ export default function Contact() {
         createdAt: serverTimestamp(),
         read: false
       });
-
-      // 2. Send Email Notification
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        console.error("Failed to trigger email notification");
-        // We don't throw an error here because the message was saved to Firebase successfully
-      }
 
       setStatus("success");
       setFormData({ name: "", email: "", message: "" });
@@ -102,9 +111,15 @@ export default function Contact() {
             />
           </div>
 
+          <Turnstile 
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
+            options={{ size: "invisible" }}
+            onSuccess={(token) => setTurnstileToken(token)} 
+          />
+
           <button
             type="submit"
-            disabled={status === "submitting"}
+            disabled={status === "submitting" || !turnstileToken}
             className="mt-4 w-full md:w-auto md:self-end bg-sky-aqua-500 hover:bg-sky-aqua-400 text-slate-900 font-bold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-70 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-sky-aqua-500/25"
           >
             {status === "submitting" ? (

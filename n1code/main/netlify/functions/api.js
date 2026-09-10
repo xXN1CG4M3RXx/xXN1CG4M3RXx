@@ -25,10 +25,27 @@ router.get('/health', (req, res) => {
 // 2. Contact form endpoint
 router.post('/contact', async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, message, turnstileToken } = req.body;
     
-    if (!name || !email || !message) {
+    if (!name || !email || !message || !turnstileToken) {
       return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Verify Turnstile Token
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+    if (turnstileSecret) {
+      const verifyResponse = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `secret=${turnstileSecret}&response=${turnstileToken}`
+      });
+      const verifyData = await verifyResponse.json();
+      
+      if (!verifyData.success) {
+        return res.status(400).json({ error: "Failed security check" });
+      }
+    } else {
+      console.warn("TURNSTILE_SECRET_KEY not configured, skipping validation in dev");
     }
 
     const { data, error: resendError } = await resend.emails.send({
