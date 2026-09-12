@@ -14,6 +14,17 @@ vi.mock('resend', () => {
   };
 });
 
+global.fetch = vi.fn().mockImplementation((url) => {
+  if (url.includes('siteverify')) {
+    return Promise.resolve({
+      json: () => Promise.resolve({ success: true })
+    });
+  }
+  return Promise.resolve({
+    json: () => Promise.resolve({})
+  });
+});
+
 describe('Netlify API Serverless Functions', () => {
   it('GET /api/health should return online status', async () => {
     const res = await request(app).get('/api/health');

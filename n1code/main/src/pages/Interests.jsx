@@ -6,17 +6,23 @@ import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink, PlayCircle } from
 import { sanitizeUrl } from "../lib/sanitize";
 
 const SteamCard = ({ game }) => {
-  const hours = (game.playtime_forever / 60).toFixed(1);
+  const hours = game.playtime_forever !== undefined ? (game.playtime_forever / 60).toFixed(1) : (game.hours || 0);
+  const imgUrl = game.isManual ? game.img_icon_url : `https://steamcdn-a.akamaihd.net/steam/apps/${game.appid}/header.jpg`;
+  const fallbackImgUrl = game.isManual ? game.img_icon_url : `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`;
+
   return (
     <div className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-blue-500/50 group flex flex-col transition-all hover-scale bg-slate-900/50">
       <div className="aspect-[460/215] w-full bg-slate-950 overflow-hidden relative">
         <img loading="lazy"
-          src={`https://steamcdn-a.akamaihd.net/steam/apps/${game.appid}/header.jpg`}
+          src={imgUrl}
           alt={game.name}
-          onError={(e) => { e.target.src = `https://media.steampowered.com/steamcommunity/public/images/apps/${game.appid}/${game.img_icon_url}.jpg`; }}
+          onError={(e) => { e.target.src = fallbackImgUrl; }}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-80" />
+        {game.isFavorite && (
+          <div className="absolute top-1.5 right-1.5 text-amber-400 drop-shadow-md text-lg z-10 leading-none">★</div>
+        )}
       </div>
       <div className="p-3">
         <h3 className="text-sm font-bold text-slate-200 line-clamp-1 mb-1" title={game.name}>{game.name}</h3>
@@ -25,36 +31,39 @@ const SteamCard = ({ game }) => {
     </div>
   );
 };
+
 const AnimeCard = ({ entry }) => {
-  const media = entry.media;
-  const title = media.title.english || media.title.romaji;
+  const media = entry.media || {};
+  const title = media.title?.english || media.title?.romaji || "";
   const maxEps = media.episodes || "?";
-  const progressPercent = media.episodes ? Math.round((entry.progress / media.episodes) * 100) : 0;
+  const progressPercent = media.episodes && entry.progress ? Math.round((entry.progress / media.episodes) * 100) : 0;
 
   return (
     <a
       key={entry.id}
-      href={sanitizeUrl(media.siteUrl)}
+      href={sanitizeUrl(media.siteUrl || "#")}
       target="_blank"
       rel="noopener noreferrer"
       className="glassmorphism rounded-xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/50 group flex flex-col transition-all hover-scale"
     >
       <div className="relative aspect-[3/4] w-full bg-slate-950 overflow-hidden">
         <img loading="lazy"
-          src={media.coverImage.large}
+          src={media.coverImage?.large}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
-        
+        {entry.isFavorite && (
+          <div className="absolute top-1.5 right-1.5 text-amber-400 drop-shadow-md text-xl z-10 leading-none">★</div>
+        )}
         <div className="absolute bottom-2 left-2 right-2">
           <div className="flex justify-between items-center text-[10px] font-mono text-slate-300 font-bold mb-1">
-            <span>Ep {entry.progress} / {maxEps}</span>
+            <span>{entry.status === 'COMPLETED' ? 'Done' : `Ep ${entry.progress || '?'} / ${maxEps}`}</span>
             {media.averageScore && (
               <span className="text-emerald-400">★ {media.averageScore}%</span>
             )}
           </div>
-          {media.episodes && (
+          {media.episodes && entry.status !== 'COMPLETED' && (
             <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-sky-aqua-400 h-full rounded-full"
@@ -66,13 +75,20 @@ const AnimeCard = ({ entry }) => {
       </div>
       <div className="p-3">
         <h3 className="text-xs font-bold text-slate-200 line-clamp-1 mb-1" title={title}>{title}</h3>
-        {media.genres && media.genres.length > 0 && (
+        {entry.manualDetails?.quote && (
+          <p className="text-[10px] text-slate-400 line-clamp-2 italic mb-1">"{entry.manualDetails.quote}"</p>
+        )}
+        {entry.manualDetails?.favCharacter && (
+          <p className="text-[10px] text-sky-aqua-400 line-clamp-1">Best: {entry.manualDetails.favCharacter}</p>
+        )}
+        {!entry.manualDetails && media.genres && media.genres.length > 0 && (
           <p className="text-[10px] text-slate-500 line-clamp-1">{media.genres.slice(0, 2).join(', ')}</p>
         )}
       </div>
     </a>
   );
 };
+
 
 export default function Interests() {
   const [activeTab, setActiveTab] = useState("gaming"); // "gaming" | "anime"
@@ -102,6 +118,8 @@ export default function Interests() {
   const [anilistWatchedAnime, setAnilistWatchedAnime] = useState([]);
   const [anilistReadingManga, setAnilistReadingManga] = useState([]);
   const [anilistReadManga, setAnilistReadManga] = useState([]);
+  const [anilistFavoriteAnimeIds, setAnilistFavoriteAnimeIds] = useState(new Set());
+  const [anilistFavoriteMangaIds, setAnilistFavoriteMangaIds] = useState(new Set());
   
   const [visibleAnime, setVisibleAnime] = useState(10);
   const [visibleManga, setVisibleManga] = useState(10);
@@ -172,6 +190,12 @@ export default function Interests() {
                 }
               }
             }
+            User(name: $userName) {
+              favourites {
+                anime(page: 1, perPage: 50) { nodes { id } }
+                manga(page: 1, perPage: 50) { nodes { id } }
+              }
+            }
           }
         `;
 
@@ -194,6 +218,11 @@ export default function Interests() {
         const flatAnime = animeLists.flatMap(list => list.entries);
         const flatManga = mangaLists.flatMap(list => list.entries);
         
+        const favAnime = resData?.data?.User?.favourites?.anime?.nodes?.map(n => n.id) || [];
+        const favManga = resData?.data?.User?.favourites?.manga?.nodes?.map(n => n.id) || [];
+        setAnilistFavoriteAnimeIds(new Set(favAnime));
+        setAnilistFavoriteMangaIds(new Set(favManga));
+
         setAnilistWatchingAnime(flatAnime.filter(e => e.status === 'CURRENT'));
         setAnilistWatchedAnime(flatAnime.filter(e => e.status !== 'CURRENT'));
         
@@ -261,22 +290,63 @@ export default function Interests() {
     return (a.title || "").localeCompare(b.title || "");
   });
 
-  const getSortedAniList = (list) => {
+  const getSortedAniList = (list, isFavSet) => {
     const getTitle = (e) => e.media?.title?.english || e.media?.title?.romaji || "";
-    return [...list].sort((a, b) => {
+    return [...list].map(e => ({
+       ...e,
+       isFavorite: e.isFavorite || (isFavSet && isFavSet.has(e.media?.id))
+    })).sort((a, b) => {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+      
       if (animeSort === "myRating") return (b.score || 0) - (a.score || 0);
       if (animeSort === "overallRating") return (b.media?.averageScore || 0) - (a.media?.averageScore || 0);
       return getTitle(a).localeCompare(getTitle(b));
     });
   };
   
-  const sortedWatchingAnime = getSortedAniList(anilistWatchingAnime);
-  const sortedWatchedAnime = getSortedAniList(anilistWatchedAnime);
-  const sortedReadingManga = getSortedAniList(anilistReadingManga);
-  const sortedReadManga = getSortedAniList(anilistReadManga);
+  const mapManualAnime = (type, targetStatus) => {
+    return (interestsData.anime || [])
+      .filter(a => (a.type || 'Anime') === type && (a.status || 'COMPLETED') === targetStatus)
+      .map(a => ({
+         id: `manual-${a.id}`,
+         progress: '?',
+         score: a.score,
+         status: a.status || 'COMPLETED',
+         isFavorite: a.isFavorite || false,
+         manualDetails: a,
+         media: {
+           title: { english: a.title, romaji: a.title },
+           coverImage: { large: a.coverUrl || '/placeholder.png' },
+           averageScore: parseFloat(a.score) * 10 || null,
+           siteUrl: '#'
+         }
+      }));
+  };
+
+  const sortedWatchingAnime = getSortedAniList([...anilistWatchingAnime, ...mapManualAnime('Anime', 'CURRENT')], anilistFavoriteAnimeIds);
+  const sortedWatchedAnime = getSortedAniList([...anilistWatchedAnime, ...mapManualAnime('Anime', 'COMPLETED')], anilistFavoriteAnimeIds);
+  const sortedDroppedAnime = getSortedAniList([...mapManualAnime('Anime', 'DROPPED')], anilistFavoriteAnimeIds);
+  const sortedPlanningAnime = getSortedAniList([...mapManualAnime('Anime', 'PLANNING')], anilistFavoriteAnimeIds);
+
+  const sortedReadingManga = getSortedAniList([...anilistReadingManga, ...mapManualAnime('Manga', 'CURRENT')], anilistFavoriteMangaIds);
+  const sortedReadManga = getSortedAniList([...anilistReadManga, ...mapManualAnime('Manga', 'COMPLETED')], anilistFavoriteMangaIds);
   
   const getSortedSteam = () => {
-    return [...steamGames].sort((a, b) => {
+    const manualGames = (interestsData.games || []).map(g => ({
+      appid: `manual-${g.id}`,
+      name: g.title,
+      playtime_forever: (parseFloat(g.hours) || 0) * 60,
+      img_icon_url: g.bannerUrl,
+      isManual: true,
+      isFavorite: g.status === 'Favorite'
+    }));
+    
+    // Merge, ensuring favorites are pushed to top
+    return [...steamGames, ...manualGames].sort((a, b) => {
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+      
       if (gameSort === "name") return (a.name || "").localeCompare(b.name || "");
       return b.playtime_forever - a.playtime_forever;
     });
@@ -328,444 +398,146 @@ export default function Interests() {
         </div>
       </div>
 
-      {/* ======================================================== */}
+            {/* ======================================================== */}
       {/* GAMING TAB CONTENT */}
       {/* ======================================================== */}
       {activeTab === "gaming" && (
         <div className="space-y-10 animate-fade-in">
-          {/* Sub-filters */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Filter:</span>
-              {["all", "playing", "favorites"].map((f) => (
+          {/* Steam & Manual Games Grid */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Gamepad2 className="w-5 h-5 text-sky-aqua-400" />
+              <h3 className="text-xl font-bold font-display text-slate-100">Library & Favorites</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {sortedSteam.slice(0, visibleSteam).map(game => <SteamCard key={game.appid} game={game} />)}
+            </div>
+            
+            {visibleSteam < sortedSteam.length && (
+              <div className="mt-8 flex justify-center">
                 <button
-                  key={f}
-                  onClick={() => setGameFilter(f)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
-                    gameFilter === f
-                      ? "bg-sky-aqua-500/20 text-sky-aqua-300 border border-sky-aqua-500/40"
-                      : "bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800"
-                  }`}
+                  onClick={() => setVisibleSteam(prev => prev + 12)}
+                  className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
                 >
-                  {f === "playing" ? "Currently Playing" : f === "favorites" ? "All-Time Favorites" : "All Games"}
+                  Load More Games
                 </button>
-              ))}
-            </div>
-            <div className="text-xs font-mono text-slate-500">
-              {filteredGames.length} {filteredGames.length === 1 ? "title" : "titles"}
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
-                <select
-                  value={gameSort}
-                  onChange={(e) => setGameSort(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="playtime">Playtime</option>
-                </select>
               </div>
-            </div>
+            )}
+            
+            {sortedSteam.length === 0 && (
+              <div className="text-center py-16 text-slate-500">
+                No games added yet. Configure Steam sync or add manual games via the admin panel.
+              </div>
+            )}
           </div>
+        </div>
+      )}
 
-          {/* Games Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGames.map((game) => (
-              <div
-                key={game.id}
-                className="glassmorphism rounded-2xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/40 transition-all duration-300 flex flex-col group hover:-translate-y-1 shadow-xl"
-              >
-                {/* Banner / Poster */}
-                <div className="relative h-44 w-full bg-slate-950 overflow-hidden">
-                  {game.bannerUrl ? (
-                    <img loading="lazy"
-                      src={game.bannerUrl}
-                      alt={game.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-slate-900 text-slate-700">
-                      <Gamepad2 className="w-12 h-12" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-
-                  {/* Status Badge */}
-                  <div className="absolute top-3 left-3">
-                    {game.status === "Currently Playing" ? (
-                      <span className="flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        Currently Playing
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-semibold">
-                        <Trophy className="w-3 h-3" />
-                        Favorite
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Platform */}
-                  {game.platform && (
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-slate-900/80 text-slate-300 border border-slate-700/60 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-mono font-bold">
-                        {game.platform}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Body */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <h3 className="font-bold font-display text-lg text-slate-100 group-hover:text-sky-aqua-300 transition-colors">
-                        {game.title}
-                      </h3>
-                      {game.rating && (
-                        <span className="flex items-center gap-1 text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md shrink-0">
-                          <Star className="w-3 h-3 fill-amber-400" />
-                          {game.rating}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {(game.genre || '').split(',').map(g => g.trim()).filter(Boolean).map((g, i) => (
-                        <span key={i} className="text-[10px] font-mono font-bold text-sky-aqua-400 bg-sky-aqua-500/10 border border-sky-aqua-500/20 px-2 py-0.5 rounded-md">
-                          {g}
-                        </span>
-                      ))}
-                    </div>
-
-                    {game.notes && (
-                      <p className="text-slate-400 text-sm font-light leading-relaxed">
-                        {game.notes}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Footer with hours / rank */}
-                  {(game.hours || game.rank) && (
-                    <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-4 text-xs font-mono text-slate-500">
-                      {game.hours && (
-                        <div className="flex items-center gap-1.5">
-                          <PlayCircle className="w-3.5 h-3.5 text-sky-aqua-500" />
-                          <span className="text-slate-300">{game.hours}</span>
-                        </div>
-                      )}
-                      {game.rank && (
-                        <div className="flex items-center gap-1.5 ml-auto">
-                          <Trophy className="w-3.5 h-3.5 text-amber-500" />
-                          <span className="text-slate-300 font-bold">{game.rank}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+      {/* ======================================================== */}
+      {/* ANIME TAB CONTENT */}
+      {/* ======================================================== */}
+      {activeTab === "anime" && (
+        <div className="space-y-12 animate-fade-in pt-4">
+          <div className="space-y-16">
+            {/* ANIME SECTION */}
+            <div className="space-y-8">
+              <div className="flex items-center gap-2 mb-2">
+                <Film className="w-5 h-5 text-sky-aqua-400" />
+                <h3 className="text-xl font-bold font-display text-slate-100">Anime</h3>
               </div>
-            ))}
-          </div>
-
-          {/* ======================================================== */}
-          {/* LIVE STEAM INTEGRATION SECTION */}
-          {/* ======================================================== */}
-          {interestsData.steamId && interestsData.steamSyncEnabled && (
-            <div className="mt-16 pt-10 border-t border-slate-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              
+              {sortedWatchingAnime.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping" />
-                    <h2 className="text-2xl font-bold font-display text-slate-100">Live Steam Library</h2>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Currently Watching</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {sortedWatchingAnime.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
                   </div>
-                  <p className="text-slate-400 text-sm mt-1">
-                    Live updates of my Steam library and playtime.
-                  </p>
                 </div>
-                <a
-                  href={`https://steamcommunity.com/profiles/${interestsData.steamId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-xs font-mono text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 px-4 py-2 rounded-xl transition-all self-start sm:self-auto shadow-sm"
-                >
-                  <span>Steam Profile</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
+              )}
 
-              {steamError ? (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8 text-center text-red-400 mt-4">
-                  <p className="font-bold mb-2">Failed to load Steam games</p>
-                  <p className="text-sm">{steamError}</p>
-                  <p className="text-xs mt-4 opacity-70">Check console for details or ensure your Steam ID is a 64-bit numeric ID and your "Game details" privacy setting is Public.</p>
-                </div>
-              ) : steamLoading ? (
-                <div className="flex items-center justify-center p-12 text-slate-500">
-                  <div className="w-8 h-8 border-3 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mr-3" />
-                  <span>Loading Steam library...</span>
-                </div>
-              ) : steamGames.length === 0 ? (
-                <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-500">
-                  No public Steam games found. Check your privacy settings.
-                </div>
-              ) : (
+              {sortedPlanningAnime.length > 0 && (
                 <div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                    {sortedSteam.slice(0, visibleSteam).map(game => <SteamCard key={game.appid} game={game} />)}
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Planning to Watch</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {sortedPlanningAnime.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
                   </div>
-                  {visibleSteam < sortedSteam.length && (
-                    <div className="mt-8 flex justify-center">
+                </div>
+              )}
+
+              {sortedWatchedAnime.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Completed</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {sortedWatchedAnime.slice(0, visibleAnime).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                  </div>
+                  
+                  {visibleAnime < sortedWatchedAnime.length && (
+                    <div className="mt-6 flex justify-center">
                       <button
-                        onClick={() => setVisibleSteam(prev => prev + 12)}
-                        className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
+                        onClick={() => setVisibleAnime(prev => prev + 10)}
+                        className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
                       >
-                        Load More Steam Games
+                        Load More Anime
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {sortedDroppedAnime.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Dropped</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {sortedDroppedAnime.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* MANGA SECTION */}
+            <div className="space-y-8 pt-8 border-t border-slate-800/50">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-5 h-5 flex items-center justify-center bg-emerald-500/10 rounded text-emerald-400 border border-emerald-500/20">M</div>
+                <h3 className="text-xl font-bold font-display text-slate-100">Manga & Light Novels</h3>
+              </div>
+              
+              {sortedReadingManga.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Currently Reading</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {sortedReadingManga.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                  </div>
+                </div>
+              )}
+
+              {sortedReadManga.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Completed</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {sortedReadManga.slice(0, visibleManga).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
+                  </div>
+                  
+                  {visibleManga < sortedReadManga.length && (
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        onClick={() => setVisibleManga(prev => prev + 10)}
+                        className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
+                      >
+                        Load More Manga
                       </button>
                     </div>
                   )}
                 </div>
               )}
             </div>
-          )}
 
-          {filteredGames.length === 0 && (
-            <div className="text-center py-16 text-slate-500">
-              No games found under this filter.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ======================================================== */}
-      {/* ANIME & MANGA TAB CONTENT */}
-      {/* ======================================================== */}
-      {activeTab === "anime" && (
-        <div className="space-y-12 animate-fade-in">
-          
-          {/* Sub-filters */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Filter:</span>
-              {["all", "anime", "manga"].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setAnimeFilter(f)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${
-                    animeFilter === f
-                      ? "bg-sky-aqua-500/20 text-sky-aqua-300 border border-sky-aqua-500/40"
-                      : "bg-slate-900/60 text-slate-400 hover:text-slate-200 border border-slate-800"
-                  }`}
-                >
-                  {f === "all" ? "All Masterpieces" : f}
-                </button>
-              ))}
-            </div>
-            <div className="text-xs font-mono text-slate-500">
-              {filteredAnime.length} {filteredAnime.length === 1 ? "entry" : "entries"}
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
-                <select
-                  value={animeSort}
-                  onChange={(e) => setAnimeSort(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="myRating">My Rating (High to Low)</option>
-                  <option value="overallRating">Overall Rating (High to Low)</option>
-                </select>
+            {sortedWatchingAnime.length === 0 && sortedPlanningAnime.length === 0 && sortedWatchedAnime.length === 0 && sortedReadingManga.length === 0 && sortedReadManga.length === 0 && (
+               <div className="text-center py-16 text-slate-500">
+                No anime or manga found. Configure AniList sync or add items via the admin panel.
               </div>
-            </div>
+            )}
           </div>
-
-          {/* Masterpieces Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAnime.map((item) => (
-              <div
-                key={item.id}
-                className="glassmorphism rounded-2xl overflow-hidden border border-slate-800 hover:border-sky-aqua-500/40 transition-all duration-300 flex flex-col group hover:-translate-y-1 shadow-xl"
-              >
-                {/* Poster Container */}
-                <div className="relative h-56 w-full bg-slate-950 overflow-hidden">
-                  {item.coverUrl ? (
-                    <img loading="lazy"
-                      src={item.coverUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-85 group-hover:opacity-100"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-slate-900 text-slate-700">
-                      <Film className="w-12 h-12" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-
-                  {/* Type Badge */}
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-sky-aqua-500/20 text-sky-aqua-300 border border-sky-aqua-500/30 backdrop-blur-md px-2.5 py-1 rounded-md text-xs font-bold font-mono">
-                      {item.type}
-                    </span>
-                  </div>
-
-                  {/* Score */}
-                  {item.score && (
-                    <div className="absolute top-3 right-3">
-                      <span className="flex items-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-md px-2.5 py-1 rounded-md text-xs font-bold">
-                        <Star className="w-3 h-3 fill-amber-400" />
-                        {item.score}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div>
-                    <h3 className="font-bold font-display text-xl text-slate-100 group-hover:text-sky-aqua-300 transition-colors mb-2">
-                      {item.title}
-                    </h3>
-
-                    {item.favCharacter && (
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3 bg-slate-900/60 py-1 px-2.5 rounded-lg border border-slate-800 w-fit">
-                        <Sparkles className="w-3 h-3 text-sky-aqua-400" />
-                        <span>Best Character:</span>
-                        <strong className="text-slate-200">{item.favCharacter}</strong>
-                      </div>
-                    )}
-
-                    {item.quote && (
-                      <p className="text-slate-400 text-sm font-light italic leading-relaxed pl-3 border-l-2 border-sky-aqua-500/50">
-                        "{item.quote}"
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* ======================================================== */}
-          {/* LIVE ANILIST INTEGRATION SECTION */}
-          {/* ======================================================== */}
-          {interestsData.anilistUsername && interestsData.anilistSyncEnabled && (
-            <div className="mt-16 pt-10 border-t border-slate-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping" />
-                    <h2 className="text-2xl font-bold font-display text-slate-100">Live AniList Activity</h2>
-                  </div>
-                  <p className="text-slate-400 text-sm mt-1">
-                    Live updates of what I'm currently watching synced via AniList GraphQL API.
-                  </p>
-                </div>
-
-                <a
-                  href={`https://anilist.co/user/${interestsData.anilistUsername}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-xs font-mono text-sky-aqua-400 hover:text-sky-aqua-300 bg-sky-aqua-500/10 hover:bg-sky-aqua-500/20 border border-sky-aqua-500/30 px-4 py-2 rounded-xl transition-all self-start sm:self-auto shadow-sm"
-                >
-                  <span>@{interestsData.anilistUsername} on AniList</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-
-              {anilistLoading ? (
-                <div className="flex items-center justify-center p-12 text-slate-500">
-                  <div className="w-8 h-8 border-3 border-sky-aqua-500/20 border-t-sky-aqua-500 rounded-full animate-spin mr-3" />
-                  <span>Loading live AniList feed...</span>
-                </div>
-              ) : (anilistWatchingAnime.length === 0 && anilistWatchedAnime.length === 0 && anilistReadingManga.length === 0 && anilistReadManga.length === 0) ? (
-                <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-500">
-                  No recent AniList activity found for this user.
-                </div>
-              ) : (
-                <div className="space-y-16">
-                  {/* ANIME SECTION */}
-                  {(anilistWatchingAnime.length > 0 || anilistWatchedAnime.length > 0) && (
-                    <div className="space-y-8">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Film className="w-5 h-5 text-sky-aqua-400" />
-                        <h3 className="text-xl font-bold font-display text-slate-100">Anime</h3>
-                      </div>
-                      
-                      {anilistWatchingAnime.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Currently Watching</h4>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {sortedWatchingAnime.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
-                          </div>
-                        </div>
-                      )}
-
-                      {anilistWatchedAnime.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Other Anime Activity</h4>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {sortedWatchedAnime.slice(0, visibleAnime).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
-                          </div>
-                          
-                          {visibleAnime < anilistWatchedAnime.length && (
-                            <div className="mt-6 flex justify-center">
-                              <button
-                                onClick={() => setVisibleAnime(prev => prev + 10)}
-                                className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
-                              >
-                                Load More Anime
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* MANGA SECTION */}
-                  {(anilistReadingManga.length > 0 || anilistReadManga.length > 0) && (
-                    <div className="space-y-8 pt-8 border-t border-slate-800/50">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-5 h-5 flex items-center justify-center bg-emerald-500/10 rounded text-emerald-400 border border-emerald-500/20">M</div>
-                        <h3 className="text-xl font-bold font-display text-slate-100">Manga & Light Novels</h3>
-                      </div>
-                      
-                      {anilistReadingManga.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Currently Reading</h4>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {sortedReadingManga.map(entry => <AnimeCard key={entry.id} entry={entry} />)}
-                          </div>
-                        </div>
-                      )}
-
-                      {anilistReadManga.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Other Manga Activity</h4>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {sortedReadManga.slice(0, visibleManga).map(entry => <AnimeCard key={entry.id} entry={entry} />)}
-                          </div>
-                          
-                          {visibleManga < anilistReadManga.length && (
-                            <div className="mt-6 flex justify-center">
-                              <button
-                                onClick={() => setVisibleManga(prev => prev + 10)}
-                                className="bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 px-6 py-2 rounded-xl transition-all text-sm font-medium"
-                              >
-                                Load More Manga
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
         </div>
       )}
 

@@ -145,6 +145,8 @@ export default function InterestsManager() {
           id: Date.now().toString(),
           title: 'New Anime / Manga',
           type: 'Anime',
+          status: 'COMPLETED',
+          isFavorite: false,
           score: '10/10',
           favCharacter: '',
           coverUrl: '',
@@ -578,6 +580,32 @@ export default function InterestsManager() {
                     <option value="Manga">Manga</option>
                     <option value="Movie">Movie</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Status</label>
+                  <select
+                    value={item.status || 'COMPLETED'}
+                    onChange={e => updateAnime(item.id, 'status', e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-sky-aqua-500"
+                  >
+                    <option value="CURRENT">Currently Watching</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="DROPPED">Dropped</option>
+                    <option value="PLANNING">Planning to Watch</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center mt-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={item.isFavorite || false}
+                      onChange={e => updateAnime(item.id, 'isFavorite', e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-700 text-sky-aqua-500 focus:ring-sky-aqua-500 bg-slate-900"
+                    />
+                    <span className="text-xs text-slate-400 font-medium">Favorite</span>
+                  </label>
                 </div>
 
                 <div>
