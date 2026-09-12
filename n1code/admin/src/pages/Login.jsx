@@ -2,15 +2,21 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useNavigate } from "react-router";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState(null);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!turnstileToken) {
+      setError("Please complete the security check.");
+      return;
+    }
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/");
@@ -47,9 +53,16 @@ export default function Login() {
               required 
             />
           </div>
+          <div className="flex justify-center mt-2">
+            <Turnstile 
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "0x4AAAAAAExR9uilSklFgVCg"}
+              onSuccess={(token) => setTurnstileToken(token)}
+            />
+          </div>
           <button 
             type="submit"
-            className="w-full bg-gradient-to-r from-sky-aqua-600 to-baltic-blue-600 hover:from-sky-aqua-500 hover:to-baltic-blue-500 text-white font-medium py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-sky-aqua-500/25"
+            disabled={!turnstileToken}
+            className="w-full bg-gradient-to-r from-sky-aqua-600 to-baltic-blue-600 hover:from-sky-aqua-500 hover:to-baltic-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-sky-aqua-500/25"
           >
             Sign In
           </button>

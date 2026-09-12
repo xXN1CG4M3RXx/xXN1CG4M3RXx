@@ -17,6 +17,14 @@ vi.mock('firebase/auth', () => ({
   })
 }));
 
+vi.mock('@marsidev/react-turnstile', () => ({
+  Turnstile: ({ onSuccess }) => {
+    // Automatically trigger onSuccess to simulate solving captcha in tests
+    setTimeout(() => onSuccess('mock-token'), 0);
+    return <div data-testid="turnstile-mock">Captcha</div>;
+  }
+}));
+
 describe('Login Page', () => {
   it('renders login form', () => {
     const { container } = render(<BrowserRouter><Login /></BrowserRouter>);
@@ -31,6 +39,10 @@ describe('Login Page', () => {
 
     fireEvent.change(emailInput, { target: { value: 'fail@test.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password' } });
+    
+    await waitFor(() => {
+      expect(submitBtn).not.toBeDisabled();
+    });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
