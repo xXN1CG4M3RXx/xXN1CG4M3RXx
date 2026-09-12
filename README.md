@@ -1,29 +1,29 @@
-# 👋Hi there!, I'm Nico
-## Software Engineer
+# 👋 Hi there! I'm Nico J (aka xXN1CG4M3RXx)
+## Full-Stack Developer & Tech Enthusiast
 
-I'm a passionate developer who enjoys building things, learning daily, and having fun along the way.
+I'm a passionate developer who loves building things, learning daily, and turning creative ideas into working projects. 
 <br>
-🚀 I like keeping my code clean, simple, and practical.
+🚀 I enjoy crafting clean, practical, and interactive web applications (like my personal portfolio with Steam & AniList integrations!).
 <br>
-💡 Always curious about new tech and better solutions.
+💡 Always curious about new tech, better solutions, and leveling up my skills.
 
 ## 🎯 Interests
 
-🌸 Anime fan, from classics to seasonal releases.<br>
-🎮 Gamer in my free time, mostly story-driven and competitive games.<br>
-💻 Coding enthusiast (ofc), I enjoy turning ideas into working projects.
+🌸 **Anime & Manga** – Huge fan, from classics to seasonal releases. I even integrated AniList into my projects!<br>
+🎮 **Gaming** – Always down for story-driven and competitive games. Check out my Steam stats!<br>
+💻 **Coding** – Building tools, full-stack apps, and experimenting with new frameworks.
 
 ## 🛠️ Languages & Tools
 
-🔹 C# – Mainly for desktop apps and backend logic.<br>
-🔹 Python – Automation, scripts, and small tools.<br>
-🔹 Java – Object-oriented projects and learning core concepts.<br>
-🔹 HTML & CSS – Building clean and responsive layouts.<br>
-🔹 JavaScript – Adding interactivity and dynamic behavior.
+🔹 **JavaScript / React** – Building interactive and dynamic front-ends.<br>
+🔹 **C#** – Mainly for desktop apps and backend logic.<br>
+🔹 **Python** – Automation, scripts, and small tools.<br>
+🔹 **Java** – Object-oriented projects and learning core concepts.<br>
+🔹 **HTML & CSS / Tailwind** – Crafting clean and responsive layouts.
 
 ## 🌱 Currently Learning
 
-📘 Improving problem-solving and data structures.<br>
+📘 Advanced React patterns and state management.<br>
 ⚙️ Exploring better project architecture and clean code practices.<br>
 🧠 Always leveling up as a developer.
 
