@@ -1,4 +1,4 @@
-# 👋 Hi there! I'm Nico J (aka xXN1CG4M3RXx)
+# 👋 Hi there! I'm Nico (aka xXN1CG4M3RXx)
 ## Full-Stack Developer & Tech Enthusiast
 
 I'm a passionate developer who loves building things, learning daily, and turning creative ideas into working projects. 
