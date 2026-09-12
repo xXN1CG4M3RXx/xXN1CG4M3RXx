@@ -3,27 +3,30 @@
 
 I'm a passionate developer who loves building things, learning daily, and turning creative ideas into working projects. 
 <br>
-🚀 I enjoy crafting clean, practical, and interactive web applications (like my personal portfolio with Steam & AniList integrations!).
+🚀 I enjoy crafting clean, practical, and interactive web applications and tools to help developers.
 <br>
 💡 Always curious about new tech, better solutions, and leveling up my skills.
 
 ## 🎯 Interests
 
-🌸 **Anime & Manga** – Huge fan, from classics to seasonal releases. I even integrated AniList into my projects!<br>
-🎮 **Gaming** – Always down for story-driven and competitive games. Check out my Steam stats!<br>
+🌸 **Anime & Manga** – Huge fan, from classics to seasonal releases.<br>
+🎮 **Gaming** – Always down for story-driven and competitive games.<br>
 💻 **Coding** – Building tools, full-stack apps, and experimenting with new frameworks.
 
 ## 🛠️ Languages & Tools
 
-🔹 **JavaScript / React** – Building interactive and dynamic front-ends.<br>
-🔹 **C#** – Mainly for desktop apps and backend logic.<br>
-🔹 **Python** – Automation, scripts, and small tools.<br>
-🔹 **Java** – Object-oriented projects and learning core concepts.<br>
-🔹 **HTML & CSS / Tailwind** – Crafting clean and responsive layouts.
+🔹 **Python** - For automation, scripts, and small tools.<br>
+🔹 **Java** - For object-oriented projects and server backends.<br>
+🔹 **Rust** - For high performance applications.<br>
+🔹 **HTML & CSS** - For web development and styling.<br>
+🔹 **JavaScript & TypeScript** - For web development and interactivity.<br>
+🔹 **SQL** - For database management and development.<br>
+🔹 **Docker** - For containerization and deployment.<br>
+
 
 ## 🌱 Currently Learning
 
-📘 Advanced React patterns and state management.<br>
+📘 Always learnign new languages and tools.<br>
 ⚙️ Exploring better project architecture and clean code practices.<br>
 🧠 Always leveling up as a developer.
 
@@ -31,21 +34,24 @@ I'm a passionate developer who loves building things, learning daily, and turnin
 
 🤝 Open to collaboration and learning from others.<br>
 ⭐ Check out my repositories and feel free to leave feedback!<br>
-🔗 If you want you can also check out my [socials](https://guns.lol/NicoJ).
+🔗 If you want you can also check out [my Website](https://n1code.dev) to find out more about me.
 
 ## Skills
 
 <p align="left">
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="python" width="40" height="40"/>&nbsp;
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/>&nbsp;
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-original.svg" alt="rust" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="java" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="html" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="css" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/>&nbsp;
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="mysql" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="react" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="spring" width="40" height="40"/>&nbsp;
 <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/raspberrypi/raspberrypi-original.svg" alt="raspberrypi" width="40" height="40"/>&nbsp;
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="docker" width="40" height="40"/>&nbsp;
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="git" width="40" height="40"/>&nbsp;
 </p>
 
 ## Support Me
