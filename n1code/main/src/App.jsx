@@ -6,6 +6,7 @@ import Skills from "./pages/Skills";
 import Setup from "./pages/Setup";
 import Interests from "./pages/Interests";
 import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
 import { db } from "./lib/firebase";
 import { doc, setDoc, increment } from "firebase/firestore";
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/setup" element={<Setup />} />
         <Route path="/interests" element={<Interests />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Navbar />
     </div>

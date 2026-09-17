@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from './lib/firebase'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
+import NotFound from './pages/NotFound'
 import LinktreeManager from './components/LinktreeManager'
 import ProjectManager from './components/ProjectManager'
 import SetupManager from './components/SetupManager'
@@ -81,7 +82,7 @@ function App() {
           <Route path="/seo" element={<ProtectedRoute user={user}><SeoManager /></ProtectedRoute>} />
           <Route path="/inbox" element={<ProtectedRoute user={user}><InboxManager /></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute user={user}><AnalyticsDashboard /></ProtectedRoute>} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
