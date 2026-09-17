@@ -95,7 +95,9 @@ export default function Interests() {
   const [gameFilter, setGameFilter] = useState("all"); // "all" | "playing" | "favorites"
   const [animeFilter, setAnimeFilter] = useState("all"); // "all" | "anime" | "manga"
   const [animeSort, setAnimeSort] = useState("name"); // "name" | "myRating" | "overallRating"
-  const [gameSort, setGameSort] = useState("name"); // "name" | "playtime"
+  const [gameSort, setGameSort] = useState("name");
+  const [gameGenreFilter, setGameGenreFilter] = useState("all");
+  const [animeGenreFilter, setAnimeGenreFilter] = useState("all"); // "name" | "playtime"
   
   const [steamGames, setSteamGames] = useState([]);
   const [steamLoading, setSteamLoading] = useState(false);
@@ -292,14 +294,20 @@ export default function Interests() {
 
   const getSortedAniList = (list, isFavSet) => {
     const getTitle = (e) => e.media?.title?.english || e.media?.title?.romaji || "";
-    return [...list].map(e => ({
+    let processed = [...list].map(e => ({
        ...e,
        isFavorite: e.isFavorite || (isFavSet && isFavSet.has(e.media?.id))
-    })).sort((a, b) => {
+    }));
+    
+    if (animeGenreFilter !== "all") {
+      processed = processed.filter(e => e.media?.genres && e.media.genres.includes(animeGenreFilter));
+    }
+
+    return processed.sort((a, b) => {
       if (a.isFavorite && !b.isFavorite) return -1;
       if (!a.isFavorite && b.isFavorite) return 1;
       
-      if (animeSort === "myRating") return (b.score || 0) - (a.score || 0);
+      if (animeSort === "myRating") return (parseFloat(b.score) || 0) - (parseFloat(a.score) || 0);
       if (animeSort === "overallRating") return (b.media?.averageScore || 0) - (a.media?.averageScore || 0);
       return getTitle(a).localeCompare(getTitle(b));
     });
@@ -319,7 +327,7 @@ export default function Interests() {
            title: { english: a.title, romaji: a.title },
            coverImage: { large: a.coverUrl || '/placeholder.png' },
            averageScore: parseFloat(a.score) * 10 || null,
-           siteUrl: '#'
+           siteUrl: '#', genres: a.genre ? a.genre.split(',').map(s=>s.trim()) : []
          }
       }));
   };
@@ -339,11 +347,16 @@ export default function Interests() {
       playtime_forever: (parseFloat(g.hours) || 0) * 60,
       img_icon_url: g.bannerUrl,
       isManual: true,
-      isFavorite: g.status === 'Favorite'
+      isFavorite: g.status === 'Favorite',
+      genres: g.genre ? g.genre.split(',').map(s => s.trim()) : []
     }));
     
-    // Merge, ensuring favorites are pushed to top
-    return [...steamGames, ...manualGames].sort((a, b) => {
+    let combined = [...steamGames, ...manualGames];
+    if (gameGenreFilter !== "all") {
+      combined = combined.filter(g => g.genres && g.genres.includes(gameGenreFilter));
+    }
+
+    return combined.sort((a, b) => {
       if (a.isFavorite && !b.isFavorite) return -1;
       if (!a.isFavorite && b.isFavorite) return 1;
       
@@ -352,6 +365,12 @@ export default function Interests() {
     });
   };
   const sortedSteam = getSortedSteam();
+  
+  const allGameGenres = Array.from(new Set((interestsData.games || []).flatMap(g => g.genre ? g.genre.split(',').map(s=>s.trim()) : []))).sort();
+  const allAnimeGenres = Array.from(new Set([
+    ...anilistWatchingAnime, ...anilistWatchedAnime, ...anilistReadingManga, ...anilistReadManga
+  ].flatMap(a => a.media?.genres || []))).sort();
+
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mb-24 min-h-screen">
@@ -403,6 +422,37 @@ export default function Interests() {
       {/* ======================================================== */}
       {activeTab === "gaming" && (
         <div className="space-y-10 animate-fade-in">
+          {/* Sub-filters */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4 mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Genre:</span>
+              <select
+                value={gameGenreFilter}
+                onChange={(e) => setGameGenreFilter(e.target.value)}
+                className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
+              >
+                <option value="all">All Genres</option>
+                {allGameGenres.map(g => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
+                <select
+                  value={gameSort}
+                  onChange={(e) => setGameSort(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="playtime">Playtime (High to Low)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           {/* Steam & Manual Games Grid */}
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-2">
@@ -440,7 +490,39 @@ export default function Interests() {
       {activeTab === "anime" && (
         <div className="space-y-12 animate-fade-in pt-4">
           <div className="space-y-16">
-            {/* ANIME SECTION */}
+            {/* Sub-filters */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4 mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Genre:</span>
+              <select
+                value={animeGenreFilter}
+                onChange={(e) => setAnimeGenreFilter(e.target.value)}
+                className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
+              >
+                <option value="all">All Genres</option>
+                {allAnimeGenres.map(g => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
+                <select
+                  value={animeSort}
+                  onChange={(e) => setAnimeSort(e.target.value)}
+                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
+                >
+                  <option value="name">Name (A-Z)</option>
+                  <option value="myRating">My Rating (High to Low)</option>
+                  <option value="overallRating">Overall Rating (High to Low)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* ANIME SECTION */}
             <div className="space-y-8">
               <div className="flex items-center gap-2 mb-2">
                 <Film className="w-5 h-5 text-sky-aqua-400" />
