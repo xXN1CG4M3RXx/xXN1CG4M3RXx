@@ -1,9 +1,64 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { fetchCachedData } from "../lib/cache";
 import { Gamepad2, Film, Sparkles, Star, Trophy, ExternalLink, PlayCircle } from "lucide-react";
 
 
 import { sanitizeUrl } from "../lib/sanitize";
+
+
+const CustomDropdown = ({ options, value, onChange, className }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(opt => opt.value === value) || options[0];
+
+  return (
+    <div className={`relative ${className || ''}`} ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between gap-3 bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-aqua-500 hover:bg-slate-800 transition-colors min-w-[140px]"
+      >
+        <span className="truncate">{selectedOption?.label}</span>
+        <svg className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180 text-sky-aqua-400' : 'text-slate-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-[100] w-full min-w-[160px] mt-1.5 bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-lg shadow-xl shadow-black/50 overflow-hidden animate-fade-in origin-top">
+          <div className="max-h-60 overflow-y-auto custom-scrollbar py-1">
+            {options.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  onChange(opt.value);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                  value === opt.value
+                    ? "bg-sky-aqua-500/20 text-sky-aqua-300"
+                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const SteamCard = ({ game }) => {
   const hours = game.playtime_forever !== undefined ? (game.playtime_forever / 60).toFixed(1) : (game.hours || 0);
@@ -352,8 +407,10 @@ export default function Interests() {
     }));
     
     let combined = [...steamGames, ...manualGames];
-    if (gameGenreFilter !== "all") {
-      combined = combined.filter(g => g.genres && g.genres.includes(gameGenreFilter));
+    if (gameFilter === "playing") {
+      combined = combined.filter(g => (g.isManual && g.status === "Currently Playing") || (!g.isManual && g.playtime_2weeks > 0));
+    } else if (gameFilter === "favorites") {
+      combined = combined.filter(g => g.isFavorite);
     }
 
     return combined.sort((a, b) => {
@@ -425,30 +482,29 @@ export default function Interests() {
           {/* Sub-filters */}
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4 mb-6">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Genre:</span>
-              <select
-                value={gameGenreFilter}
-                onChange={(e) => setGameGenreFilter(e.target.value)}
-                className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
-              >
-                <option value="all">All Genres</option>
-                {allGameGenres.map(g => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
+              <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Filter:</span>
+              <CustomDropdown 
+                value={gameFilter}
+                onChange={setGameFilter}
+                options={[
+                  { label: "All Games", value: "all" },
+                  { label: "Currently Playing", value: "playing" },
+                  { label: "All-Time Favorites", value: "favorites" }
+                ]}
+              />
             </div>
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
-                <select
+                <CustomDropdown 
                   value={gameSort}
-                  onChange={(e) => setGameSort(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="playtime">Playtime (High to Low)</option>
-                </select>
+                  onChange={setGameSort}
+                  options={[
+                    { label: "Name (A-Z)", value: "name" },
+                    { label: "Playtime (High to Low)", value: "playtime" }
+                  ]}
+                />
               </div>
             </div>
           </div>
@@ -494,30 +550,28 @@ export default function Interests() {
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4 mb-6">
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider mr-2">Genre:</span>
-              <select
+              <CustomDropdown 
                 value={animeGenreFilter}
-                onChange={(e) => setAnimeGenreFilter(e.target.value)}
-                className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
-              >
-                <option value="all">All Genres</option>
-                {allAnimeGenres.map(g => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
+                onChange={setAnimeGenreFilter}
+                options={[
+                  { label: "All Genres", value: "all" },
+                  ...allAnimeGenres.map(g => ({ label: g, value: g }))
+                ]}
+              />
             </div>
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono uppercase text-slate-500 font-bold tracking-wider">Sort:</span>
-                <select
+                <CustomDropdown 
                   value={animeSort}
-                  onChange={(e) => setAnimeSort(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-aqua-500"
-                >
-                  <option value="name">Name (A-Z)</option>
-                  <option value="myRating">My Rating (High to Low)</option>
-                  <option value="overallRating">Overall Rating (High to Low)</option>
-                </select>
+                  onChange={setAnimeSort}
+                  options={[
+                    { label: "Name (A-Z)", value: "name" },
+                    { label: "My Rating (High to Low)", value: "myRating" },
+                    { label: "Overall Rating (High to Low)", value: "overallRating" }
+                  ]}
+                />
               </div>
             </div>
           </div>
