@@ -49,7 +49,7 @@ export default function SeoManager() {
       const { buildHookUrl, ...publicSeoData } = seoData;
       
       const docRef = doc(db, "settings", "seo");
-      await setDoc(docRef, publicSeoData);
+      await setDoc(docRef, { ...publicSeoData, updatedAt: new Date().toISOString() });
       
       const hookRef = doc(db, "private_settings", "buildHook");
       await setDoc(hookRef, { url: buildHookUrl || "" });
@@ -123,6 +123,18 @@ export default function SeoManager() {
               <p className="text-xs text-slate-500 mt-1">The main title that appears in browser tabs and search results.</p>
             </div>
             
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Site URL (Canonical Domain)</label>
+              <input 
+                type="text" 
+                value={seoData.siteUrl || ""}
+                onChange={(e) => updateField('siteUrl', e.target.value)}
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-slate-200 focus:outline-none focus:border-sky-aqua-500 transition-colors"
+                placeholder="https://n1code.netlify.app"
+              />
+              <p className="text-xs text-slate-500 mt-1">The base URL of your website, used for generating the sitemap.xml and canonical SEO tags.</p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-400 mb-1">Site Description</label>
               <textarea 

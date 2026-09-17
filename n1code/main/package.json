@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "netlify dev",
     "dev:frontend": "vite",
-    "build": "vite build && node scripts/inject-seo.js",
+    "build": "vite build && node scripts/inject-seo.js && node scripts/generate-sitemap.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

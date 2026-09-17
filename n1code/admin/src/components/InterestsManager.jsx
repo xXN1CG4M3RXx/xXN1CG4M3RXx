@@ -64,7 +64,7 @@ export default function InterestsManager() {
       const docRef = doc(db, 'settings', 'interests');
       // Strip undefined values which cause setDoc to crash
       const cleanInterests = JSON.parse(JSON.stringify(interests));
-      await setDoc(docRef, cleanInterests);
+      await setDoc(docRef, { ...cleanInterests, updatedAt: new Date().toISOString() });
       setStatus({ type: 'success', message: 'Changes saved successfully!' });
       setTimeout(() => setStatus(null), 3000);
     } catch (error) {

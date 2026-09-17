@@ -86,7 +86,7 @@ export default function LinktreeManager() {
     setLoading(true);
     try {
       const docRef = doc(db, "settings", "profile");
-      await setDoc(docRef, profile);
+      await setDoc(docRef, { ...profile, updatedAt: new Date().toISOString() });
       setStatus({ type: 'success', message: 'Changes saved successfully!' });
       setTimeout(() => setStatus(null), 3000);
     } catch (error) {

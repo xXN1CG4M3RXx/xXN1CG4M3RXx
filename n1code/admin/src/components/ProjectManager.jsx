@@ -56,7 +56,7 @@ export default function ProjectManager() {
           tags: _tagsInput !== undefined ? _tagsInput.split(',').map(t => t.trim()).filter(Boolean) : (p.tags || [])
         };
       });
-      await setDoc(docRef, { list: projectsToSave });
+      await setDoc(docRef, { list: projectsToSave, updatedAt: new Date().toISOString() });
       
       // Update local state to show formatted tags
       setProjects(projectsToSave.map(p => ({

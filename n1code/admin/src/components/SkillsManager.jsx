@@ -45,7 +45,7 @@ export default function SkillsManager() {
     setSaving(true);
     try {
       const docRef = doc(db, "settings", "skills");
-      await setDoc(docRef, { list: skills });
+      await setDoc(docRef, { list: skills, updatedAt: new Date().toISOString() });
       setStatus({ type: 'success', message: 'Changes saved successfully!' });
       setTimeout(() => setStatus(null), 3000);
     } catch (error) {
