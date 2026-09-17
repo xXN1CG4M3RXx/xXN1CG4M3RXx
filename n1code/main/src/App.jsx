@@ -6,7 +6,8 @@ import Skills from "./pages/Skills";
 import Setup from "./pages/Setup";
 import Interests from "./pages/Interests";
 import Contact from "./pages/Contact";
-import NotFound from "./pages/NotFound";
+import ErrorPage from "./pages/ErrorPage";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useEffect } from "react";
 import { db } from "./lib/firebase";
 import { doc, setDoc, increment } from "firebase/firestore";
@@ -30,16 +31,20 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route path="/setup" element={<Setup />} />
-        <Route path="/interests" element={<Interests />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <Navbar />
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/skills" element={<Skills />} />
+          <Route path="/setup" element={<Setup />} />
+          <Route path="/interests" element={<Interests />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/403" element={<ErrorPage code={403} />} />
+          <Route path="/500" element={<ErrorPage code={500} />} />
+          <Route path="*" element={<ErrorPage code={404} />} />
+        </Routes>
+        <Navbar />
+      </ErrorBoundary>
     </div>
   );
 }

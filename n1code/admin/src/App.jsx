@@ -4,7 +4,8 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from './lib/firebase'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
-import NotFound from './pages/NotFound'
+import ErrorPage from './pages/ErrorPage'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import LinktreeManager from './components/LinktreeManager'
 import ProjectManager from './components/ProjectManager'
 import SetupManager from './components/SetupManager'
@@ -71,6 +72,7 @@ function App() {
       )}
 
       <main className="flex-1 max-w-5xl mx-auto px-6 py-12 w-full z-10">
+        <ErrorBoundary>
         <Routes>
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
           <Route path="/" element={<ProtectedRoute user={user}><Dashboard /></ProtectedRoute>} />
@@ -82,8 +84,11 @@ function App() {
           <Route path="/seo" element={<ProtectedRoute user={user}><SeoManager /></ProtectedRoute>} />
           <Route path="/inbox" element={<ProtectedRoute user={user}><InboxManager /></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute user={user}><AnalyticsDashboard /></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<ErrorPage code={404} />} />
+          <Route path="/403" element={<ErrorPage code={403} />} />
+          <Route path="/500" element={<ErrorPage code={500} />} />
         </Routes>
+        </ErrorBoundary>
       </main>
     </div>
   )
