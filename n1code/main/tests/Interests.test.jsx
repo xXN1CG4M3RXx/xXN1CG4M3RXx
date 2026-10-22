@@ -173,10 +173,17 @@ describe("Games page", () => {
 
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: () =>
-        Promise.resolve([
-          { appid: 730, name: "Steam Game", playtime_forever: 600, img_icon_url: "abc", playtime_2weeks: 30 },
-        ]),
+      status: 200,
+      statusText: "OK",
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({
+            games: [
+              { appid: 730, name: "Steam Game", playtime_forever: 600, img_icon_url: "abc", playtime_2weeks: 30 },
+            ],
+            privateProfile: false,
+          })
+        ),
     });
 
     render(

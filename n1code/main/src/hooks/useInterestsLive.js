@@ -64,6 +64,7 @@ export function useInterestsLive(interests = {}) {
   const [animeError, setAnimeError] = useState(null);
 
   const [steamGames, setSteamGames] = useState([]);
+  const [steamPrivate, setSteamPrivate] = useState(false);
   const [steamLoading, setSteamLoading] = useState(
     () => steamSyncEnabled && Boolean(String(steamId || "").trim())
   );
@@ -122,11 +123,21 @@ export function useInterestsLive(interests = {}) {
     fetch(`/api/steam?steamId=${encodeURIComponent(id)}`)
       .then(async (res) => {
         // A missing function (or an SPA fallback) can answer 200 with HTML,
-        // so never assume the payload is the array we asked for.
-        const body = await res.json().catch(() => null);
-        if (!res.ok) throw new Error(body?.error || "Failed to fetch steam games");
-        if (!Array.isArray(body)) throw new Error("Unexpected Steam response");
-        if (alive) setSteamGames(body);
+        // so never assume the payload is the shape we asked for.
+        const raw = await res.text().catch(() => null);
+        let body = null;
+        try {
+          body = raw ? JSON.parse(raw) : null;
+        } catch {
+          // not JSON — `body` stays null and is handled below
+        }
+        if (!res.ok) {
+          throw new Error(body?.error || body?.detail || `Steam API returned ${res.status}`);
+        }
+        if (!body || !Array.isArray(body.games)) throw new Error("The Steam sync returned an unexpected response.");
+        if (!alive) return;
+        setSteamGames(body.games);
+        setSteamPrivate(Boolean(body.privateProfile));
       })
       .catch((err) => {
         if (alive) setSteamError(err);
@@ -152,5 +163,6 @@ export function useInterestsLive(interests = {}) {
     steamLoading: steamEnabled && steamLoading,
     steamError: steamEnabled ? steamError : null,
     steamEnabled,
+    steamPrivate: steamEnabled && steamPrivate,
   };
 }

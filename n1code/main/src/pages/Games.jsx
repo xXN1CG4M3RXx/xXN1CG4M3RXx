@@ -96,6 +96,9 @@ export default function Games() {
                 steam sync failed
               </HudChip>
             )}
+            {live.steamEnabled && !live.steamLoading && !live.steamError && live.steamPrivate && (
+              <HudChip tone="amber">profile is private</HudChip>
+            )}
             {live.steamLoading && (
               <HudChip tone="amber">
                 <Loader2 className="mr-1.5 inline h-3 w-3 animate-spin" />
@@ -153,8 +156,10 @@ export default function Games() {
             <Gamepad2 className="h-8 w-8 text-slate-600" />
             <p className="max-w-md text-slate-500">
               {live.steamError
-                ? "The Steam sync did not return a library — check the Steam ID and API key, or add manual games via the admin panel."
-                : "No games added yet. Configure Steam sync or add manual games via the admin panel."}
+                ? `${live.steamError.message || "The Steam sync failed."} Check the Steam ID and API key, or add manual games via the admin panel.`
+                : live.steamPrivate
+                  ? "That Steam profile keeps its game details private, so there is nothing to show here. Manual favourites still appear."
+                  : "No games added yet. Configure Steam sync or add manual games via the admin panel."}
             </p>
           </div>
         ) : (

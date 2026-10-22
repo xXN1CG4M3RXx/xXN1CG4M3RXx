@@ -114,15 +114,44 @@ router.get('/steam', async (req, res) => {
       return res.status(500).json({ error: "STEAM_API_KEY not configured" });
     }
 
-    const url = `http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${apiKey}&steamid=${steamId}&include_appinfo=1&include_played_free_games=1&format=json`;
-    const response = await fetch(url);
-    const data = await response.json();
+    const url = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${apiKey}&steamid=${steamId}&include_appinfo=1&include_played_free_games=1&format=json`;
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data });
+    const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+
+    // Steam answers 401/403 with an HTML error page, so never assume the body
+    // is JSON — and check the status before trying to parse it.
+    const raw = await response.text();
+    let data = null;
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch {
+      data = null;
     }
 
-    res.status(200).json(data.response.games || []);
+    if (!response.ok) {
+      const detail =
+        data?.message ||
+        (raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160) || response.statusText);
+
+      const rejected = response.status === 401 || response.status === 403;
+      return res.status(502).json({
+        error: `Steam API returned ${response.status}`,
+        detail,
+        ...(rejected
+          ? { hint: "The Steam Web API key was rejected. Re-issue it at https://steamcommunity.com/dev/apikey" }
+          : {}),
+      });
+    }
+
+    if (!data || !data.response) {
+      return res.status(502).json({ error: "Steam API returned an unexpected body." });
+    }
+
+    const games = Array.isArray(data.response.games) ? data.response.games : [];
+
+    // A 200 with an empty list means the profile's game details are private,
+    // which is different from the profile owning no games.
+    return res.status(200).json({ games, privateProfile: games.length === 0 });
   } catch (error) {
     console.error("Steam API proxy error:", error);
     res.status(500).json({ error: error.message || "Failed to fetch Steam data" });
