@@ -1,7 +1,7 @@
 import { 
   FaSteam, FaGithub, FaDiscord, FaYoutube, FaTwitch, FaTiktok,
   FaTwitter, FaInstagram, FaLinkedin, FaReddit, FaSpotify, FaPatreon,
-  FaPlaystation, FaXbox, FaGamepad, FaHeadset, FaReact, FaNpm,
+  FaPlaystation, FaXbox, FaGamepad, FaHeadset, FaReact,
   FaTerminal, FaDatabase, FaNodeJs, FaPython
 } from 'react-icons/fa';
 import { 

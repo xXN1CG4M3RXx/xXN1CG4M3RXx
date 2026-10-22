@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Home, Compass, Ghost, ShieldAlert, ServerCrash, AlertTriangle } from "lucide-react";
+import { Home, Compass, Ghost, ShieldAlert, ServerCrash } from "lucide-react";
 
 export default function ErrorPage({ code = 404, message }) {
   const getErrorContent = () => {

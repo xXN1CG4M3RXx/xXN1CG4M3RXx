@@ -53,7 +53,7 @@ async function generateSitemap() {
         if (snap.exists() && snap.data().updatedAt) {
           return snap.data().updatedAt;
         }
-      } catch(e) {
+      } catch {
         // Ignore
       }
       return buildDate; // fallback
@@ -79,16 +79,22 @@ async function generateSitemap() {
         docRef: 'skills'
       },
       {
+        path: '/anime',
+        changefreq: 'weekly',
+        priority: '0.8',
+        docRef: 'interests'
+      },
+      {
+        path: '/games',
+        changefreq: 'weekly',
+        priority: '0.8',
+        docRef: 'interests'
+      },
+      {
         path: '/setup',
         changefreq: 'monthly',
         priority: '0.7',
         docRef: 'setup'
-      },
-      {
-        path: '/interests',
-        changefreq: 'weekly',
-        priority: '0.8',
-        docRef: 'interests'
       },
       {
         path: '/contact',

@@ -5,7 +5,7 @@ export const sanitizeUrl = (url) => {
     if (['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
       return parsed.href;
     }
-  } catch (e) {
+  } catch {
     // If URL parsing fails, check if it's a relative path starting with /
     if (url.startsWith('/')) {
       return url;

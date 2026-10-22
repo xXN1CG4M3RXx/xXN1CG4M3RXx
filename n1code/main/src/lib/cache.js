@@ -48,7 +48,7 @@ export const fetchCachedData = async (type, onUpdate) => {
       // Background revalidate to ensure fresh data for next time
       fetchFresh();
       return dataCache[type];
-    } catch (e) {
+    } catch {
       console.warn("Failed to parse local cache");
     }
   }

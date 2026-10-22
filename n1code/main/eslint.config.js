@@ -5,7 +5,8 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // build output, the Netlify function bundle and coverage reports
+  globalIgnores(['dist', 'coverage', '.netlify']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -16,6 +17,20 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
       parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+  },
+  {
+    // Server-side modules: the Netlify function and the build scripts.
+    files: ["netlify/**/*.js", "scripts/**/*.js"],
+    languageOptions: {
+      globals: { ...globals.node },
+    },
+  },
+  {
+    // Vitest specs run in Node: `global`, `process` and friends are real there.
+    files: ['tests/**/*.{js,jsx}'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser, ...globals.jest },
     },
   },
 ])
