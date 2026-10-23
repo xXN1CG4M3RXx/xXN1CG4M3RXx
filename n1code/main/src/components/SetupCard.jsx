@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react";
 import { sanitizeUrl } from "../lib/sanitize";
 
 /** One hardware / software entry in a setup column. */
-export function SetupItem({ item, index = 0 }) {
+export function SetupItem({ item }) {
   const href = item.link ? sanitizeUrl(item.link) : null;
   const hasLink = href && href !== "#";
 
@@ -27,8 +27,7 @@ export function SetupItem({ item, index = 0 }) {
 
   return (
     <li
-      className="reveal is-visible group flex items-center gap-3 border-b border-white/[0.05] py-3 transition-colors last:border-0"
-      style={{ "--reveal-delay": `${Math.min(index, 10) * 40}ms` }}
+      className="group flex items-center gap-3 border-b border-white/[0.05] py-3 transition-colors last:border-0"
     >
       {hasLink ? (
         <a
@@ -47,11 +46,10 @@ export function SetupItem({ item, index = 0 }) {
 }
 
 /** Setup column: title + icon + item list. */
-export default function SetupCard({ title, icon, items = [], delay = 0 }) {
+export default function SetupCard({ title, icon, items = [] }) {
   return (
     <section
-      className="reveal relative rounded-2xl border border-white/[0.07] bg-slate-950/50 p-6 backdrop-blur-md transition-colors duration-300 hover:border-sky-aqua-500/30"
-      style={{ "--reveal-delay": `${delay}ms` }}
+      className="relative h-full rounded-2xl border border-white/[0.07] bg-slate-950/50 p-6 backdrop-blur-md transition-colors duration-300 hover:border-sky-aqua-500/30"
     >
       <div className="hud-corner hud-corner--tl" />
       <div className="hud-corner hud-corner--br" />
@@ -73,7 +71,7 @@ export default function SetupCard({ title, icon, items = [], delay = 0 }) {
       ) : (
         <ul>
           {items.map((item, index) => (
-            <SetupItem key={item.id ?? index} item={item} index={index} />
+            <SetupItem key={item.id ?? index} item={item} />
           ))}
         </ul>
       )}

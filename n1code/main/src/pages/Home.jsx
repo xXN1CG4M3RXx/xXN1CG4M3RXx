@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, ChevronDown, Cpu, Keyboard, Monitor as MonitorIcon } from "lucide-react";
+import { ArrowRight, Cpu, Keyboard, Monitor as MonitorIcon } from "lucide-react";
 import { useSiteData, asList } from "../hooks/useSiteData";
 import { useInterestsLive } from "../hooks/useInterestsLive";
 import { useCountUp, useInView, useTypewriter } from "../lib/animate";
 import { mapManualAnime, sortEntries, sortGames } from "../lib/interests";
 import { trackView } from "../lib/analytics";
 import Reveal from "../components/Reveal";
-import ScrollNav from "../components/ScrollNav";
+import ScrollProgress from "../components/ScrollProgress";
 import SocialBar from "../components/SocialBar";
 import IntroOverlay from "../components/IntroOverlay";
 import ContactForm from "../components/ContactForm";
@@ -17,17 +17,6 @@ import SetupCard from "../components/SetupCard";
 import GameCard from "../components/GameCard";
 import AnimeCard from "../components/AnimeCard";
 import { HudChip } from "../components/HUD";
-
-const SECTIONS = [
-  { id: "hero", label: "Entry" },
-  { id: "stats", label: "Stats" },
-  { id: "projects", label: "Projects" },
-  { id: "stack", label: "Stack" },
-  { id: "lounge", label: "Lounge" },
-  { id: "anime", label: "Anime" },
-  { id: "setup", label: "Setup" },
-  { id: "contact", label: "Contact" },
-];
 
 const FEATURED_PROJECT_COUNT = 3;
 const STRIP_SIZE = 8;
@@ -128,16 +117,6 @@ function Hero({ profile }) {
           </div>
         </Reveal>
       </div>
-
-      <a
-        href="#stats"
-        className="absolute bottom-8 flex flex-col items-center gap-3 text-slate-500 transition-colors hover:text-sky-aqua-400"
-        aria-label="Scroll to the next section"
-      >
-        <span className="font-mono text-[10px] uppercase tracking-[0.3em]">scroll</span>
-        <span className="scroll-cue" />
-        <ChevronDown className="animate-float h-4 w-4" />
-      </a>
     </section>
   );
 }
@@ -418,8 +397,12 @@ function SetupSection({ setup }) {
         </Reveal>
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <SetupCard title="Peripherals" icon={<MonitorIcon className="h-5 w-5" />} items={peripherals} delay={90} />
-          <SetupCard title="Development Setup" icon={<Keyboard className="h-5 w-5" />} items={development} delay={180} />
+          <Reveal delay={90} className="h-full">
+            <SetupCard title="Peripherals" icon={<MonitorIcon className="h-5 w-5" />} items={peripherals} />
+          </Reveal>
+          <Reveal delay={180} className="h-full">
+            <SetupCard title="Development Setup" icon={<Keyboard className="h-5 w-5" />} items={development} />
+          </Reveal>
         </div>
 
         <Reveal delay={200} className="mt-10 text-center">
@@ -486,14 +469,16 @@ export default function Home() {
   const animeManual = data.interests?.anime || [];
   const gameManual = data.interests?.games || [];
 
-  const stripGames = sortGames({
+  // Sorted in full so the counters report the real totals; the marquees only
+  // take a slice of these.
+  const mergedGames = sortGames({
     steamGames: live.steam,
     manualGames: gameManual,
     filter: "all",
     sort: "playtime",
-  }).slice(0, STRIP_SIZE);
+  });
 
-  const stripAnime = sortEntries(
+  const mergedAnime = sortEntries(
     [
       ...live.anilist.watchingAnime,
       ...live.anilist.watchedAnime,
@@ -501,17 +486,21 @@ export default function Home() {
       ...live.anilist.readManga,
       ...mapManualAnime(animeManual, "Anime", "CURRENT"),
       ...mapManualAnime(animeManual, "Anime", "COMPLETED"),
+      ...mapManualAnime(animeManual, "Manga", "CURRENT"),
       ...mapManualAnime(animeManual, "Manga", "COMPLETED"),
     ],
     { sort: "name" }
-  ).slice(0, STRIP_SIZE);
+  );
 
   const counts = {
     projects: projects.length,
     skills: skills.length,
-    anime: animeManual.length + live.anilist.watchedAnime.length + live.anilist.watchingAnime.length,
-    games: stripGames.length,
+    anime: mergedAnime.length,
+    games: mergedGames.length,
   };
+
+  const stripGames = mergedGames.slice(0, STRIP_SIZE);
+  const stripAnime = mergedAnime.slice(0, STRIP_SIZE);
 
   // One view per session, tracked once the intro has resolved.
   useEffect(() => {
@@ -535,7 +524,7 @@ export default function Home() {
     <div className="relative">
       {!introDone && <IntroOverlay onDone={() => setIntroDone(true)} />}
 
-      <ScrollNav sections={SECTIONS} />
+      <ScrollProgress />
 
       <main>
         <Hero profile={profile} />

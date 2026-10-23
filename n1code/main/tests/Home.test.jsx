@@ -83,8 +83,65 @@ describe("Home (single-page overview)", () => {
     expect(document.getElementById("setup")).toBeInTheDocument();
     expect(document.getElementById("contact")).toBeInTheDocument();
 
-    // the section dot navigation mirrors the sections
-    expect(screen.getAllByRole("button", { name: "Projects" }).length).toBeGreaterThan(0);
+    // the scroll progress bar is mounted and purely decorative
+    const bar = document.querySelector(".fixed.top-0[aria-hidden='true']");
+    expect(bar).toBeInTheDocument();
+    expect(bar.querySelectorAll("button, a")).toHaveLength(0);
+  });
+
+  it("counts every game in the stats band, not just the marquee slice", async () => {
+    // The marquee only shows 8 tiles; the counter used to report that slice
+    // length, so a large library rendered as "8+".
+    //
+    // happy-dom's requestAnimationFrame advances its clock by microseconds per
+    // frame, so the count-up never finishes there. Pretending the user asked
+    // for reduced motion makes useCountUp settle on its final value at once.
+    const matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+      matches: /prefers-reduced-motion/.test(query),
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }));
+
+    try {
+      const games = Array.from({ length: 10 }, (_, i) => ({
+        id: `g${i}`,
+        title: `Game ${i}`,
+        hours: "10",
+        status: "Completed",
+        genre: "RPG",
+      }));
+
+      seed({
+        profile: { username: "Test User" },
+        interests: { games, steamId: "", steamSyncEnabled: false, anime: [] },
+      });
+
+      render(
+        <MemoryRouter>
+          <Home />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => expect(screen.getByText("Test User")).toBeInTheDocument());
+
+      // the marquee loops its tiles, so "Game 0" is expected more than once
+      expect(screen.getAllByText("Game 0").length).toBeGreaterThan(0);
+
+      // the marquee is capped at 8 tiles, the counter is not. The track
+      // renders each tile twice so the loop has no visible seam.
+      expect(document.querySelectorAll("#lounge .marquee-track > *")).toHaveLength(16);
+
+      const stat = document.querySelector("#stats .font-display");
+      await waitFor(() => expect(stat).toHaveTextContent("10"));
+      expect(stat).not.toHaveTextContent("8");
+    } finally {
+      matchMedia.mockRestore();
+    }
   });
 
   it("shows the featured projects with a link through to the detail page", async () => {

@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, it, expect, vi } from "vitest";
 import Dropdown from "../src/components/Dropdown";
-import ScrollNav from "../src/components/ScrollNav";
+import ScrollProgress from "../src/components/ScrollProgress";
 import Backdrop from "../src/components/Backdrop";
 import Reveal from "../src/components/Reveal";
 import { HudCorners, HudChip, SectionHeading } from "../src/components/HUD";
@@ -61,24 +61,14 @@ describe("Dropdown", () => {
   });
 });
 
-describe("ScrollNav", () => {
-  const sections = [
-    { id: "hero", label: "Entry" },
-    { id: "projects", label: "Projects" },
-  ];
+describe("ScrollProgress", () => {
+  it("renders a decorative bar with no interactive chrome", () => {
+    const { container } = render(<ScrollProgress />);
 
-  it("renders a dot per section with an accessible label", () => {
-    render(<ScrollNav sections={sections} />);
-
-    expect(screen.getByRole("navigation", { name: /section navigation/i })).toBeInTheDocument();
-    sections.forEach((section) => {
-      expect(screen.getByRole("button", { name: section.label })).toBeInTheDocument();
-    });
-  });
-
-  it("renders no dot navigation when no sections are given", () => {
-    render(<ScrollNav sections={[]} />);
-    expect(screen.queryByRole("navigation", { name: /section navigation/i })).not.toBeInTheDocument();
+    const bar = container.firstElementChild;
+    expect(bar).toHaveClass("fixed", "top-0");
+    expect(bar).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelectorAll("button, a")).toHaveLength(0);
   });
 });
 
