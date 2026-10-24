@@ -432,7 +432,7 @@ function ContactSection({ profile }) {
           subtitle="Project idea, question, or just want to say hi? Drop a message — it lands straight in my inbox."
         />
 
-        <Reveal variant="blur" delay={180} className="mt-12">
+        <Reveal variant="fade-up" delay={180} className="mt-12">
           <ContactForm />
         </Reveal>
 
@@ -484,9 +484,11 @@ export default function Home() {
   const mergedAnime = sortEntries(
     [
       ...live.anilist.watchingAnime,
-      ...live.anilist.watchedAnime,
+      ...live.anilist.planningAnime,
+      ...live.anilist.completedAnime,
       ...live.anilist.readingManga,
-      ...live.anilist.readManga,
+      ...live.anilist.planningManga,
+      ...live.anilist.completedManga,
       ...mapManualAnime(animeManual, "Anime", "CURRENT"),
       ...mapManualAnime(animeManual, "Anime", "COMPLETED"),
       ...mapManualAnime(animeManual, "Manga", "CURRENT"),

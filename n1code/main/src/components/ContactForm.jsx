@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle, Send } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { db } from "../lib/firebase";
+import Reveal from "./Reveal";
 
 const EMPTY_FORM = { name: "", email: "", message: "" };
 
@@ -96,7 +97,7 @@ export default function ContactForm() {
       <div className="hud-corner hud-corner--bl" />
       <div className="hud-corner hud-corner--br" />
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <Reveal delay={60} className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <label className="flex flex-col gap-2">
           <span className="pl-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-300">Name</span>
           <input
@@ -120,19 +121,23 @@ export default function ContactForm() {
             className="w-full rounded-2xl border border-slate-700/50 bg-slate-900/60 px-5 py-4 text-slate-200 transition-all placeholder:text-slate-600 focus:border-sky-aqua-500/50 focus:outline-none focus:ring-1 focus:ring-sky-aqua-500/50"
           />
         </label>
-      </div>
+      </Reveal>
 
-      <label className="flex flex-col gap-2">
-        <span className="pl-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-300">Message</span>
-        <textarea
-          required
-          rows={5}
-          value={formData.message}
-          onChange={update("message")}
-          placeholder="What's on your mind?"
-          className="w-full resize-none rounded-2xl border border-slate-700/50 bg-slate-900/60 px-5 py-4 text-slate-200 transition-all placeholder:text-slate-600 focus:border-sky-aqua-500/50 focus:outline-none focus:ring-1 focus:ring-sky-aqua-500/50"
-        />
-      </label>
+      <Reveal delay={120}>
+        <label className="flex flex-col gap-2">
+          <span className="pl-2 font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
+            Message
+          </span>
+          <textarea
+            required
+            rows={5}
+            value={formData.message}
+            onChange={update("message")}
+            placeholder="What's on your mind?"
+            className="w-full resize-none rounded-2xl border border-slate-700/50 bg-slate-900/60 px-5 py-4 text-slate-200 transition-all placeholder:text-slate-600 focus:border-sky-aqua-500/50 focus:outline-none focus:ring-1 focus:ring-sky-aqua-500/50"
+          />
+        </label>
+      </Reveal>
 
       <Turnstile
         siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || "0x4AAAAAAExR9uilSklFgVCg"}
@@ -140,13 +145,15 @@ export default function ContactForm() {
         onSuccess={(token) => setTurnstileToken(token)}
       />
 
-      <button
-        type="submit"
+      <Reveal delay={180}>
+        <button
+          type="submit"
         disabled={status === "submitting" || !turnstileToken}
         className="mt-2 flex w-full items-center justify-center gap-3 rounded-2xl bg-sky-aqua-500 px-8 py-4 font-bold text-slate-900 shadow-lg shadow-sky-aqua-500/25 transition-all duration-300 hover:scale-[1.02] hover:bg-sky-aqua-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 md:w-auto md:self-end"
       >
-        {buttonLabel}
-      </button>
+          {buttonLabel}
+        </button>
+      </Reveal>
     </form>
   );
 }

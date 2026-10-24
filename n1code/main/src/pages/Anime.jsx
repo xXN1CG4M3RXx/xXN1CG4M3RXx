@@ -30,49 +30,66 @@ export default function Anime() {
   const manual = useMemo(() => interests.anime || [], [interests.anime]);
 
   const lists = useMemo(() => {
-    const watching = sortEntries([...live.anilist.watchingAnime, ...mapManualAnime(manual, "Anime", "CURRENT")], {
-      sort,
-      genre,
-      favoriteIds: live.anilist.favoriteAnimeIds,
-    });
-    const planning = sortEntries([...mapManualAnime(manual, "Anime", "PLANNING")], {
-      sort,
-      genre,
-      favoriteIds: live.anilist.favoriteAnimeIds,
-    });
-    const completed = sortEntries([...live.anilist.watchedAnime, ...mapManualAnime(manual, "Anime", "COMPLETED")], {
-      sort,
-      genre,
-      favoriteIds: live.anilist.favoriteAnimeIds,
-    });
-    const dropped = sortEntries([...mapManualAnime(manual, "Anime", "DROPPED")], {
-      sort,
-      genre,
-      favoriteIds: live.anilist.favoriteAnimeIds,
-    });
-    const reading = sortEntries([...live.anilist.readingManga, ...mapManualAnime(manual, "Manga", "CURRENT")], {
-      sort,
-      genre,
-      favoriteIds: live.anilist.favoriteMangaIds,
-    });
-    const read = sortEntries([...live.anilist.readManga, ...mapManualAnime(manual, "Manga", "COMPLETED")], {
-      sort,
-      genre,
-      favoriteIds: live.anilist.favoriteMangaIds,
-    });
+    const animeFavs = live.anilist.favoriteAnimeIds;
+    const mangaFavs = live.anilist.favoriteMangaIds;
+
+    // Live AniList entries come pre-bucketed by status; manual entries are
+    // mapped onto the same buckets so both render through one component.
+    const groups = {
+      watching: sortEntries(
+        [...live.anilist.watchingAnime, ...mapManualAnime(manual, "Anime", "CURRENT")],
+        { sort, genre, favoriteIds: animeFavs }
+      ),
+      planning: sortEntries(
+        [...live.anilist.planningAnime, ...mapManualAnime(manual, "Anime", "PLANNING")],
+        { sort, genre, favoriteIds: animeFavs }
+      ),
+      completed: sortEntries(
+        [...live.anilist.completedAnime, ...mapManualAnime(manual, "Anime", "COMPLETED")],
+        { sort, genre, favoriteIds: animeFavs }
+      ),
+      onHold: sortEntries([...live.anilist.onHoldAnime], { sort, genre, favoriteIds: animeFavs }),
+      dropped: sortEntries(
+        [...live.anilist.droppedAnime, ...mapManualAnime(manual, "Anime", "DROPPED")],
+        { sort, genre, favoriteIds: animeFavs }
+      ),
+      reading: sortEntries(
+        [...live.anilist.readingManga, ...mapManualAnime(manual, "Manga", "CURRENT")],
+        { sort, genre, favoriteIds: mangaFavs }
+      ),
+      mangaPlanning: sortEntries(
+        [...live.anilist.planningManga, ...mapManualAnime(manual, "Manga", "PLANNING")],
+        { sort, genre, favoriteIds: mangaFavs }
+      ),
+      mangaCompleted: sortEntries(
+        [...live.anilist.completedManga, ...mapManualAnime(manual, "Manga", "COMPLETED")],
+        { sort, genre, favoriteIds: mangaFavs }
+      ),
+      mangaOnHold: sortEntries([...live.anilist.onHoldManga], { sort, genre, favoriteIds: mangaFavs }),
+      mangaDropped: sortEntries(
+        [...live.anilist.droppedManga, ...mapManualAnime(manual, "Manga", "DROPPED")],
+        { sort, genre, favoriteIds: mangaFavs }
+      ),
+    };
 
     const byType = (list, wanted) => (typeFilter === "all" || typeFilter === wanted ? list : []);
 
-    return { watching, planning, completed, dropped, reading, read, byType };
+    return { ...groups, byType };
   }, [live.anilist, manual, sort, genre, typeFilter]);
 
   const allGenres = useMemo(
     () =>
       collectAnimeGenres([
         ...live.anilist.watchingAnime,
-        ...live.anilist.watchedAnime,
+        ...live.anilist.planningAnime,
+        ...live.anilist.completedAnime,
+        ...live.anilist.onHoldAnime,
+        ...live.anilist.droppedAnime,
         ...live.anilist.readingManga,
-        ...live.anilist.readManga,
+        ...live.anilist.planningManga,
+        ...live.anilist.completedManga,
+        ...live.anilist.onHoldManga,
+        ...live.anilist.droppedManga,
       ]),
     [live.anilist]
   );
@@ -81,9 +98,13 @@ export default function Anime() {
     lists.byType(lists.watching, "anime").length +
     lists.byType(lists.planning, "anime").length +
     lists.byType(lists.completed, "anime").length +
+    lists.byType(lists.onHold, "anime").length +
     lists.byType(lists.dropped, "anime").length +
     lists.byType(lists.reading, "manga").length +
-    lists.byType(lists.read, "manga").length;
+    lists.byType(lists.mangaPlanning, "manga").length +
+    lists.byType(lists.mangaCompleted, "manga").length +
+    lists.byType(lists.mangaOnHold, "manga").length +
+    lists.byType(lists.mangaDropped, "manga").length;
 
   const renderGroup = (title, entries, { animate = true } = {}) => {
     if (entries.length === 0) return null;
@@ -239,16 +260,20 @@ export default function Anime() {
             {renderGroup("Currently Watching", lists.byType(lists.watching, "anime"))}
             {renderGroup("Planning to Watch", lists.byType(lists.planning, "anime"))}
             {renderGroup("Completed Anime", lists.byType(lists.completed, "anime"))}
+            {renderGroup("On Hold", lists.byType(lists.onHold, "anime"))}
             {renderGroup("Dropped", lists.byType(lists.dropped, "anime"))}
             {renderGroup("Currently Reading", lists.byType(lists.reading, "manga"))}
-            {renderGroup("Completed Manga", lists.byType(lists.read, "manga"))}
+            {renderGroup("Planning to Read", lists.byType(lists.mangaPlanning, "manga"))}
+            {renderGroup("Completed Manga", lists.byType(lists.mangaCompleted, "manga"))}
+            {renderGroup("On Hold", lists.byType(lists.mangaOnHold, "manga"))}
+            {renderGroup("Dropped", lists.byType(lists.mangaDropped, "manga"))}
           </>
         )}
       </div>
 
       <div className="mt-20 border-t border-white/5 pt-8">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-600">
-          {"// titles are ordered by your favourites first, then the selected sort"}
+          {"// groups follow the AniList status; favourites sort first within each"}
         </p>
       </div>
     </PageShell>

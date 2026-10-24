@@ -87,6 +87,69 @@ describe("Anime page", () => {
     expect(screen.getByText(/completed anime/i)).toBeInTheDocument();
   });
 
+  it("keeps AniList PLANNING entries out of Completed", async () => {
+    // Bucketing by "status !== CURRENT" used to sweep PLANNING (and PAUSED)
+    // into the completed list, which is why the archive looked merged.
+    seed({
+      interests: { anime: [], anilistUsername: "testuser", anilistSyncEnabled: true },
+    });
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          data: {
+            anime: {
+              lists: [
+                {
+                  entries: [
+                    { id: 1, status: "CURRENT", progress: 3, media: { id: 11, title: { english: "Air" }, episodes: 12 } },
+                    { id: 2, status: "PLANNING", progress: 0, media: { id: 12, title: { english: "Queued" }, episodes: 24 } },
+                    { id: 3, status: "COMPLETED", progress: 12, media: { id: 13, title: { english: "Done" }, episodes: 12 } },
+                    { id: 4, status: "PAUSED", progress: 5, media: { id: 14, title: { english: "Paused" }, episodes: 12 } },
+                  ],
+                },
+              ],
+            },
+            manga: { lists: [] },
+            User: { favourites: { anime: { nodes: [] }, manga: { nodes: [] } } },
+          },
+        }),
+    });
+
+    render(
+      <MemoryRouter>
+        <Anime />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => expect(screen.getAllByText("Air").length).toBeGreaterThan(0));
+
+    const headings = Array.from(document.querySelectorAll("h2")).map((h) => h.textContent.trim());
+
+    expect(headings).toContain("Currently Watching");
+    expect(headings).toContain("Planning to Watch");
+    expect(headings).toContain("Completed Anime");
+    expect(headings).toContain("On Hold");
+
+    // each group is a <section> whose heading sits inside a Reveal wrapper and
+    // whose cards live in the .grid sibling of that wrapper
+    const inGroup = (title) => {
+      const h2 = Array.from(document.querySelectorAll("h2")).find((h) => h.textContent.trim() === title);
+      const grid = h2?.closest("section")?.querySelector(".grid");
+      return grid ? grid.textContent : "";
+    };
+
+    expect(inGroup("Currently Watching")).toContain("Air");
+    expect(inGroup("Planning to Watch")).toContain("Queued");
+    expect(inGroup("Completed Anime")).toContain("Done");
+    expect(inGroup("On Hold")).toContain("Paused");
+
+    // the regression: PLANNING and PAUSED must not be filed under Completed
+    expect(inGroup("Completed Anime")).not.toContain("Queued");
+    expect(inGroup("Completed Anime")).not.toContain("Paused");
+  });
+
   it("merges live AniList entries into the right groups", async () => {
     seed({
       interests: {

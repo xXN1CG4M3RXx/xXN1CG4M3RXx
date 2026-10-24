@@ -35,13 +35,43 @@ const ANILIST_QUERY = `
   }
 `;
 
+/**
+ * AniList list statuses, grouped the way the archive displays them.
+ *
+ * Bucketing by "not CURRENT" used to sweep PLANNING and PAUSED entries into
+ * "Completed", which made the archive look merged.
+ */
+const STATUS_GROUPS = {
+  watching: ["CURRENT", "REPEATING"],
+  planning: ["PLANNING"],
+  completed: ["COMPLETED"],
+  onHold: ["PAUSED"],
+  dropped: ["DROPPED"],
+};
+
+const bucketByStatus = (entries = []) => {
+  const grouped = Object.fromEntries(Object.keys(STATUS_GROUPS).map((key) => [key, []]));
+  (Array.isArray(entries) ? entries : []).forEach((entry) => {
+    Object.entries(STATUS_GROUPS).forEach(([key, statuses]) => {
+      if (statuses.includes(entry?.status)) grouped[key].push(entry);
+    });
+  });
+  return grouped;
+};
+
 // Module-level constants: a fresh Set per render would make the memoised
 // selectors below re-run (and would be a new identity every time).
 const EMPTY_ANILIST = {
   watchingAnime: [],
-  watchedAnime: [],
+  planningAnime: [],
+  completedAnime: [],
+  onHoldAnime: [],
+  droppedAnime: [],
   readingManga: [],
-  readManga: [],
+  planningManga: [],
+  completedManga: [],
+  onHoldManga: [],
+  droppedManga: [],
   favoriteAnimeIds: new Set(),
   favoriteMangaIds: new Set(),
 };
@@ -91,12 +121,20 @@ export function useInterestsLive(interests = {}) {
 
         const flatAnime = (lists?.anime?.lists || []).flatMap((list) => list.entries || []);
         const flatManga = (lists?.manga?.lists || []).flatMap((list) => list.entries || []);
+        const anime = bucketByStatus(flatAnime);
+        const manga = bucketByStatus(flatManga);
 
         setAnimeLists({
-          watchingAnime: flatAnime.filter((e) => e.status === "CURRENT"),
-          watchedAnime: flatAnime.filter((e) => e.status !== "CURRENT"),
-          readingManga: flatManga.filter((e) => e.status === "CURRENT"),
-          readManga: flatManga.filter((e) => e.status !== "CURRENT"),
+          watchingAnime: anime.watching,
+          planningAnime: anime.planning,
+          completedAnime: anime.completed,
+          onHoldAnime: anime.onHold,
+          droppedAnime: anime.dropped,
+          readingManga: manga.watching,
+          planningManga: manga.planning,
+          completedManga: manga.completed,
+          onHoldManga: manga.onHold,
+          droppedManga: manga.dropped,
           favoriteAnimeIds: new Set(lists?.User?.favourites?.anime?.nodes?.map((n) => n.id) || []),
           favoriteMangaIds: new Set(lists?.User?.favourites?.manga?.nodes?.map((n) => n.id) || []),
         });
