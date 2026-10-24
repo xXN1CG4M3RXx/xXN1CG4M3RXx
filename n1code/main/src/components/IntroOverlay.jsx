@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { prefersReducedMotion } from "../lib/animate";
 
 const BOOT_LINES = [
@@ -76,7 +77,13 @@ export default function IntroOverlay({ onDone }) {
 
   if (gone) return null;
 
-  return (
+  // Portalled to <body>: the route wrapper runs a `filter` while its enter
+  // animation plays, and a `filter` other than `none` makes an element the
+  // containing block for fixed-position descendants. Without the portal the
+  // overlay's `position: fixed` resolved against the full page height, so the
+  // cutscene's content rendered thousands of px below the fold and all the
+  // visitor saw was a blank screen.
+  return createPortal(
     <div
       className={`fixed inset-0 z-[100] overflow-hidden bg-[#04070d] ${
         leaving ? "animate-cutscene-out" : "animate-cutscene-in"
@@ -162,6 +169,7 @@ export default function IntroOverlay({ onDone }) {
       >
         skip intro
       </button>
-    </div>
+    </div>,
+    document.body
   );
 }
