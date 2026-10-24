@@ -192,6 +192,14 @@
   --font-mono: "Share Tech Mono", monospace;
 }
 
+/* `overflow-x: hidden` on body alone does not stop sideways panning on
+   mobile browsers — the viewport still honours it, so it has to go on the
+   root too. */
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -227,7 +235,9 @@ h1, h2, h3, h4, h5, h6 {
     opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
     transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
     filter 0.85s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  /* No `will-change` here: it would create a stacking context around every
+     reveal, which traps a dropdown menu's z-index inside it and lets later
+     siblings (the cards) paint over the open menu. */
 }
 
 .reveal[data-variant="fade-up"]    { transform: translateY(48px); }
@@ -344,6 +354,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Marquee */
 .marquee {
   overflow: hidden;
+  /* The track is translated on the compositor and is far wider than the
+     viewport; contain it so a mobile compositor cannot rasterise it outside
+     the clip and make the page horizontally pannable. */
+  contain: paint;
   mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
