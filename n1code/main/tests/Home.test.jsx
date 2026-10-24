@@ -178,7 +178,7 @@ describe("Home (single-page overview)", () => {
 
     // advance past the intro timeline without draining the typewriter's interval
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(4000);
+      await vi.advanceTimersByTimeAsync(5200);
     });
 
     expect(setDoc).toHaveBeenCalled();

@@ -38,11 +38,27 @@ describe("IntroOverlay", () => {
 
     expect(screen.queryByText("N1CODE")).not.toBeInTheDocument();
 
+    // the panels part at REVEAL_AT
     act(() => {
-      vi.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1900);
     });
 
     expect(screen.getByText("N1CODE")).toBeInTheDocument();
+  });
+
+  it("keeps the boot log readable before the panels part", () => {
+    vi.useFakeTimers();
+    render(<IntroOverlay onDone={() => {}} />);
+
+    // every line has appeared well before the reveal
+    act(() => {
+      vi.advanceTimersByTime(1600);
+    });
+
+    const lines = document.querySelectorAll('[aria-label="Skip intro"] .font-mono p');
+    expect(lines).toHaveLength(5);
+    expect(lines[0]).toHaveTextContent(/boot sequence initiated/);
+    expect(lines[4]).toHaveTextContent(/rendering world/);
   });
 
   it("calls onDone once the cutscene finishes", () => {
@@ -51,7 +67,7 @@ describe("IntroOverlay", () => {
     render(<IntroOverlay onDone={onDone} />);
 
     act(() => {
-      vi.advanceTimersByTime(4000);
+      vi.advanceTimersByTime(5200);
     });
 
     expect(onDone).toHaveBeenCalledTimes(1);

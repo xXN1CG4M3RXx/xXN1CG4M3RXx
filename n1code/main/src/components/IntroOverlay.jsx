@@ -10,10 +10,13 @@ const BOOT_LINES = [
   "rendering world ............... OK",
 ];
 
-const REVEAL_AT = 1000;
-const PROMPT_AT = 1900;
-const FINISH_AT = 2650;
-const EXIT_MS = 520;
+// Total ~5s: the boot log has time to be read, the panels part, then the logo
+// and the "scroll to begin" prompt hold before the cutscene hands over.
+const BOOT_STAGGER_MS = 200;
+const REVEAL_AT = 1800;
+const PROMPT_AT = 3000;
+const FINISH_AT = 4400;
+const EXIT_MS = 600;
 
 /**
  * One-time entry cutscene. Boot log → two panels part → logo burst → prompt.
@@ -23,6 +26,7 @@ const EXIT_MS = 520;
  */
 export default function IntroOverlay({ onDone }) {
   const [stage, setStage] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [gone, setGone] = useState(false);
   const finishedRef = useRef(false);
@@ -48,11 +52,15 @@ export default function IntroOverlay({ onDone }) {
       return undefined;
     }
 
+    const startedAt = performance.now();
     const timers = [
       window.setTimeout(() => setStage(1), REVEAL_AT),
       window.setTimeout(() => setStage(2), PROMPT_AT),
       window.setTimeout(finish, FINISH_AT),
     ];
+    const ticker = window.setInterval(() => {
+      setElapsed(Math.min(FINISH_AT, performance.now() - startedAt));
+    }, 100);
 
     const onKey = (event) => {
       if (["Escape", "Enter", " "].includes(event.key)) {
@@ -69,6 +77,7 @@ export default function IntroOverlay({ onDone }) {
 
     return () => {
       timers.forEach(window.clearTimeout);
+      window.clearInterval(ticker);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("pointerdown", onPointerDown);
@@ -112,7 +121,7 @@ export default function IntroOverlay({ onDone }) {
               <p
                 key={line}
                 className="animate-boot mb-2 whitespace-nowrap"
-                style={{ animationDelay: `${index * 150}ms`, opacity: 0 }}
+                style={{ animationDelay: `${index * BOOT_STAGGER_MS}ms`, opacity: 0 }}
               >
                 <span className="mr-2 text-slate-600">{">"}</span>
                 {line}
@@ -156,7 +165,7 @@ export default function IntroOverlay({ onDone }) {
         sector 01 // entry point
       </div>
       <div className="pointer-events-none absolute bottom-8 right-8 hidden font-mono text-[10px] uppercase tracking-[0.3em] text-slate-500 sm:block">
-        {String(Math.min(100, stage * 34)).padStart(3, "0")}%
+        {String(Math.round((elapsed / FINISH_AT) * 100)).padStart(3, "0")}%
       </div>
 
       <button
