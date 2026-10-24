@@ -136,7 +136,9 @@ describe("Home (single-page overview)", () => {
       // renders each tile twice so the loop has no visible seam.
       expect(document.querySelectorAll("#lounge .marquee-track > *")).toHaveLength(16);
 
-      const stat = document.querySelector("#stats .font-display");
+      // the first .font-display in #stats is the *projects* counter, so
+      // target the games one by its hook
+      const stat = document.querySelector('#stats [data-stat="games"] .font-display');
       await waitFor(() => expect(stat).toHaveTextContent("10"));
       expect(stat).not.toHaveTextContent("8");
     } finally {

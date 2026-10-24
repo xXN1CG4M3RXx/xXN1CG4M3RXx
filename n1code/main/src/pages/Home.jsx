@@ -125,12 +125,15 @@ function Hero({ profile }) {
 /* 02 — Stats                                                         */
 /* ------------------------------------------------------------------ */
 
-function Stat({ value, suffix, label, start, delay }) {
+function Stat({ stat, value, suffix, label, start, delay }) {
   const count = useCountUp(value, { duration: 1500, start });
 
   return (
     <Reveal variant="zoom" delay={delay} className="h-full">
-      <div className="relative flex h-full flex-col items-center gap-1 rounded-2xl border border-white/[0.07] bg-slate-950/40 px-4 py-6 backdrop-blur-sm transition-colors duration-300 hover:border-sky-aqua-500/35">
+      <div
+        data-stat={stat}
+        className="relative flex h-full flex-col items-center gap-1 rounded-2xl border border-white/[0.07] bg-slate-950/40 px-4 py-6 backdrop-blur-sm transition-colors duration-300 hover:border-sky-aqua-500/35"
+      >
         <div className="hud-corner hud-corner--tl" />
         <div className="hud-corner hud-corner--br" />
         <span className="font-display text-4xl font-bold text-slate-50 sm:text-5xl">
@@ -145,10 +148,10 @@ function Stat({ value, suffix, label, start, delay }) {
 
 function Stats({ counts }) {
   const items = [
-    { value: counts.projects, label: "projects shipped", suffix: "" },
-    { value: counts.skills, label: "tools in the stack", suffix: "" },
-    { value: counts.anime, label: "titles tracked", suffix: "" },
-    { value: counts.games, label: "games in the library", suffix: "+" },
+    { stat: "projects", value: counts.projects, label: "projects shipped", suffix: "" },
+    { stat: "skills", value: counts.skills, label: "tools in the stack", suffix: "" },
+    { stat: "anime", value: counts.anime, label: "titles tracked", suffix: "" },
+    { stat: "games", value: counts.games, label: "games in the library", suffix: "+" },
   ];
 
   // Same hook every other reveal uses, so the counters start exactly when the
