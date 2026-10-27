@@ -28,10 +28,10 @@ export default function Backdrop() {
     const mouse = { x: -9999, y: -9999, active: false };
 
     const dpr = Math.min(window.devicePixelRatio || 1, 1);
-    const MAX_PARTICLES = 32;
+    const MAX_PARTICLES = 16;
 
     const seed = () => {
-      const count = Math.round(Math.min(MAX_PARTICLES, Math.max(16, (width * height) / 40000)));
+      const count = Math.round(Math.min(MAX_PARTICLES, Math.max(8, (width * height) / 80000)));
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
