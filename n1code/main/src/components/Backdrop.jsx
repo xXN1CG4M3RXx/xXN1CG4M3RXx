@@ -27,7 +27,7 @@ export default function Backdrop() {
     let particles = [];
     const mouse = { x: -9999, y: -9999, active: false };
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1);
     const MAX_PARTICLES = 64;
 
     const seed = () => {
