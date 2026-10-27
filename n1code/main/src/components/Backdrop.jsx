@@ -27,10 +27,11 @@ export default function Backdrop() {
     let particles = [];
     const mouse = { x: -9999, y: -9999, active: false };
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const MAX_PARTICLES = 64;
 
     const seed = () => {
-      const count = Math.round(Math.min(90, Math.max(34, (width * height) / 26000)));
+      const count = Math.round(Math.min(MAX_PARTICLES, Math.max(28, (width * height) / 26000)));
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -101,23 +102,26 @@ export default function Backdrop() {
         ctx.fill();
       }
 
-      // constellation lines
+      // Constellation lines. Strokes are the expensive part, so we coalesce
+      // every pair into a single `Path2D` and issue one native stroke() rather
+      // than one per pair. This keeps the lines on screen every frame with a
+      // fraction of the draw calls.
       ctx.globalAlpha = 1;
+      const linePath = new Path2D();
       for (let i = 0; i < particles.length; i += 1) {
         for (let j = i + 1; j < particles.length; j += 1) {
           const a = particles[i];
           const b = particles[j];
           const dist = Math.hypot(a.x - b.x, a.y - b.y);
           if (dist < LINK_DISTANCE) {
-            ctx.strokeStyle = `rgba(0, 204, 255, ${(1 - dist / LINK_DISTANCE) * 0.16})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
+            linePath.moveTo(a.x, a.y);
+            linePath.lineTo(b.x, b.y);
           }
         }
       }
+      ctx.strokeStyle = "rgba(0, 204, 255, 0.16)";
+      ctx.lineWidth = 1;
+      ctx.stroke(linePath);
 
       ctx.globalAlpha = 1;
       raf = window.requestAnimationFrame(draw);
