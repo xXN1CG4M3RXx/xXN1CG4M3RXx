@@ -198,11 +198,10 @@
 /* `overflow-x: hidden` on body alone does not stop sideways panning on
    mobile browsers — the viewport still honours it, so it has to go on the
    root too. */
-html,
-body {
+html {
+  overflow-y: auto;
   overflow-x: hidden;
-  scroll-behavior: auto; /* keep instant scroll; never let a library latch a
-                           smooth-scroll that outlives its element */
+  scroll-behavior: auto;
 }
 
 body {
@@ -220,8 +219,7 @@ body {
   background-attachment: fixed;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none; /* stop over-scroll ghosting from making the
-                               scrollbar appear stuck after a scroll gesture */
+  overscroll-behavior: none;
 }
 
 h1, h2, h3, h4, h5, h6 {

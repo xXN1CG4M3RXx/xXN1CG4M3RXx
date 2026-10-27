@@ -70,10 +70,14 @@ export default function IntroOverlay({ onDone }) {
     };
     const onWheel = () => finish();
     const onPointerDown = () => finish();
+    const onTouchMove = () => finish();
 
     window.addEventListener("keydown", onKey);
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    // Mobile scroll: touch devices never fire `wheel`, so without a touchmove
+    // listener an opaque overlay would freeze the page beneath it.
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       timers.forEach(window.clearTimeout);
@@ -94,7 +98,7 @@ export default function IntroOverlay({ onDone }) {
   // visitor saw was a blank screen.
   return createPortal(
     <div
-      className={`fixed inset-0 z-[100] overflow-hidden bg-[#04070d]/66 ${
+      className={`fixed inset-0 z-[100] overflow-hidden bg-[#04070d] ${
         leaving ? "animate-cutscene-out" : "animate-cutscene-in"
       }`}
       role="button"
