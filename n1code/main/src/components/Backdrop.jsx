@@ -153,7 +153,7 @@ export default function Backdrop() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
       <div className="hud-grid animate-grid-drift absolute inset-0" />
 
       <div className="animate-float-slow absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-sky-aqua-600/12 blur-[120px]" />
