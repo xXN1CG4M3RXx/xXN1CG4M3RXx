@@ -94,7 +94,7 @@ export default function IntroOverlay({ onDone }) {
   // visitor saw was a blank screen.
   return createPortal(
     <div
-      className={`fixed inset-0 z-[100] overflow-hidden bg-[#04070d] ${
+      className={`fixed inset-0 z-[100] overflow-hidden bg-[#04070d]/66 ${
         leaving ? "animate-cutscene-out" : "animate-cutscene-in"
       }`}
       role="button"
